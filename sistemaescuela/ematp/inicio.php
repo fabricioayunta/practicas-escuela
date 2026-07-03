@@ -7,25 +7,18 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel EMATP</title>
-</head>
-<body>
-
 <h1>Panel EMATP</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
 
 <hr>
 
-<h3>Opciones</h3>
+<a href="tickets.php">Gestionar Tickets</a>
 
-<ul>
-    <li><a href="tickets.php">Ver Tickets</a></li>
-</ul>
+<br><br>
 
-</body>
-</html>
+<a href="computadoras.php">Gestionar Computadoras</a>
+
+<br><br>
+
+<a href="../logout.php">Cerrar Sesión</a>
