@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-07-2026 a las 21:41:57
+-- Tiempo de generación: 03-07-2026 a las 21:16:06
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -145,7 +145,7 @@ CREATE TABLE `computadoras` (
 
 INSERT INTO `computadoras` (`id_computadora`, `numero_pc`, `id_laboratorio`, `estado`) VALUES
 (1, 1, 1, ''),
-(2, 2, 1, ''),
+(2, 2, 1, 'Alta'),
 (3, 3, 1, ''),
 (4, 4, 1, ''),
 (5, 5, 1, ''),
@@ -246,7 +246,8 @@ CREATE TABLE `historialticket` (
 
 INSERT INTO `historialticket` (`id_historial`, `id_ticket`, `estado`, `fecha`, `observacion`, `id_usuario`) VALUES
 (1, 1, 'Pendiente', '2026-06-29 14:56:49', 'wow hemos observado que no funciona. pero no se comno sew arregla xd', 2),
-(2, 1, 'Cerrado', '2026-06-29 14:57:19', 'listo\r\n', 2);
+(2, 1, 'Cerrado', '2026-06-29 14:57:19', 'listo\r\n', 2),
+(3, 2, 'Pendiente', '2026-07-03 14:50:00', 'me ', 2);
 
 -- --------------------------------------------------------
 
@@ -288,7 +289,16 @@ INSERT INTO `historial_computadoras` (`id_historial`, `id_computadora`, `id_usua
 (19, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:32'),
 (20, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:33'),
 (21, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:33'),
-(22, 3, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:49');
+(22, 3, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:49'),
+(23, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:25:17'),
+(24, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:29:21'),
+(25, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:54:58'),
+(26, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:54:58'),
+(27, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:54:59'),
+(28, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:57:41'),
+(29, 2, 2, 'La computadora fue dada de alta', '2026-07-03 14:05:10'),
+(30, 2, 2, 'La computadora fue dada de baja.\nMotivo: porque tengo ganas y soy el jefe\r\n', '2026-07-03 14:05:27'),
+(31, 2, 2, 'La computadora fue dada de alta', '2026-07-03 14:07:13');
 
 -- --------------------------------------------------------
 
@@ -355,7 +365,8 @@ CREATE TABLE `tickets` (
 --
 
 INSERT INTO `tickets` (`id_ticket`, `titulo`, `descripcion`, `fecha_creacion`, `estado`, `id_usuario`, `id_computadora`, `foto`, `id_ematp_asignado`) VALUES
-(1, 'usb delantero ', 'no anda los usb de adelante del gabinete', '2026-06-29 14:51:46', 'Cerrado', 3, 60, NULL, 2);
+(1, 'usb delantero ', 'no anda los usb de adelante del gabinete', '2026-06-29 14:51:46', 'Cerrado', 3, 60, NULL, 2),
+(2, ' el telcado no anda', 'sf,jdsfg', '2026-07-03 14:49:12', 'Pendiente', 4, 37, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -379,7 +390,8 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `email`, `contrasena`, `id_rol`) VALUES
 (1, 'admin', 'prueba', 'admin@gmail.com', '12345', 1),
 (2, 'lucas', 'gomez', 'ematp@gmail.com', '12345', 3),
-(3, 'marta', 'soria', 'profe@gmail.com', '12345', 2);
+(3, 'marta', 'soria', 'profe@gmail.com', '12345', 2),
+(4, 'luciana', 'rodriguez', 'luly@gmail.com', '12345', 2);
 
 --
 -- Índices para tablas volcadas
@@ -468,19 +480,19 @@ ALTER TABLE `computadoras`
 -- AUTO_INCREMENT de la tabla `historialticket`
 --
 ALTER TABLE `historialticket`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_computadoras`
 --
 ALTER TABLE `historial_computadoras`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `laboratorios`
 --
 ALTER TABLE `laboratorios`
-  MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -492,13 +504,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
