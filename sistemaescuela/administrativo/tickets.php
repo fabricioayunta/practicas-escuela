@@ -94,7 +94,7 @@ ORDER BY tickets.fecha_creacion DESC";
 $resultado = mysqli_query($conexion,$sql);
 $resultado = mysqli_query($conexion,$sql);
 ?>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Todos los Tickets</h1>
 
 <a href="inicio.php">← Volver</a>

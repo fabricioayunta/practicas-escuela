@@ -16,7 +16,7 @@ $pc = mysqli_fetch_assoc($res);
 
 $labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
 ?>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Editar Computadora</h1>
 
 <a href="computadoras.php">← Volver</a>

@@ -34,7 +34,7 @@ $componentes = mysqli_fetch_assoc($resultado);
 <html lang="es">
 
 <head>
-
+<link rel="stylesheet" href="../css/estilos.css">
 <meta charset="UTF-8">
 
 <title>Editar Componentes</title>
@@ -42,7 +42,7 @@ $componentes = mysqli_fetch_assoc($resultado);
 </head>
 
 <body>
-
+<?php include("../includes/menu_ematp.php"); ?>
 <h1>Editar Componentes</h1>
 
 <p>

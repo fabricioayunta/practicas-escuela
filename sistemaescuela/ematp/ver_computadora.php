@@ -47,11 +47,12 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="../css/estilos.css">
     <meta charset="UTF-8">
     <title>Computadora</title>
 </head>
 <body>
-
+<?php include("../includes/menu_ematp.php"); ?>
 <h1>Computadora PC <?php echo $pc["numero_pc"]; ?></h1>
 
 <a href="computadoras.php?laboratorio=<?php echo $pc["id_laboratorio"]; ?>">

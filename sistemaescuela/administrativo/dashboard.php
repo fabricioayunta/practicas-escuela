@@ -32,10 +32,15 @@ $tickets = mysqli_fetch_assoc($res4)["total"];
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="../css/estilos.css">
     <meta charset="UTF-8">
     <title>Dashboard Admin</title>
 </head>
 <body>
+
+<div class="contenedor">
+
+<?php include("../includes/menu_admin.php"); ?>
 
 <h1>Dashboard Administrativo</h1>
 
@@ -43,33 +48,92 @@ $tickets = mysqli_fetch_assoc($res4)["total"];
 
 <hr>
 
-<div style="display:flex; gap:20px;">
+<div class="cards">
 
-    <div style="padding:10px; border:1px solid black;">
-        <h3>Total PCs</h3>
-        <h2><?php echo $totalPC; ?></h2>
-    </div>
+<div class="card azul">
 
-    <div style="padding:10px; border:1px solid black;">
-        <h3>Activas</h3>
-        <h2 style="color:green;"><?php echo $activas; ?></h2>
-    </div>
+<h3>💻 Total Computadoras</h3>
 
-    <div style="padding:10px; border:1px solid black;">
-        <h3>Bajas</h3>
-        <h2 style="color:red;"><?php echo $bajas; ?></h2>
-    </div>
-
-    <div style="padding:10px; border:1px solid black;">
-        <h3>Tickets abiertos</h3>
-        <h2 style="color:orange;"><?php echo $tickets; ?></h2>
-    </div>
+<h1><?php echo $totalPC; ?></h1>
 
 </div>
 
+<div class="card verde">
+
+<h3>🟢 Activas</h3>
+
+<h1><?php echo $activas; ?></h1>
+
+</div>
+
+<div class="card rojo">
+
+<h3>🔴 Fuera de Servicio</h3>
+
+<h1><?php echo $bajas; ?></h1>
+
+</div>
+
+<div class="card naranja">
+
+<h3>🎫 Tickets Abiertos</h3>
+
+<h1><?php echo $tickets; ?></h1>
+
+</div>
+
+<div class="card gris">
+
+<h3>👥 Usuarios</h3>
+
+<h1><?php echo $totalUsuarios; ?></h1>
+
+</div>
+
+<div class="card azul">
+
+<h3>👨‍🏫 Profesores</h3>
+
+<h1><?php echo $profesores; ?></h1>
+
+</div>
+
+<div class="card verde">
+
+<h3>🛠 EMATP</h3>
+
+<h1><?php echo $ematp; ?></h1>
+
+</div>
+
+<div class="card naranja">
+
+<h3>🧪 Laboratorios</h3>
+
+<h1><?php echo $laboratorios; ?></h1>
+
+</div>
+
+<div class="card rojo">
+
+<h3>✅ Tickets Cerrados</h3>
+
+<h1><?php echo $ticketsCerrados; ?></h1>
+
+</div>
+
+<div class="card gris">
+
+<h3>⏳ Tickets Pendientes</h3>
+
+<h1><?php echo $ticketsPendientes; ?></h1>
+
+</div>
+
+</div>
 <hr>
 
 <a href="inicio.php">Volver al panel</a>
-
+</div>      
 </body>
 </html>

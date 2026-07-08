@@ -34,13 +34,13 @@ if(isset($_GET["laboratorio"])){
 <head>
 
 <meta charset="UTF-8">
-
+<link rel="stylesheet" href="../css/estilos.css">
 <title>Computadoras</title>
 
 </head>
 
 <body>
-
+<?php include("../includes/menu_ematp.php"); ?>
 <h1>Gestión de Computadoras</h1>
 
 <a href="inicio.php">← Volver al Panel</a>

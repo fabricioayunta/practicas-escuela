@@ -16,12 +16,13 @@ $laboratorios = mysqli_query($conexion, $sqlLaboratorios);
 <html lang="es">
 
 <head>
+    <link rel="stylesheet" href="../css/estilos.css">
     <meta charset="UTF-8">
     <title>Crear Ticket</title>
 </head>
 
 <body>
-
+<?php include("../includes/menu_profesor.php"); ?>
 <h1>Crear Ticket</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>

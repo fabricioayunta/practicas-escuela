@@ -15,7 +15,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 $usuario = mysqli_fetch_assoc($resultado);
 ?>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Editar Usuario</h1>
 
 <form action="actualizar_usuario.php" method="POST">

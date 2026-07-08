@@ -18,11 +18,12 @@ $laboratorio = mysqli_fetch_assoc($resultado);
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="../css/estilos.css">
     <meta charset="UTF-8">
     <title>Editar Laboratorio</title>
 </head>
 <body>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Editar Laboratorio</h1>
 
 <a href="laboratorios.php">← Volver</a>

@@ -72,7 +72,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 <html lang="es">
 
 <head>
-
+<link rel="stylesheet" href="../css/estilos.css">
 <meta charset="UTF-8">
 
 <title>Ver Ticket</title>
@@ -80,7 +80,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 </head>
 
 <body>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Ticket #<?php echo $ticket["id_ticket"]; ?></h1>
 
 <a href="tickets.php">← Volver</a>

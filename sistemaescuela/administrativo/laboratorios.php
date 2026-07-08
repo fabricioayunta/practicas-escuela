@@ -18,7 +18,7 @@ $resultado = mysqli_query($conexion,$sql);
 <html lang="es">
 
 <head>
-
+<link rel="stylesheet" href="../css/estilos.css">
 <meta charset="UTF-8">
 
 <title>Laboratorios</title>
@@ -26,7 +26,7 @@ $resultado = mysqli_query($conexion,$sql);
 </head>
 
 <body>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Gestión de Laboratorios</h1>
 
 <p>

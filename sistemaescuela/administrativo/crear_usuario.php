@@ -6,7 +6,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
     exit();
 }
 ?>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Crear Usuario</h1>
 
 <form action="guardar_usuario.php" method="POST">

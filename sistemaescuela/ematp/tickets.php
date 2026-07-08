@@ -29,7 +29,7 @@ $resultado = mysqli_query($conexion, $sql);
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
+<link rel="stylesheet" href="../css/estilos.css">
 <meta charset="UTF-8">
 
 <title>Tickets</title>
@@ -39,7 +39,7 @@ $resultado = mysqli_query($conexion, $sql);
 </head>
 
 <body>
-
+<?php include("../includes/menu_ematp.php"); ?>
 <h1>Panel EMATP</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>

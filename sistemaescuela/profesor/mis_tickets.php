@@ -28,11 +28,12 @@ $resultado = mysqli_query($conexion, $sql);
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="../css/estilos.css">
     <meta charset="UTF-8">
     <title>Mis Tickets</title>
 </head>
 <body>
-
+<?php include("../includes/menu_profesor.php"); ?>
 <h1>Mis Tickets</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>

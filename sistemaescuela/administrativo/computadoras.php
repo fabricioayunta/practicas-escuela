@@ -22,10 +22,11 @@ $resultado = mysqli_query($conexion, $sql);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/estilos.css">
     <title>Computadoras</title>
 </head>
 <body>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Gestión de Computadoras</h1>
 
 <a href="inicio.php">← Volver</a>

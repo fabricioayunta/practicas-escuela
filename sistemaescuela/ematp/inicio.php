@@ -6,19 +6,19 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
     exit();
 }
 ?>
-
+<?php include("../includes/menu_ematp.php"); ?>
 <h1>Panel EMATP</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
 
 <hr>
 
-<a href="tickets.php">Gestionar Tickets</a>
+ <ul>
 
-<br><br>
+<li><a href="tickets.php">Gestionar Tickets</a></li>
 
-<a href="computadoras.php">Gestionar Computadoras</a>
+<li><a href="laboratorios.php">Computadoras</a></li>
 
-<br><br>
+<li><a href="../logout.php">Cerrar Sesión</a></li>
 
-<a href="../logout.php">Cerrar Sesión</a>
+</ul>

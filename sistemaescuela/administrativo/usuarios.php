@@ -11,7 +11,7 @@ include("../conexion/conexion.php");
 $sql = "SELECT * FROM usuarios";
 $resultado = mysqli_query($conexion, $sql);
 ?>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Gestión de Usuarios</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>

@@ -47,12 +47,13 @@ $historial = mysqli_query($conexion, $sqlHistorial);
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="../css/estilos.css">
 <meta charset="UTF-8">
 <title>Gestionar Ticket</title>
 </head>
 
 <body>
-
+<?php include("../includes/menu_ematp.php"); ?>
 <h1>Gestionar Ticket #<?php echo $ticket["id_ticket"]; ?></h1>
 
 <a href="tickets.php">← Volver a Tickets</a>

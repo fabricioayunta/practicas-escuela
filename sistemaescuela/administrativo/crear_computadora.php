@@ -10,7 +10,7 @@ include("../conexion/conexion.php");
 
 $labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
 ?>
-
+<?php include("../includes/menu_admin.php"); ?>
 <h1>Nueva Computadora</h1>
 
 <a href="computadoras.php">← Volver</a>
