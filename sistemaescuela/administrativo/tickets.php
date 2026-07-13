@@ -94,9 +94,19 @@ ORDER BY tickets.fecha_creacion DESC";
 $resultado = mysqli_query($conexion,$sql);
 $resultado = mysqli_query($conexion,$sql);
 ?>
-<?php include("../includes/menu_admin.php"); ?>
-<h1>Todos los Tickets</h1>
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+    <meta charset="UTF-8">
+    <title>Tickets</title>
+
+    <link rel="stylesheet" href="../css/estilos.css">
+</head>
+
+<body>
+
+<?php include("../includes/menu_admin.php"); ?>
 <a href="inicio.php">← Volver</a>
 
 <br><br>
@@ -110,12 +120,20 @@ $resultado = mysqli_query($conexion,$sql);
 
 <option value="">Todos</option>
 
-<option value="Abierto">Abiertos</option>
+<option value="Abierto"
+<?php if(isset($_GET["estado"]) && $_GET["estado"]=="Abierto") echo "selected"; ?>>
+Abiertos
+</option>
 
-<option value="Pendiente">Pendientes</option>
+<option value="Pendiente"
+<?php if(isset($_GET["estado"]) && $_GET["estado"]=="Pendiente") echo "selected"; ?>>
+Pendientes
+</option>
 
-<option value="Cerrado">Cerrados</option>
-
+<option value="Cerrado"
+<?php if(isset($_GET["estado"]) && $_GET["estado"]=="Cerrado") echo "selected"; ?>>
+Cerrados
+</option>
 </select>
 <br><br>
 
@@ -126,7 +144,7 @@ type="text"
 name="buscar"
 placeholder="Nombre o apellido">
 <button type="submit">
-Buscar
+🔍 Buscar
 </button>
 
 </form>
@@ -172,7 +190,29 @@ echo $fila["nombre"]." ".$fila["apellido"];
 
 <td><?php echo $fila["titulo"]; ?></td>
 
-<td><?php echo $fila["estado"]; ?></td>
+<td>
+
+<?php
+
+$clase = "";
+
+if($fila["estado"]=="Abierto"){
+    $clase="abierto";
+}
+elseif($fila["estado"]=="Pendiente"){
+    $clase="pendiente";
+}
+else{
+    $clase="cerrado";
+}
+
+?>
+
+<span class="estado <?php echo $clase; ?>">
+<?php echo $fila["estado"]; ?>
+</span>
+
+</td>
 
 <td>
 <?php echo date("d/m/Y H:i",strtotime($fila["fecha_creacion"])); ?>
@@ -180,10 +220,11 @@ echo $fila["nombre"]." ".$fila["apellido"];
 
 <td>
 
-<a href="ver_ticket.php?id=<?php echo $fila["id_ticket"]; ?>">
-Ver
+<a
+class="btn btn-azul"
+href="ver_ticket.php?id=<?php echo $fila["id_ticket"]; ?>">
+👁 Ver
 </a>
-
 </td>
 
 </tr>
@@ -191,3 +232,6 @@ Ver
 <?php } ?>
 
 </table>
+</body>
+</html>
+

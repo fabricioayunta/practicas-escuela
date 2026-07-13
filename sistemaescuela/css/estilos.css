@@ -401,3 +401,107 @@ table{
     border-left:8px solid #6c757d;
 
 }
+
+/*==========================
+BOTONES
+===========================*/
+
+.btn{
+
+    display:inline-block;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    color:white !important;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.btn-verde{
+
+    background:#198754;
+
+}
+
+.btn-verde:hover{
+
+    background:#157347;
+
+}
+
+.btn-azul{
+
+    background:#0d6efd;
+
+}
+
+.btn-azul:hover{
+
+    background:#0b5ed7;
+
+}
+
+.btn-rojo{
+
+    background:#dc3545;
+
+}
+
+.btn-rojo:hover{
+
+    background:#bb2d3b;
+
+}
+
+.acciones{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+}
+
+/*==========================
+ESTADOS TICKETS
+===========================*/
+
+.estado{
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.abierto{
+
+    background:#198754;
+
+}
+
+.pendiente{
+
+    background:#ffc107;
+
+    color:black;
+
+}
+
+.cerrado{
+
+    background:#dc3545;
+
+}

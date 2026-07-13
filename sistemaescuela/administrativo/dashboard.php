@@ -27,6 +27,35 @@ $bajas = mysqli_fetch_assoc($res3)["total"];
 $sql4 = "SELECT COUNT(*) as total FROM tickets WHERE estado!='Cerrado'";
 $res4 = mysqli_query($conexion,$sql4);
 $tickets = mysqli_fetch_assoc($res4)["total"];
+/* TOTAL USUARIOS */
+$sql5 = "SELECT COUNT(*) as total FROM usuarios";
+$res5 = mysqli_query($conexion,$sql5);
+$totalUsuarios = mysqli_fetch_assoc($res5)["total"];
+
+/* PROFESORES (rol = 2) */
+$sql6 = "SELECT COUNT(*) as total FROM usuarios WHERE id_rol = 2";
+$res6 = mysqli_query($conexion,$sql6);
+$profesores = mysqli_fetch_assoc($res6)["total"];
+
+/* EMATP (rol = 3) */
+$sql7 = "SELECT COUNT(*) as total FROM usuarios WHERE id_rol = 3";
+$res7 = mysqli_query($conexion,$sql7);
+$ematp = mysqli_fetch_assoc($res7)["total"];
+
+/* LABORATORIOS */
+$sql8 = "SELECT COUNT(*) as total FROM laboratorios";
+$res8 = mysqli_query($conexion,$sql8);
+$laboratorios = mysqli_fetch_assoc($res8)["total"];
+
+/* TICKETS CERRADOS */
+$sql9 = "SELECT COUNT(*) as total FROM tickets WHERE estado='Cerrado'";
+$res9 = mysqli_query($conexion,$sql9);
+$ticketsCerrados = mysqli_fetch_assoc($res9)["total"];
+
+/* TICKETS PENDIENTES */
+$sql10 = "SELECT COUNT(*) as total FROM tickets WHERE estado='Pendiente'";
+$res10 = mysqli_query($conexion,$sql10);
+$ticketsPendientes = mysqli_fetch_assoc($res10)["total"];
 ?>
 
 <!DOCTYPE html>

@@ -11,8 +11,20 @@ include("../conexion/conexion.php");
 $sql = "SELECT * FROM usuarios";
 $resultado = mysqli_query($conexion, $sql);
 ?>
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios</title>
+
+    <link rel="stylesheet" href="../css/estilos.css">
+</head>
+
+<body>
+
 <?php include("../includes/menu_admin.php"); ?>
-<h1>Gestión de Usuarios</h1>
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
 
@@ -20,7 +32,9 @@ $resultado = mysqli_query($conexion, $sql);
 
 <br><br>
 
-<a href="crear_usuario.php">+ Crear nuevo usuario</a>
+<a href="crear_usuario.php" class="btn btn-verde">
+➕ Crear Usuario
+</a>
 
 <hr>
 
@@ -42,15 +56,31 @@ $resultado = mysqli_query($conexion, $sql);
             <td><?php echo $fila["email"]; ?></td>
             <td><?php echo $fila["id_rol"]; ?></td>
 
-            <td>
-                <a href="editar_usuario.php?id=<?php echo $fila["id_usuario"]; ?>">Editar</a>
-                |
-                <a href="eliminar_usuario.php?id=<?php echo $fila["id_usuario"]; ?>"
-                   onclick="return confirm('¿Seguro que querés eliminar este usuario?');">
-                   Eliminar
-                </a>
-            </td>
+           <td>
+
+<div class="acciones">
+
+<a
+class="btn btn-azul"
+href="editar_usuario.php?id=<?php echo $fila["id_usuario"]; ?>">
+✏️ Editar
+</a>
+
+<a
+class="btn btn-rojo"
+href="eliminar_usuario.php?id=<?php echo $fila["id_usuario"]; ?>"
+onclick="return confirm('¿Seguro que querés eliminar este usuario?');">
+🗑️ Eliminar
+</a>
+
+</div>
+
+</td>
         </tr>
     <?php } ?>
 
 </table>
+
+</body>
+</html>
+
