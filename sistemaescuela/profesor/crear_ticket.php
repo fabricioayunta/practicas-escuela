@@ -29,7 +29,7 @@ $laboratorios = mysqli_query($conexion, $sqlLaboratorios);
 
 <hr>
 
-<form action="guardar_ticket.php" method="POST">
+<form action="guardar_ticket.php" method="POST" enctype="multipart/form-data">
 
     <label>Título:</label><br>
     <input type="text" name="titulo" required>
@@ -81,7 +81,14 @@ $laboratorios = mysqli_query($conexion, $sqlLaboratorios);
     <textarea name="descripcion" rows="6" cols="50" required></textarea>
 
     <br><br>
+<label>Adjuntar imagen (opcional):</label><br>
 
+<input
+type="file"
+name="foto"
+accept=".jpg,.jpeg,.png,.webp">
+
+<br><br>
     <button type="submit">
         Crear Ticket
     </button>

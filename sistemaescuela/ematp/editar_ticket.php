@@ -82,6 +82,30 @@ PC <?php echo $ticket["numero_pc"]; ?>
 <?php echo nl2br($ticket["descripcion"]); ?>
 </p>
 
+<h3>Imagen Adjunta</h3>
+
+<?php
+
+if(!empty($ticket["foto"])){
+
+?>
+
+<img
+src="../uploads/<?php echo $ticket["foto"]; ?>"
+style="max-width:500px; border:1px solid #ccc; border-radius:10px;">
+
+<?php
+
+}else{
+
+    echo "<p><i>El profesor no adjuntó ninguna imagen.</i></p>";
+
+}
+
+?>
+
+<br><br>
+
 <p><strong>Estado actual:</strong>
 <?php echo $ticket["estado"]; ?>
 </p>

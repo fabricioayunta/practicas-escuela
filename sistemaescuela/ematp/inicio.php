@@ -17,7 +17,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
 
 <li><a href="tickets.php">Gestionar Tickets</a></li>
 
-<li><a href="laboratorios.php">Computadoras</a></li>
+<li><a href="computadoras.php">Computadoras</a></li>
 
 <li><a href="../logout.php">Cerrar Sesión</a></li>
 
