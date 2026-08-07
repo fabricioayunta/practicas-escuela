@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-08-2026 a las 21:41:30
+-- Tiempo de generación: 07-08-2026 a las 21:53:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -247,7 +247,8 @@ CREATE TABLE `historialticket` (
 INSERT INTO `historialticket` (`id_historial`, `id_ticket`, `estado`, `fecha`, `observacion`, `id_usuario`) VALUES
 (1, 1, 'Pendiente', '2026-06-29 14:56:49', 'wow hemos observado que no funciona. pero no se comno sew arregla xd', 2),
 (2, 1, 'Cerrado', '2026-06-29 14:57:19', 'listo\r\n', 2),
-(3, 2, 'Pendiente', '2026-07-03 14:50:00', 'me ', 2);
+(3, 2, 'Pendiente', '2026-07-03 14:50:00', 'me ', 2),
+(4, 3, 'Pendiente', '2026-08-07 15:50:06', 'visto', 2);
 
 -- --------------------------------------------------------
 
@@ -370,7 +371,8 @@ CREATE TABLE `tickets` (
 INSERT INTO `tickets` (`id_ticket`, `titulo`, `descripcion`, `fecha_creacion`, `estado`, `id_usuario`, `id_computadora`, `foto`, `id_ematp_asignado`) VALUES
 (1, 'usb delantero ', 'no anda los usb de adelante del gabinete', '2026-06-29 14:51:46', 'Cerrado', 3, 60, NULL, 2),
 (2, ' el telcado no anda', 'sf,jdsfg', '2026-07-03 14:49:12', 'Pendiente', 4, 37, NULL, 2),
-(3, 'prueba imagen', 'prueba', '2026-08-05 16:22:19', 'Abierto', 3, 1, '6a738d6bbbc7e.jpeg', NULL);
+(3, 'prueba imagen', 'prueba', '2026-08-05 16:22:19', 'Pendiente', 3, 1, '6a738d6bbbc7e.jpeg', 2),
+(4, 'prueba213', 'hola', '2026-08-07 14:35:13', 'Abierto', 3, 33, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -484,7 +486,7 @@ ALTER TABLE `computadoras`
 -- AUTO_INCREMENT de la tabla `historialticket`
 --
 ALTER TABLE `historialticket`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_computadoras`
@@ -508,7 +510,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

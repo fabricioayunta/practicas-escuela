@@ -44,7 +44,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
 
-<a href="inicio.php">← Volver al Panel</a>
+<a href="../menu.php">← Volver al Panel</a>
 
 <br><br>
 

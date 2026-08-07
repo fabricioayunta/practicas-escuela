@@ -4,11 +4,11 @@
 💻 Mesa de Ayuda Informática
 </h2>
 
-<a href="inicio.php">🏠 Inicio</a>
+<a href="../inicio.php">🏠 Inicio</a>
 
 <a href="tickets.php">🎫 Tickets</a>
 
-<a href="laboratorios.php">💻 Computadoras</a>
+<a href="computadoras.php">💻 Computadoras</a>
 
 <a href="../logout.php">🚪 Cerrar sesión</a>
 
