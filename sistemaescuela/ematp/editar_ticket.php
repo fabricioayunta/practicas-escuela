@@ -62,47 +62,46 @@ $historial = mysqli_query($conexion, $sqlHistorial);
 
 <h3>Información del Ticket</h3>
 
-<p><strong>Profesor:</strong>
-<?php echo $ticket["nombre"] . " " . $ticket["apellido"]; ?>
+<p>
+    <strong>Profesor:</strong>
+    <?php echo $ticket["nombre"] . " " . $ticket["apellido"]; ?>
 </p>
 
-<p><strong>Laboratorio:</strong>
-<?php echo $ticket["laboratorio"]; ?>
+<p>
+    <strong>Laboratorio:</strong>
+    <?php echo $ticket["laboratorio"]; ?>
 </p>
 
-<p><strong>Computadora:</strong>
-PC <?php echo $ticket["numero_pc"]; ?>
+<p>
+    <strong>Computadora:</strong>
+    PC <?php echo $ticket["numero_pc"]; ?>
 </p>
 
-<p><strong>Título:</strong>
-<?php echo $ticket["titulo"]; ?>
+<p> 
+    <strong>Título:</strong>
+    <?php echo $ticket["titulo"]; ?>
 </p>
 
-<p><strong>Descripción:</strong><br>
-<?php echo nl2br($ticket["descripcion"]); ?>
+<p> 
+    <strong>Descripción:</strong><br>
+    <?php echo nl2br($ticket["descripcion"]); ?>
 </p>
 
-<h3>Imagen Adjunta</h3>
-
-<?php
-
-if(!empty($ticket["foto"])){
-
-?>
-
-<img
-src="../uploads/<?php echo $ticket["foto"]; ?>"
-style="max-width:500px; border:1px solid #ccc; border-radius:10px;">
-
-<?php
-
-}else{
-
-    echo "<p><i>El profesor no adjuntó ninguna imagen.</i></p>";
-
-}
-
-?>
+<?php if (!empty($ticket["foto"])) { ?>
+    <p>
+        <strong>Foto del problema:</strong>
+    </p>
+    <a
+        href="../uploads/tickets/<?php echo htmlspecialchars($ticket["foto"]); ?>"
+        target="_blank"
+    >
+        <img
+            src="../uploads/tickets/<?php echo htmlspecialchars($ticket["foto"]); ?>"
+            alt="Foto del problema"
+            style="max-width:200px; max-height:300px;"
+        >
+    </a>
+<?php } ?>
 
 <br><br>
 
@@ -111,7 +110,6 @@ style="max-width:500px; border:1px solid #ccc; border-radius:10px;">
 </p>
 
 <hr>
-
 <h3>Cambiar Estado</h3>
 
 <form action="actualizar_ticket.php" method="POST">
@@ -128,24 +126,20 @@ value="<?php echo $ticket["id_ticket"]; ?>">
 <select name="estado">
 
 <option value="Abierto"
-<?php if($ticket["estado"]=="Abierto") echo "selected"; ?>>
-Abierto
+<?php if($ticket["estado"]=="Abierto") echo "selected"; ?>>Abierto
 </option>
 
 <option value="Pendiente"
-<?php if($ticket["estado"]=="Pendiente") echo "selected"; ?>>
-Pendiente
+<?php if($ticket["estado"]=="Pendiente") echo "selected"; ?>>Pendiente
 </option>
 
 <option value="Cerrado"
-<?php if($ticket["estado"]=="Cerrado") echo "selected"; ?>>
-Cerrado
+<?php if($ticket["estado"]=="Cerrado") echo "selected"; ?>>Cerrado
 </option>
 
 </select>
 
 <br><br>
-
 <label>Observación</label>
 
 <br>
@@ -157,69 +151,47 @@ cols="70"
 required></textarea>
 
 <br><br>
-
 <button type="submit">
-
 Guardar Cambios
-
 </button>
 
 </form>
 
 <hr>
-
 <h2>Historial del Ticket</h2>
-
 <table border="1" cellpadding="10">
-
 <tr>
-
 <th>Fecha</th>
-
 <th>Estado</th>
-
 <th>Observación</th>
-
 <th>Usuario</th>
 
 </tr>
-
 <?php while($fila = mysqli_fetch_assoc($historial)){ ?>
-
 <tr>
 
 <td>
-
 <?php
 echo date("d/m/Y H:i", strtotime($fila["fecha"]));
 ?>
-
 </td>
 
 <td>
-
 <?php echo $fila["estado"]; ?>
-
 </td>
 
 <td>
-
 <?php echo $fila["observacion"]; ?>
-
 </td>
 
 <td>
-
 <?php
 echo $fila["nombre"]." ".$fila["apellido"];
 ?>
-
 </td>
 
 </tr>
-
 <?php } ?>
-
 </table>
 
 </body>

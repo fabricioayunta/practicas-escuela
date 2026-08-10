@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-08-2026 a las 21:53:37
+-- Tiempo de generación: 10-08-2026 a las 21:24:39
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -248,7 +248,8 @@ INSERT INTO `historialticket` (`id_historial`, `id_ticket`, `estado`, `fecha`, `
 (1, 1, 'Pendiente', '2026-06-29 14:56:49', 'wow hemos observado que no funciona. pero no se comno sew arregla xd', 2),
 (2, 1, 'Cerrado', '2026-06-29 14:57:19', 'listo\r\n', 2),
 (3, 2, 'Pendiente', '2026-07-03 14:50:00', 'me ', 2),
-(4, 3, 'Pendiente', '2026-08-07 15:50:06', 'visto', 2);
+(4, 3, 'Pendiente', '2026-08-07 15:50:06', 'visto', 2),
+(5, 9, 'Pendiente', '2026-08-10 15:50:41', 'ererere', 2);
 
 -- --------------------------------------------------------
 
@@ -356,6 +357,7 @@ CREATE TABLE `tickets` (
   `id_ticket` int(11) NOT NULL,
   `titulo` varchar(100) NOT NULL,
   `descripcion` text NOT NULL,
+  `componentes_afectados` text DEFAULT NULL,
   `fecha_creacion` datetime DEFAULT current_timestamp(),
   `estado` enum('Abierto','Pendiente','Cerrado') NOT NULL DEFAULT 'Abierto',
   `id_usuario` int(11) NOT NULL,
@@ -368,11 +370,17 @@ CREATE TABLE `tickets` (
 -- Volcado de datos para la tabla `tickets`
 --
 
-INSERT INTO `tickets` (`id_ticket`, `titulo`, `descripcion`, `fecha_creacion`, `estado`, `id_usuario`, `id_computadora`, `foto`, `id_ematp_asignado`) VALUES
-(1, 'usb delantero ', 'no anda los usb de adelante del gabinete', '2026-06-29 14:51:46', 'Cerrado', 3, 60, NULL, 2),
-(2, ' el telcado no anda', 'sf,jdsfg', '2026-07-03 14:49:12', 'Pendiente', 4, 37, NULL, 2),
-(3, 'prueba imagen', 'prueba', '2026-08-05 16:22:19', 'Pendiente', 3, 1, '6a738d6bbbc7e.jpeg', 2),
-(4, 'prueba213', 'hola', '2026-08-07 14:35:13', 'Abierto', 3, 33, NULL, NULL);
+INSERT INTO `tickets` (`id_ticket`, `titulo`, `descripcion`, `componentes_afectados`, `fecha_creacion`, `estado`, `id_usuario`, `id_computadora`, `foto`, `id_ematp_asignado`) VALUES
+(1, 'usb delantero ', 'no anda los usb de adelante del gabinete', NULL, '2026-06-29 14:51:46', 'Cerrado', 3, 60, NULL, 2),
+(2, ' el telcado no anda', 'sf,jdsfg', NULL, '2026-07-03 14:49:12', 'Pendiente', 4, 37, NULL, 2),
+(3, 'prueba imagen', 'prueba', NULL, '2026-08-05 16:22:19', 'Pendiente', 3, 1, '6a738d6bbbc7e.jpeg', 2),
+(4, 'prueba213', 'hola', NULL, '2026-08-07 14:35:13', 'Abierto', 3, 33, NULL, NULL),
+(5, 'Problema en: Mother, Memoria RAM, Teclado', 'NO ANDA  NADA', 'Mother, Memoria RAM, Teclado', '2026-08-10 14:54:09', 'Abierto', 3, 4, NULL, NULL),
+(6, 'Problema en: Procesador, Disco, Mouse', 'No funciona', 'Procesador, Disco, Mouse', '2026-08-10 15:04:41', 'Abierto', 3, 29, NULL, NULL),
+(7, 'Problema en: Mother, Memoria RAM, Teclado', 'prueba de imagen con el mejor auto', 'Mother, Memoria RAM, Teclado', '2026-08-10 15:09:20', 'Abierto', 3, 2, NULL, NULL),
+(8, 'Problema en: Disco, Teclado', 'igkghkghk', 'Disco, Teclado', '2026-08-10 15:25:47', 'Abierto', 3, 31, 'ticket_6a7a17abcadb81.89306716.jpg', NULL),
+(9, 'Problema en: Procesador, Monitor', 'gdfgdgdfgdfg', 'Procesador, Monitor', '2026-08-10 15:26:07', 'Pendiente', 3, 47, 'ticket_6a7a17bf82c809.36632045.jpg', 2),
+(10, 'Problema en: Memoria RAM, Disco, Monitor', 'fytytyyyyty', 'Memoria RAM, Disco, Monitor', '2026-08-10 15:51:25', 'Abierto', 3, 30, 'ticket_6a7a1dad69d824.69732661.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -486,7 +494,7 @@ ALTER TABLE `computadoras`
 -- AUTO_INCREMENT de la tabla `historialticket`
 --
 ALTER TABLE `historialticket`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_computadoras`
@@ -510,7 +518,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

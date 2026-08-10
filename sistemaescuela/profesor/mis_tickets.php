@@ -48,27 +48,80 @@ $resultado = mysqli_query($conexion, $sql);
         <th>Computadora</th>
         <th>Título</th>
         <th>Descripción</th>
-        <t 
+        <th>estado</th>
         <th>Fecha</th>
+        <th>accion</th>
     </tr>
+    <td>
 
-    <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
-    <tr>
-        <td><?php echo $fila["id_ticket"]; ?></td>
-        <td><?php echo $fila["laboratorio"]; ?></td>
-        <td>PC <?php echo $fila["numero_pc"]; ?></td>
-        <td><?php echo $fila["titulo"]; ?></td>
-        <td><?php echo $fila["descripcion"]; ?></td>
-        <td><?php echo $fila["estado"]; ?></td>
-        <td><?php echo date("d/m/Y H:i", strtotime($fila["fecha_creacion"])); ?></td>
-    </tr>
-    <?php } ?>
+<?php if (!empty($fila["foto"])) { ?>
+
+    <a href="../uploads/tickets/<?php echo htmlspecialchars($fila["foto"]); ?>" target="_blank">
+        Ver foto
+    </a>
+
+
+<?php } ?>
+
+</td>
+
+<?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
+
+<tr>
+
+    <td>
+        <?php echo $fila["id_ticket"]; ?>
+    </td>
+
+    <td>
+        <?php echo $fila["laboratorio"]; ?>
+    </td>
+
+    <td>
+        PC <?php echo $fila["numero_pc"]; ?>
+    </td>
+
+    <td>
+        <?php echo $fila["titulo"]; ?>
+    </td>
+
+    <td>
+        <?php echo $fila["descripcion"]; ?>
+    </td>
+
+    <td>
+        <?php echo $fila["estado"]; ?>
+    </td>
+
+    <td>
+        <?php echo date("d/m/Y H:i", strtotime($fila["fecha_creacion"])); ?>
+    </td>
+
+    <td>
+
+        <?php if ($fila["estado"] == "Abierto") { ?>
+
+            <a href="editar_ticket.php?id=<?php echo $fila["id_ticket"]; ?>">
+                Editar
+            </a>
+
+        <?php } else { ?>
+
+            -
+
+        <?php } ?>
+
+    </td>
+
+</tr>
+
+<?php } ?>
 
 </table>
 
 <br>
 
-<a href="inicio.php">← Volver al panel</a>
+<a href="../inicio.php">← Volver al panel</a>
 
 </body>
 </html>
