@@ -29,7 +29,7 @@ $resultado = mysqli_query($conexion, $sql);
 <?php include("../includes/menu_admin.php"); ?>
 <h1>Gestión de Computadoras</h1>
 
-<a href="inicio.php">← Volver</a>
+<a href="dashboard.php">Volver al panel</a>
 |
 <a href="crear_computadora.php">+ Nueva Computadora</a>
 

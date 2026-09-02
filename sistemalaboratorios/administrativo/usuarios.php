@@ -28,7 +28,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
 
-<a href="inicio.php">Volver al panel</a>
+<a href="dashboard.php">Volver al panel</a>
 
 <br><br>
 

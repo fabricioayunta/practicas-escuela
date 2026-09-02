@@ -37,9 +37,7 @@ Bienvenido
 
 </p>
 
-<a href="inicio.php">
-
-← Volver
+<a href="dashboard.php">Volver al panel</a>
 
 </a>
 

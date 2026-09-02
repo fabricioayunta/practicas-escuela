@@ -18,7 +18,7 @@ $contrasena = trim($_POST["password"] ?? "");
 ========================= */
 
 if ($email == "" || $contrasena == "") {
-    header("Location: index.php");
+    header("Location: /practicas-escuela/sistemalaboratorios/administrativo/dashboard.php");
     exit();
 }
 
@@ -91,7 +91,7 @@ if (mysqli_num_rows($resultado) == 1) {
 
             /* Ir al inicio del módulo */
 
-            header("Location: inicio.php");
+            header("Location: /practicas-escuela/sistemalaboratorios/administrativo/dashboard.php");
             exit();
 
         }

@@ -107,7 +107,7 @@ $resultado = mysqli_query($conexion,$sql);
 <body>
 
 <?php include("../includes/menu_admin.php"); ?>
-<a href="inicio.php">← Volver</a>
+<a href="dashboard.php">Volver al panel</a>
 
 <br><br>
 <hr>
