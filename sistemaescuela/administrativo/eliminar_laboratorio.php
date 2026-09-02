@@ -1,39 +1,81 @@
 <?php
+
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+/* Verificar sesión y rol de administrador */
+if (
+    !isset($_SESSION["id_usuario"]) ||
+    !isset($_SESSION["id_rol"]) ||
+    (int)$_SESSION["id_rol"] !== 1
+) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+/* Conexión a la base de datos */
+require_once("../conexion/conexion.php");
 
-$id = $_GET["id"];
+/* Obtener y validar ID */
+$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
-// Verificar si tiene computadoras
-$sql = "SELECT COUNT(*) AS total
-        FROM computadoras
-        WHERE id_laboratorio='$id'";
-
-$resultado = mysqli_query($conexion,$sql);
-$fila = mysqli_fetch_assoc($resultado);
-
-if($fila["total"] > 0){
-
-    echo "<script>
-            alert('No se puede eliminar este laboratorio porque tiene computadoras asignadas.');
-            window.location='laboratorios.php';
-          </script>";
-    exit();
-
+if ($id === false || $id === null || $id <= 0) {
+    exit("ID de laboratorio inválido.");
 }
 
-// Eliminar
-$sqlEliminar = "DELETE FROM laboratorios
-                WHERE id_laboratorio='$id'";
+/* Verificar si existen computadoras asociadas */
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT COUNT(*) AS total
+     FROM computadoras
+     WHERE id_laboratorio = ?"
+);
 
-mysqli_query($conexion,$sqlEliminar);
+if (!$stmt) {
+    exit("Error al preparar la consulta.");
+}
 
+mysqli_stmt_bind_param($stmt, "i", $id);
+
+if (!mysqli_stmt_execute($stmt)) {
+    mysqli_stmt_close($stmt);
+    exit("Error al verificar las computadoras.");
+}
+
+$resultado = mysqli_stmt_get_result($stmt);
+$fila = mysqli_fetch_assoc($resultado);
+
+mysqli_stmt_close($stmt);
+
+/* No permitir eliminar si tiene computadoras */
+$total = (int)($fila["total"] ?? 0);
+
+if ($total > 0) {
+    header("Location: laboratorios.php?error=tiene_computadoras");
+    exit();
+}
+
+/* Preparar eliminación */
+$stmt = mysqli_prepare(
+    $conexion,
+    "DELETE FROM laboratorios
+     WHERE id_laboratorio = ?"
+);
+
+if (!$stmt) {
+    exit("Error al preparar la eliminación.");
+}
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+
+/* Ejecutar eliminación */
+if (!mysqli_stmt_execute($stmt)) {
+    mysqli_stmt_close($stmt);
+    exit("Error al eliminar el laboratorio.");
+}
+
+mysqli_stmt_close($stmt);
+
+/* Volver a laboratorios */
 header("Location: laboratorios.php");
 exit();
 ?>

@@ -18,7 +18,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
 
 <h1>Panel Administrativo</h1>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
 
 <hr>
 

@@ -53,9 +53,9 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 </head>
 <body>
 <?php include("../includes/menu_ematp.php"); ?>
-<h1>Computadora PC <?php echo $pc["numero_pc"]; ?></h1>
+<h1>Computadora PC <?php echo e($pc["numero_pc"]); ?></h1>
 
-<a href="computadoras.php?laboratorio=<?php echo $pc["id_laboratorio"]; ?>">
+<a href="computadoras.php?laboratorio=<?php echo e($pc["id_laboratorio"]); ?>">
 ← Volver
 </a>
 
@@ -63,8 +63,8 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 
 <h3>Información</h3>
 
-<p><strong>Laboratorio:</strong> <?php echo $pc["laboratorio"]; ?></p>
-<p><strong>PC:</strong> <?php echo $pc["numero_pc"]; ?></p>
+<p><strong>Laboratorio:</strong> <?php echo e($pc["laboratorio"]); ?></p>
+<p><strong>PC:</strong> <?php echo e($pc["numero_pc"]); ?></p>
 
 <!-- SECCIÓN DE ESTADO -->
 <p><strong>Estado Actual:</strong>
@@ -78,7 +78,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 <?php if ($pc["estado"] == "Alta") { ?>
     <!-- Mostrar botón de BAJA si está operativa -->
     <form action="cambiar_estado.php" method="POST">
-        <input type="hidden" name="id_computadora" value="<?php echo $id; ?>">
+        <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
       <input type="hidden" name="nuevo_estado" value="Baja">
         <textarea name="motivo" required placeholder="Motivo de la baja..."></textarea><br>
         <button type="submit">Dar de Baja</button>
@@ -86,7 +86,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 <?php } else { ?>
     <!-- Mostrar botón de ALTA si está de baja -->
     <form action="cambiar_estado.php" method="POST">
-        <input type="hidden" name="id_computadora" value="<?php echo $id; ?>">
+        <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
        <input type="hidden" name="nuevo_estado" value="Alta">
         <button type="submit">Dar de Alta</button>
     </form>
@@ -104,41 +104,41 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 </tr>
 <tr>
     <td>Mother</td>
-    <td><?php echo $componentes["mother"]; ?></td>
+    <td><?php echo e($componentes["mother"]); ?></td>
 </tr>
 <tr>
     <td>Procesador</td>
-    <td><?php echo $componentes["procesador"]; ?></td>
+    <td><?php echo e($componentes["procesador"]); ?></td>
 </tr>
 <tr>
     <td>Memoria RAM</td>
-    <td><?php echo $componentes["memoria_ram"]; ?></td>
+    <td><?php echo e($componentes["memoria_ram"]); ?></td>
 </tr>
 <tr>
     <td>Disco</td>
-    <td><?php echo $componentes["disco"]; ?></td>
+    <td><?php echo e($componentes["disco"]); ?></td>
 </tr>
 <tr>
     <td>Monitor</td>
-    <td><?php echo $componentes["monitor"]; ?></td>
+    <td><?php echo e($componentes["monitor"]); ?></td>
 </tr>
 <tr>
     <td>Teclado</td>
-    <td><?php echo $componentes["teclado"]; ?></td>
+    <td><?php echo e($componentes["teclado"]); ?></td>
 </tr>
 <tr>
     <td>Mouse</td>
-    <td><?php echo $componentes["mouse"]; ?></td>
+    <td><?php echo e($componentes["mouse"]); ?></td>
 </tr>
 <tr>
     <td>Observaciones</td>
-    <td><?php echo $componentes["observaciones"]; ?></td>
+    <td><?php echo e($componentes["observaciones"]); ?></td>
 </tr>
 </table>
 
 <br>
 
-<a href="editar_componentes.php?id=<?php echo $pc["id_computadora"]; ?>">
+<a href="editar_componentes.php?id=<?php echo e($pc["id_computadora"]); ?>">
 <button>Editar Componentes</button>
 </a>
 <hr>
@@ -158,11 +158,11 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 <?php echo date("d/m/Y H:i",strtotime($fila["fecha"])); ?>
 </td>
 <td>
-<?php echo $fila["nombre"]." ".$fila["apellido"]; ?>
+<?php echo e($fila["nombre"])." ".e($fila["apellido"]); ?>
 </td>
 <td>
 <!-- nl2br permite que los motivos con saltos de línea se vean bien -->
-<?php echo nl2br($fila["accion"]); ?>
+<?php echo nl2br(e($fila["accion"])); ?>
 </td>
 </tr>
 <?php } ?>

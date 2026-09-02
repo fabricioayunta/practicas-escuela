@@ -8,7 +8,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
 
 include("../conexion/conexion.php");
 
-$id = $_GET["id"];
+$id = (int)($_GET["id"] ?? 0);
 
 // Obtener la computadora
 $sqlPC = "SELECT
@@ -17,17 +17,19 @@ $sqlPC = "SELECT
           FROM computadoras
           INNER JOIN laboratorios
           ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-          WHERE computadoras.id_computadora = '$id'";
+          WHERE computadoras.id_computadora = ?";
 
-$resultadoPC = mysqli_query($conexion, $sqlPC);
-$pc = mysqli_fetch_assoc($resultadoPC);
+$stmt = mysqli_prepare($conexion, $sqlPC);
+mysqli_stmt_bind_param($stmt, "i", $id); mysqli_stmt_execute($stmt);
+$pc = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
 // Obtener componentes
 $sql = "SELECT * FROM componentes
-        WHERE id_computadora = '$id'";
+        WHERE id_computadora = ?";
 
-$resultado = mysqli_query($conexion, $sql);
-$componentes = mysqli_fetch_assoc($resultado);
+$stmt = mysqli_prepare($conexion, $sql);
+mysqli_stmt_bind_param($stmt, "i", $id); mysqli_stmt_execute($stmt);
+$componentes = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +51,7 @@ $componentes = mysqli_fetch_assoc($resultado);
 
 <strong>Laboratorio:</strong>
 
-<?php echo $pc["laboratorio"]; ?>
+<?php echo e($pc["laboratorio"]); ?>
 
 </p>
 
@@ -57,7 +59,7 @@ $componentes = mysqli_fetch_assoc($resultado);
 
 <strong>PC:</strong>
 
-<?php echo $pc["numero_pc"]; ?>
+<?php echo e($pc["numero_pc"]); ?>
 
 </p>
 
@@ -68,7 +70,7 @@ $componentes = mysqli_fetch_assoc($resultado);
 <input
 type="hidden"
 name="id_computadora"
-value="<?php echo $id; ?>">
+value="<?php echo (int)$id; ?>">
 
 <label>Mother</label>
 
@@ -77,7 +79,7 @@ value="<?php echo $id; ?>">
 <input
 type="text"
 name="mother"
-value="<?php echo $componentes["mother"]; ?>">
+value="<?php echo e($componentes["mother"]); ?>">
 
 <br><br>
 
@@ -88,7 +90,7 @@ value="<?php echo $componentes["mother"]; ?>">
 <input
 type="text"
 name="procesador"
-value="<?php echo $componentes["procesador"]; ?>">
+value="<?php echo e($componentes["procesador"]); ?>">
 
 <br><br>
 
@@ -99,7 +101,7 @@ value="<?php echo $componentes["procesador"]; ?>">
 <input
 type="text"
 name="memoria_ram"
-value="<?php echo $componentes["memoria_ram"]; ?>">
+value="<?php echo e($componentes["memoria_ram"]); ?>">
 
 <br><br>
 
@@ -110,7 +112,7 @@ value="<?php echo $componentes["memoria_ram"]; ?>">
 <input
 type="text"
 name="disco"
-value="<?php echo $componentes["disco"]; ?>">
+value="<?php echo e($componentes["disco"]); ?>">
 
 <br><br>
 
@@ -121,7 +123,7 @@ value="<?php echo $componentes["disco"]; ?>">
 <input
 type="text"
 name="monitor"
-value="<?php echo $componentes["monitor"]; ?>">
+value="<?php echo e($componentes["monitor"]); ?>">
 
 <br><br>
 
@@ -132,7 +134,7 @@ value="<?php echo $componentes["monitor"]; ?>">
 <input
 type="text"
 name="teclado"
-value="<?php echo $componentes["teclado"]; ?>">
+value="<?php echo e($componentes["teclado"]); ?>">
 
 <br><br>
 
@@ -143,7 +145,7 @@ value="<?php echo $componentes["teclado"]; ?>">
 <input
 type="text"
 name="mouse"
-value="<?php echo $componentes["mouse"]; ?>">
+value="<?php echo e($componentes["mouse"]); ?>">
 
 <br><br>
 
@@ -154,7 +156,7 @@ value="<?php echo $componentes["mouse"]; ?>">
 <textarea
 name="observaciones"
 rows="5"
-cols="60"><?php echo $componentes["observaciones"]; ?></textarea>
+cols="60"><?php echo e($componentes["observaciones"]); ?></textarea>
 
 <br><br>
 
@@ -168,7 +170,7 @@ Guardar Componentes
 
 <br>
 
-<a href="ver_computadora.php?id=<?php echo $id; ?>">
+<a href="ver_computadora.php?id=<?php echo (int)$id; ?>">
 
 ← Volver
 

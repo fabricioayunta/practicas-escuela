@@ -9,7 +9,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
 <?php include("../includes/menu_ematp.php"); ?>
 <h1>Panel EMATP</h1>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+<p>Bienvenido <?php echo htmlspecialchars($_SESSION["nombre"]); ?></p>
 
 <hr>
 

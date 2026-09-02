@@ -60,7 +60,7 @@ if(isset($_GET["laboratorio"])){
 <?php while($lab=mysqli_fetch_assoc($laboratorios)){ ?>
 
 <option
-value="<?php echo $lab["id_laboratorio"]; ?>"
+value="<?php echo e($lab["id_laboratorio"]); ?>"
 
 <?php
 
@@ -74,7 +74,7 @@ if($_GET["laboratorio"]==$lab["id_laboratorio"]) echo "selected";
 
 >
 
-<?php echo $lab["nombre"]; ?>
+<?php echo e($lab["nombre"]); ?>
 
 </option>
 
@@ -118,13 +118,13 @@ while($pc=mysqli_fetch_assoc($computadoras)){
 
 <td>
 
-PC <?php echo $pc["numero_pc"]; ?>
+PC <?php echo e($pc["numero_pc"]); ?>
 
 </td>
 
 <td>
 
-<a href="ver_computadora.php?id=<?php echo $pc["id_computadora"]; ?>">
+<a href="ver_computadora.php?id=<?php echo e($pc["id_computadora"]); ?>">
 
 Ver Componentes
 

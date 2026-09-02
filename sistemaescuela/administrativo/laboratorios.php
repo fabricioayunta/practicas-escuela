@@ -33,7 +33,7 @@ $resultado = mysqli_query($conexion,$sql);
 
 Bienvenido
 
-<?php echo $_SESSION["nombre"]; ?>
+<?php echo e($_SESSION["nombre"]); ?>
 
 </p>
 
@@ -75,19 +75,19 @@ while($fila=mysqli_fetch_assoc($resultado)){
 
 <td>
 
-<?php echo $fila["id_laboratorio"]; ?>
+<?php echo e($fila["id_laboratorio"]); ?>
 
 </td>
 
 <td>
 
-<?php echo $fila["nombre"]; ?>
+<?php echo e($fila["nombre"]); ?>
 
 </td>
 
 <td>
 
-<a href="editar_laboratorio.php?id=<?php echo $fila["id_laboratorio"]; ?>">
+<a href="editar_laboratorio.php?id=<?php echo e($fila["id_laboratorio"]); ?>">
 
 Editar
 
@@ -96,7 +96,7 @@ Editar
 |
 
 <a
-href="eliminar_laboratorio.php?id=<?php echo $fila["id_laboratorio"]; ?>"
+href="eliminar_laboratorio.php?id=<?php echo e($fila["id_laboratorio"]); ?>"
 onclick="return confirm('¿Eliminar laboratorio?');">
 
 Eliminar

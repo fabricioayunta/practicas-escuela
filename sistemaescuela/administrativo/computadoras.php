@@ -48,16 +48,16 @@ $resultado = mysqli_query($conexion, $sql);
 <?php while($fila = mysqli_fetch_assoc($resultado)){ ?>
 
 <tr>
-    <td><?php echo $fila["id_computadora"]; ?></td>
-    <td><?php echo $fila["laboratorio"]; ?></td>
-    <td>PC <?php echo $fila["numero_pc"]; ?></td>
+    <td><?php echo e($fila["id_computadora"]); ?></td>
+    <td><?php echo e($fila["laboratorio"]); ?></td>
+    <td>PC <?php echo e($fila["numero_pc"]); ?></td>
     <td>
         <?php echo ($fila["estado"] == "Alta") ? "🟢 Alta" : "🔴 Baja"; ?>
     </td>
     <td>
-        <a href="editar_computadora.php?id=<?php echo $fila["id_computadora"]; ?>">Editar</a>
+        <a href="editar_computadora.php?id=<?php echo e($fila["id_computadora"]); ?>">Editar</a>
         |
-        <a href="eliminar_computadora.php?id=<?php echo $fila["id_computadora"]; ?>"
+        <a href="eliminar_computadora.php?id=<?php echo e($fila["id_computadora"]); ?>"
            onclick="return confirm('¿Eliminar computadora?');">
            Eliminar
         </a>

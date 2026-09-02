@@ -26,7 +26,7 @@ $resultado = mysqli_query($conexion, $sql);
 
 <?php include("../includes/menu_admin.php"); ?>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
 
 <a href="inicio.php">Volver al panel</a>
 
@@ -50,11 +50,11 @@ $resultado = mysqli_query($conexion, $sql);
 
     <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
         <tr>
-            <td><?php echo $fila["id_usuario"]; ?></td>
-            <td><?php echo $fila["nombre"]; ?></td>
-            <td><?php echo $fila["apellido"]; ?></td>
-            <td><?php echo $fila["email"]; ?></td>
-            <td><?php echo $fila["id_rol"]; ?></td>
+            <td><?php echo e($fila["id_usuario"]); ?></td>
+            <td><?php echo e($fila["nombre"]); ?></td>
+            <td><?php echo e($fila["apellido"]); ?></td>
+            <td><?php echo e($fila["email"]); ?></td>
+            <td><?php echo e($fila["id_rol"]); ?></td>
 
            <td>
 
@@ -62,13 +62,13 @@ $resultado = mysqli_query($conexion, $sql);
 
 <a
 class="btn btn-azul"
-href="editar_usuario.php?id=<?php echo $fila["id_usuario"]; ?>">
+href="editar_usuario.php?id=<?php echo e($fila["id_usuario"]); ?>">
 ✏️ Editar
 </a>
 
 <a
 class="btn btn-rojo"
-href="eliminar_usuario.php?id=<?php echo $fila["id_usuario"]; ?>"
+href="eliminar_usuario.php?id=<?php echo e($fila["id_usuario"]); ?>"
 onclick="return confirm('¿Seguro que querés eliminar este usuario?');">
 🗑️ Eliminar
 </a>

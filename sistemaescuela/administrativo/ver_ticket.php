@@ -8,7 +8,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
 
 include("../conexion/conexion.php");
 
-$id = $_GET["id"];
+$id = (int)($_GET["id"] ?? 0);
 
 /* DATOS DEL TICKET */
 
@@ -40,10 +40,9 @@ ON computadoras.id_laboratorio = laboratorios.id_laboratorio
 LEFT JOIN usuarios ematp
 ON tickets.id_ematp_asignado = ematp.id_usuario
 
-WHERE id_ticket='$id'";
+WHERE id_ticket=?";
 
-$resultado = mysqli_query($conexion,$sql);
-
+$stmt=mysqli_prepare($conexion,$sql); mysqli_stmt_bind_param($stmt,"i",$id); mysqli_stmt_execute($stmt); $resultado=mysqli_stmt_get_result($stmt);
 $ticket = mysqli_fetch_assoc($resultado);
 
 /* HISTORIAL */
@@ -60,11 +59,11 @@ FROM historialticket
 INNER JOIN usuarios
 ON historialticket.id_usuario = usuarios.id_usuario
 
-WHERE id_ticket='$id'
+WHERE id_ticket=?
 
 ORDER BY fecha DESC";
 
-$historial = mysqli_query($conexion,$sqlHistorial);
+$stmt=mysqli_prepare($conexion,$sqlHistorial); mysqli_stmt_bind_param($stmt,"i",$id); mysqli_stmt_execute($stmt); $historial=mysqli_stmt_get_result($stmt);
 
 ?>
 
@@ -81,7 +80,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 
 <body>
 <?php include("../includes/menu_admin.php"); ?>
-<h1>Ticket #<?php echo $ticket["id_ticket"]; ?></h1>
+<h1>Ticket #<?php echo e($ticket["id_ticket"]); ?></h1>
 
 <a href="tickets.php">← Volver</a>
 
@@ -93,7 +92,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 
 <strong>Profesor:</strong>
 
-<?php echo $ticket["nombre"]." ".$ticket["apellido"]; ?>
+<?php echo e($ticket["nombre"])." ".e($ticket["apellido"]); ?>
 
 </p>
 
@@ -101,7 +100,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 
 <strong>Laboratorio:</strong>
 
-<?php echo $ticket["laboratorio"]; ?>
+<?php echo e($ticket["laboratorio"]); ?>
 
 </p>
 
@@ -109,7 +108,7 @@ $historial = mysqli_query($conexion,$sqlHistorial);
 
 <strong>Computadora:</strong>
 
-PC <?php echo $ticket["numero_pc"]; ?>
+PC <?php echo e($ticket["numero_pc"]); ?>
 
 </p>
 
@@ -117,7 +116,7 @@ PC <?php echo $ticket["numero_pc"]; ?>
 
 <strong>Título:</strong>
 
-<?php echo $ticket["titulo"]; ?>
+<?php echo e($ticket["titulo"]); ?>
 
 </p>
 
@@ -127,7 +126,7 @@ PC <?php echo $ticket["numero_pc"]; ?>
 
 <br>
 
-<?php echo nl2br($ticket["descripcion"]); ?>
+<?php echo nl2br(e($ticket["descripcion"])); ?>
 
 </p>
 
@@ -135,7 +134,7 @@ PC <?php echo $ticket["numero_pc"]; ?>
 
 <strong>Estado:</strong>
 
-<?php echo $ticket["estado"]; ?>
+<?php echo e($ticket["estado"]); ?>
 
 </p>
 
@@ -155,7 +154,7 @@ PC <?php echo $ticket["numero_pc"]; ?>
 
 if($ticket["nombre_ematp"]!=""){
 
-echo $ticket["nombre_ematp"]." ".$ticket["apellido_ematp"];
+echo e($ticket["nombre_ematp"])." ".e($ticket["apellido_ematp"]);
 
 }else{
 
@@ -197,19 +196,19 @@ echo "Sin asignar";
 
 <td>
 
-<?php echo $fila["nombre"]." ".$fila["apellido"]; ?>
+<?php echo e($fila["nombre"])." ".e($fila["apellido"]); ?>
 
 </td>
 
 <td>
 
-<?php echo $fila["estado"]; ?>
+<?php echo e($fila["estado"]); ?>
 
 </td>
 
 <td>
 
-<?php echo $fila["observacion"]; ?>
+<?php echo e($fila["observacion"]); ?>
 
 </td>
 

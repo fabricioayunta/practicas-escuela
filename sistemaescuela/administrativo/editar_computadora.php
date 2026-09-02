@@ -8,11 +8,10 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
 
 include("../conexion/conexion.php");
 
-$id = $_GET["id"];
+$id = (int)($_GET["id"] ?? 0);
 
-$sql = "SELECT * FROM computadoras WHERE id_computadora='$id'";
-$res = mysqli_query($conexion,$sql);
-$pc = mysqli_fetch_assoc($res);
+$sql = "SELECT * FROM computadoras WHERE id_computadora=?";
+$stmt=mysqli_prepare($conexion,$sql); mysqli_stmt_bind_param($stmt,"i",$id); mysqli_stmt_execute($stmt); $pc=mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
 $labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
 ?>
@@ -25,16 +24,16 @@ $labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
 
 <form action="actualizar_computadora.php" method="POST">
 
-<input type="hidden" name="id" value="<?php echo $pc["id_computadora"]; ?>">
+<input type="hidden" name="id" value="<?php echo e($pc["id_computadora"]); ?>">
 
 <label>Laboratorio</label>
 <br>
 <select name="id_laboratorio">
 
 <?php while($l = mysqli_fetch_assoc($labs)){ ?>
-<option value="<?php echo $l["id_laboratorio"]; ?>"
+<option value="<?php echo e($l["id_laboratorio"]); ?>"
 <?php if($l["id_laboratorio"] == $pc["id_laboratorio"]) echo "selected"; ?>>
-    <?php echo $l["nombre"]; ?>
+    <?php echo e($l["nombre"]); ?>
 </option>
 <?php } ?>
 
@@ -44,7 +43,7 @@ $labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
 
 <label>Número PC</label>
 <br>
-<input type="number" name="numero_pc" value="<?php echo $pc["numero_pc"]; ?>">
+<input type="number" name="numero_pc" value="<?php echo e($pc["numero_pc"]); ?>">
 
 <br><br>
 

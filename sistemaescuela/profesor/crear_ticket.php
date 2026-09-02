@@ -53,7 +53,7 @@ $laboratorios = mysqli_query($conexion, $sqlLaboratorios);
 
         <?php while($lab = mysqli_fetch_assoc($laboratorios)){ ?>
 
-            <option value="<?php echo $lab["id_laboratorio"]; ?>">
+            <option value="<?php echo e($lab["id_laboratorio"]); ?>">
 
                 <?php echo htmlspecialchars($lab["nombre"]); ?>
 

@@ -1,28 +1,70 @@
 <?php
+
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+/* Verificar sesión y rol de administrador */
+if (
+    !isset($_SESSION["id_usuario"]) ||
+    !isset($_SESSION["id_rol"]) ||
+    (int)$_SESSION["id_rol"] !== 1
+) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+/* Conexión a la base de datos */
+require_once("../conexion/conexion.php");
 
-$id = $_POST["id_laboratorio"];
-$nombre = $_POST["nombre"];
+/* Obtener y validar ID */
+$id = filter_input(
+    INPUT_POST,
+    "id_laboratorio",
+    FILTER_VALIDATE_INT
+);
 
-$sql = "UPDATE laboratorios
-        SET nombre='$nombre'
-        WHERE id_laboratorio='$id'";
+/* Obtener y limpiar nombre */
+$nombre = trim($_POST["nombre"] ?? "");
 
-if(mysqli_query($conexion,$sql)){
-
-    header("Location: laboratorios.php");
-    exit();
-
-}else{
-
-    echo "Error al actualizar.";
-
+/* Validar ID */
+if ($id === false || $id === null || $id <= 0) {
+    exit("ID de laboratorio inválido.");
 }
+
+/* Validar nombre */
+if ($nombre === "") {
+    exit("El nombre del laboratorio es obligatorio.");
+}
+
+/* Validar longitud */
+if (mb_strlen($nombre) > 100) {
+    exit("El nombre del laboratorio es demasiado largo.");
+}
+
+/* Preparar consulta */
+$stmt = mysqli_prepare(
+    $conexion,
+    "UPDATE laboratorios
+     SET nombre = ?
+     WHERE id_laboratorio = ?"
+);
+
+if (!$stmt) {
+    exit("Error al preparar la consulta.");
+}
+
+/* Vincular parámetros */
+mysqli_stmt_bind_param($stmt, "si", $nombre, $id);
+
+/* Ejecutar actualización */
+if (!mysqli_stmt_execute($stmt)) {
+    mysqli_stmt_close($stmt);
+    exit("Error al actualizar el laboratorio.");
+}
+
+mysqli_stmt_close($stmt);
+
+/* Volver al listado */
+header("Location: laboratorios.php");
+exit();
+
 ?>

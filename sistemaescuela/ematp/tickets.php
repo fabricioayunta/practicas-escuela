@@ -42,7 +42,7 @@ $resultado = mysqli_query($conexion, $sql);
 <?php include("../includes/menu_ematp.php"); ?>
 <h1>Panel EMATP</h1>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
 
 <a href="../menu.php">← Volver al Panel</a>
 
@@ -74,13 +74,13 @@ $resultado = mysqli_query($conexion, $sql);
 
 <tr>
 
-<td><?php echo $fila["id_ticket"]; ?></td>
+<td><?php echo e($fila["id_ticket"]); ?></td>
 
 <td>
 
 <?php
 
-echo $fila["nombre"]." ".$fila["apellido"];
+echo e($fila["nombre"])." ".e($fila["apellido"]);
 
 ?>
 
@@ -88,19 +88,19 @@ echo $fila["nombre"]." ".$fila["apellido"];
 
 <td>
 
-<?php echo $fila["laboratorio"]; ?>
+<?php echo e($fila["laboratorio"]); ?>
 
 </td>
 
 <td>
 
-PC <?php echo $fila["numero_pc"]; ?>
+PC <?php echo e($fila["numero_pc"]); ?>
 
 </td>
 
 <td>
 
-<?php echo $fila["titulo"]; ?>
+<?php echo e($fila["titulo"]); ?>
 
 </td>
 
@@ -138,7 +138,7 @@ echo date("d/m/Y H:i",strtotime($fila["fecha_creacion"]));
 
 <td>
 
-<a href="editar_ticket.php?id=<?php echo $fila["id_ticket"]; ?>">
+<a href="editar_ticket.php?id=<?php echo e($fila["id_ticket"]); ?>">
 
 Gestionar
 

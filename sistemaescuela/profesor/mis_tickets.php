@@ -36,7 +36,7 @@ $resultado = mysqli_query($conexion, $sql);
 <?php include("../includes/menu_profesor.php"); ?>
 <h1>Mis Tickets</h1>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
 
 <a href="crear_ticket.php">+ Crear Ticket</a>
 <br><br>
@@ -70,27 +70,27 @@ $resultado = mysqli_query($conexion, $sql);
 <tr>
 
     <td>
-        <?php echo $fila["id_ticket"]; ?>
+        <?php echo e($fila["id_ticket"]); ?>
     </td>
 
     <td>
-        <?php echo $fila["laboratorio"]; ?>
+        <?php echo e($fila["laboratorio"]); ?>
     </td>
 
     <td>
-        PC <?php echo $fila["numero_pc"]; ?>
+        PC <?php echo e($fila["numero_pc"]); ?>
     </td>
 
     <td>
-        <?php echo $fila["titulo"]; ?>
+        <?php echo e($fila["titulo"]); ?>
     </td>
 
     <td>
-        <?php echo $fila["descripcion"]; ?>
+        <?php echo e($fila["descripcion"]); ?>
     </td>
 
     <td>
-        <?php echo $fila["estado"]; ?>
+        <?php echo e($fila["estado"]); ?>
     </td>
 
     <td>
@@ -101,7 +101,7 @@ $resultado = mysqli_query($conexion, $sql);
 
         <?php if ($fila["estado"] == "Abierto") { ?>
 
-            <a href="editar_ticket.php?id=<?php echo $fila["id_ticket"]; ?>">
+            <a href="editar_ticket.php?id=<?php echo e($fila["id_ticket"]); ?>">
                 Editar
             </a>
 

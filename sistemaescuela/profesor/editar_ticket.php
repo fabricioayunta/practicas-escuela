@@ -91,7 +91,7 @@ $componentesActuales = explode(
 <?php include("../includes/menu_profesor.php"); ?>
 
 <h1>
-    Editar Ticket #<?php echo $ticket["id_ticket"]; ?>
+    Editar Ticket #<?php echo e($ticket["id_ticket"]); ?>
 </h1>
 
 <hr>
@@ -124,7 +124,7 @@ PC <?php echo htmlspecialchars($ticket["numero_pc"]); ?>
 <input
     type="hidden"
     name="id_ticket"
-    value="<?php echo $ticket["id_ticket"]; ?>"
+    value="<?php echo e($ticket["id_ticket"]); ?>"
 >
 
 

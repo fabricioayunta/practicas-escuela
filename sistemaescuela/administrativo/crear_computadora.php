@@ -26,8 +26,8 @@ $labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
 <option value="">Seleccionar</option>
 
 <?php while($l = mysqli_fetch_assoc($labs)){ ?>
-<option value="<?php echo $l["id_laboratorio"]; ?>">
-    <?php echo $l["nombre"]; ?>
+<option value="<?php echo e($l["id_laboratorio"]); ?>">
+    <?php echo e($l["nombre"]); ?>
 </option>
 <?php } ?>
 

@@ -8,91 +8,14 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
 
 include("../conexion/conexion.php");
 
-$sql = "SELECT
-tickets.id_ticket,
-tickets.titulo,
-tickets.estado,
-tickets.fecha_creacion,
-
-usuarios.nombre,
-usuarios.apellido,
-
-laboratorios.nombre AS laboratorio,
-
-computadoras.numero_pc
-
-FROM tickets
-
-INNER JOIN usuarios
-ON tickets.id_usuario = usuarios.id_usuario
-
-INNER JOIN computadoras
-ON tickets.id_computadora = computadoras.id_computadora
-
-INNER JOIN laboratorios
-ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-
-ORDER BY tickets.fecha_creacion DESC";
 $filtro = " WHERE 1=1 ";
-
-if(isset($_GET["estado"]) && $_GET["estado"]!=""){
-
-    $estado = $_GET["estado"];
-
-    $filtro .= " AND tickets.estado='$estado'";
-
-}
-
-if(isset($_GET["buscar"]) && $_GET["buscar"]!=""){
-
-    $buscar = $_GET["buscar"];
-
-    $filtro .= " AND (
-        usuarios.nombre LIKE '%$buscar%'
-        OR usuarios.apellido LIKE '%$buscar%'
-    )";
-
-}
-
-if(isset($_GET["estado"]) && $_GET["estado"]!=""){
-
-    $estado = $_GET["estado"];
-
-    $filtro = " WHERE tickets.estado='$estado'";
-
-}
-
-$sql = "SELECT
-
-tickets.id_ticket,
-tickets.titulo,
-tickets.estado,
-tickets.fecha_creacion,
-
-usuarios.nombre,
-usuarios.apellido,
-
-laboratorios.nombre AS laboratorio,
-
-computadoras.numero_pc
-
-FROM tickets
-
-INNER JOIN usuarios
-ON tickets.id_usuario = usuarios.id_usuario
-
-INNER JOIN computadoras
-ON tickets.id_computadora = computadoras.id_computadora
-
-INNER JOIN laboratorios
-ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-
-$filtro
-
-ORDER BY tickets.fecha_creacion DESC";
-
-$resultado = mysqli_query($conexion,$sql);
-$resultado = mysqli_query($conexion,$sql);
+$parametros = []; $tipos = "";
+if(isset($_GET["estado"]) && $_GET["estado"]!==""){ $estado=$_GET["estado"]; if(in_array($estado,["Abierto","Pendiente","Cerrado"],true)){ $filtro .= " AND tickets.estado=?"; $parametros[]=$estado; $tipos.="s"; } }
+if(isset($_GET["buscar"]) && $_GET["buscar"]!==""){ $buscar=trim($_GET["buscar"]); $filtro .= " AND (usuarios.nombre LIKE ? OR usuarios.apellido LIKE ?)"; $like="%".$buscar."%"; $parametros[]=$like; $parametros[]=$like; $tipos.="ss"; }
+$sql = "SELECT tickets.id_ticket,tickets.titulo,tickets.estado,tickets.fecha_creacion,usuarios.nombre,usuarios.apellido,laboratorios.nombre AS laboratorio,computadoras.numero_pc FROM tickets INNER JOIN usuarios ON tickets.id_usuario=usuarios.id_usuario INNER JOIN computadoras ON tickets.id_computadora=computadoras.id_computadora INNER JOIN laboratorios ON computadoras.id_laboratorio=laboratorios.id_laboratorio $filtro ORDER BY tickets.fecha_creacion DESC";
+$stmt=mysqli_prepare($conexion,$sql);
+if($tipos!==""){ mysqli_stmt_bind_param($stmt,$tipos,...$parametros); }
+mysqli_stmt_execute($stmt); $resultado=mysqli_stmt_get_result($stmt);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -176,19 +99,19 @@ placeholder="Nombre o apellido">
 
 <tr>
 
-<td><?php echo $fila["id_ticket"]; ?></td>
+<td><?php echo e($fila["id_ticket"]); ?></td>
 
 <td>
 <?php
-echo $fila["nombre"]." ".$fila["apellido"];
+echo e($fila["nombre"])." ".e($fila["apellido"]);
 ?>
 </td>
 
-<td><?php echo $fila["laboratorio"]; ?></td>
+<td><?php echo e($fila["laboratorio"]); ?></td>
 
-<td>PC <?php echo $fila["numero_pc"]; ?></td>
+<td>PC <?php echo e($fila["numero_pc"]); ?></td>
 
-<td><?php echo $fila["titulo"]; ?></td>
+<td><?php echo e($fila["titulo"]); ?></td>
 
 <td>
 
@@ -209,7 +132,7 @@ else{
 ?>
 
 <span class="estado <?php echo $clase; ?>">
-<?php echo $fila["estado"]; ?>
+<?php echo e($fila["estado"]); ?>
 </span>
 
 </td>
@@ -222,7 +145,7 @@ else{
 
 <a
 class="btn btn-azul"
-href="ver_ticket.php?id=<?php echo $fila["id_ticket"]; ?>">
+href="ver_ticket.php?id=<?php echo e($fila["id_ticket"]); ?>">
 👁 Ver
 </a>
 </td>

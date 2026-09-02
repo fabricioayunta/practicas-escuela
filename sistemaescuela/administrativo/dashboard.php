@@ -73,7 +73,7 @@ $ticketsPendientes = mysqli_fetch_assoc($res10)["total"];
 
 <h1>Dashboard Administrativo</h1>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
 
 <hr>
 

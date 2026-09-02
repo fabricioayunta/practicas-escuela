@@ -8,7 +8,7 @@ if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
 
 include("../conexion/conexion.php");
 
-$id_ticket = $_GET["id"];
+$id_ticket = (int)($_GET["id"] ?? 0);
 
 // Obtener información del ticket
 $sql = "SELECT
@@ -24,9 +24,12 @@ $sql = "SELECT
             ON tickets.id_computadora = computadoras.id_computadora
         INNER JOIN laboratorios
             ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-        WHERE tickets.id_ticket = '$id_ticket'";
+        WHERE tickets.id_ticket = ?";
 
-$resultado = mysqli_query($conexion, $sql);
+$stmt = mysqli_prepare($conexion, $sql);
+mysqli_stmt_bind_param($stmt, "i", $id_ticket);
+mysqli_stmt_execute($stmt);
+$resultado = mysqli_stmt_get_result($stmt);
 $ticket = mysqli_fetch_assoc($resultado);
 
 // Obtener historial del ticket
@@ -37,10 +40,13 @@ $sqlHistorial = "SELECT
                 FROM historialticket
                 INNER JOIN usuarios
                     ON historialticket.id_usuario = usuarios.id_usuario
-                WHERE historialticket.id_ticket = '$id_ticket'
+                WHERE historialticket.id_ticket = ?
                 ORDER BY historialticket.fecha DESC";
 
-$historial = mysqli_query($conexion, $sqlHistorial);
+$stmt = mysqli_prepare($conexion, $sqlHistorial);
+mysqli_stmt_bind_param($stmt, "i", $id_ticket);
+mysqli_stmt_execute($stmt);
+$historial = mysqli_stmt_get_result($stmt);
 
 ?>
 
@@ -54,7 +60,7 @@ $historial = mysqli_query($conexion, $sqlHistorial);
 
 <body>
 <?php include("../includes/menu_ematp.php"); ?>
-<h1>Gestionar Ticket #<?php echo $ticket["id_ticket"]; ?></h1>
+<h1>Gestionar Ticket #<?php echo e($ticket["id_ticket"]); ?></h1>
 
 <a href="tickets.php">← Volver a Tickets</a>
 
@@ -64,27 +70,27 @@ $historial = mysqli_query($conexion, $sqlHistorial);
 
 <p>
     <strong>Profesor:</strong>
-    <?php echo $ticket["nombre"] . " " . $ticket["apellido"]; ?>
+    <?php echo e($ticket["nombre"]) . " " . $ticket["apellido"]; ?>
 </p>
 
 <p>
     <strong>Laboratorio:</strong>
-    <?php echo $ticket["laboratorio"]; ?>
+    <?php echo e($ticket["laboratorio"]); ?>
 </p>
 
 <p>
     <strong>Computadora:</strong>
-    PC <?php echo $ticket["numero_pc"]; ?>
+    PC <?php echo e($ticket["numero_pc"]); ?>
 </p>
 
 <p> 
     <strong>Título:</strong>
-    <?php echo $ticket["titulo"]; ?>
+    <?php echo e($ticket["titulo"]); ?>
 </p>
 
 <p> 
     <strong>Descripción:</strong><br>
-    <?php echo nl2br($ticket["descripcion"]); ?>
+    <?php echo nl2br(e($ticket["descripcion"])); ?>
 </p>
 
 <?php if (!empty($ticket["foto"])) { ?>
@@ -106,7 +112,7 @@ $historial = mysqli_query($conexion, $sqlHistorial);
 <br><br>
 
 <p><strong>Estado actual:</strong>
-<?php echo $ticket["estado"]; ?>
+<?php echo e($ticket["estado"]); ?>
 </p>
 
 <hr>
@@ -117,7 +123,7 @@ $historial = mysqli_query($conexion, $sqlHistorial);
 <input
 type="hidden"
 name="id_ticket"
-value="<?php echo $ticket["id_ticket"]; ?>">
+value="<?php echo e($ticket["id_ticket"]); ?>">
 
 <label>Estado</label>
 
@@ -177,16 +183,16 @@ echo date("d/m/Y H:i", strtotime($fila["fecha"]));
 </td>
 
 <td>
-<?php echo $fila["estado"]; ?>
+<?php echo e($fila["estado"]); ?>
 </td>
 
 <td>
-<?php echo $fila["observacion"]; ?>
+<?php echo e($fila["observacion"]); ?>
 </td>
 
 <td>
 <?php
-echo $fila["nombre"]." ".$fila["apellido"];
+echo e($fila["nombre"])." ".e($fila["apellido"]);
 ?>
 </td>
 
