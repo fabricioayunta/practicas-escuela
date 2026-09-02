@@ -43,7 +43,7 @@ if(isset($_GET["laboratorio"])){
 <?php include("../includes/menu_ematp.php"); ?>
 <h1>Gestión de Computadoras</h1>
 
-<a href="inicio.php">← Volver al Panel</a>
+<a href="../inicio.php">← Volver al Panel</a>
 
 <hr>
 
