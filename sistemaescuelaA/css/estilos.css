@@ -1,0 +1,507 @@
+/* ===========================
+   CONFIGURACIÓN GENERAL
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+body{
+
+    background:#eef2f7;
+
+    color:#333;
+
+    font-family:Arial, Helvetica, sans-serif;
+
+}
+
+.contenedor{
+
+    width:95%;
+
+    max-width:1400px;
+
+    margin:30px auto;
+
+}
+
+/* ===========================
+   TITULOS
+=========================== */
+
+h1{
+
+    color:#1f4e79;
+
+    margin-bottom:20px;
+
+}
+
+h2{
+
+    color:#1f4e79;
+
+    margin-bottom:15px;
+
+}
+
+h3{
+
+    margin-bottom:15px;
+
+}
+
+/* ===========================
+   LINKS
+=========================== */
+
+a{
+
+    color:#1f4e79;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+}
+
+a:hover{
+
+    color:#0d6efd;
+
+}
+
+/* ===========================
+   BOTONES
+=========================== */
+
+button{
+
+    background:#1f4e79;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+button:hover{
+
+    background:#0d6efd;
+
+}
+
+/* ===========================
+   INPUTS
+=========================== */
+
+input,
+select,
+textarea{
+
+    width:100%;
+
+    padding:10px;
+
+    border:1px solid #ccc;
+
+    border-radius:8px;
+
+    margin-top:5px;
+    margin-bottom:15px;
+
+    font-size:15px;
+
+}
+
+textarea{
+
+    resize:vertical;
+
+}
+
+/* ===========================
+   TABLAS
+=========================== */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:20px;
+
+    background:white;
+
+    box-shadow:0px 3px 10px rgba(0,0,0,.15);
+
+}
+
+table th{
+
+    background:#1f4e79;
+
+    color:white;
+
+    padding:12px;
+
+}
+
+table td{
+
+    padding:12px;
+
+    text-align:center;
+
+}
+
+table tr:nth-child(even){
+
+    background:#f2f2f2;
+
+}
+
+table tr:hover{
+
+    background:#dceeff;
+
+}
+
+/* ===========================
+   HR
+=========================== */
+
+hr{
+
+    margin:25px 0;
+
+}
+
+/* ===========================
+   FORMULARIOS
+=========================== */
+
+form{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:10px;
+
+    box-shadow:0px 3px 10px rgba(0,0,0,.15);
+
+}
+
+/* ===========================
+   TARJETAS DASHBOARD
+=========================== */
+
+.card{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:10px;
+
+    box-shadow:0px 3px 10px rgba(0,0,0,.15);
+
+    text-align:center;
+
+    width:220px;
+
+}
+
+.card h2{
+
+    margin-top:10px;
+
+}
+
+/* ===========================
+   CONTENEDOR CARDS
+=========================== */
+
+.cards{
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+/* ===========================
+   MENÚ
+=========================== */
+
+.menu{
+
+    background:#1f4e79;
+
+    padding:15px 25px;
+
+    border-radius:10px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:30px;
+
+    box-shadow:0px 5px 15px rgba(0,0,0,.20);
+
+    flex-wrap:wrap;
+
+}
+
+.menu a{
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    transition:.3s;
+
+}
+
+.menu a:hover{
+
+    background:white;
+
+    color:#1f4e79;
+
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+.cards{
+
+    flex-direction:column;
+
+}
+
+.menu{
+
+    flex-direction:column;
+
+}
+
+table{
+
+    font-size:13px;
+
+}
+
+}
+/* ===========================
+   DASHBOARD
+=========================== */
+
+.cards{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:25px;
+    margin-top:25px;
+
+}
+
+.card{
+
+    flex:1;
+    min-width:220px;
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+
+    transition:.3s;
+
+    text-align:center;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.card h3{
+
+    color:#666;
+
+    margin-bottom:15px;
+
+}
+
+.card h1{
+
+    font-size:45px;
+
+    margin:0;
+
+}
+
+.azul{
+
+    border-left:8px solid #0d6efd;
+
+}
+
+.verde{
+
+    border-left:8px solid #198754;
+
+}
+
+.rojo{
+
+    border-left:8px solid #dc3545;
+
+}
+
+.naranja{
+
+    border-left:8px solid #fd7e14;
+
+}
+
+.gris{
+
+    border-left:8px solid #6c757d;
+
+}
+
+/*==========================
+BOTONES
+===========================*/
+
+.btn{
+
+    display:inline-block;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    text-decoration:none;
+
+    color:white !important;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.btn-verde{
+
+    background:#198754;
+
+}
+
+.btn-verde:hover{
+
+    background:#157347;
+
+}
+
+.btn-azul{
+
+    background:#0d6efd;
+
+}
+
+.btn-azul:hover{
+
+    background:#0b5ed7;
+
+}
+
+.btn-rojo{
+
+    background:#dc3545;
+
+}
+
+.btn-rojo:hover{
+
+    background:#bb2d3b;
+
+}
+
+.acciones{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+}
+
+/*==========================
+ESTADOS TICKETS
+===========================*/
+
+.estado{
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.abierto{
+
+    background:#198754;
+
+}
+
+.pendiente{
+
+    background:#ffc107;
+
+    color:black;
+
+}
+
+.cerrado{
+
+    background:#dc3545;
+
+}

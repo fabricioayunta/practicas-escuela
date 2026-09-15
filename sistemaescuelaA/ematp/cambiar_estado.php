@@ -1,0 +1,6 @@
+<?php
+session_start(); if(!isset($_SESSION["id_usuario"])||$_SESSION["id_rol"]!=3){header("Location: ../index.php");exit();} include("../conexion/conexion.php");
+$id_pc=(int)($_POST["id_computadora"]??0); $nuevo_estado=$_POST["nuevo_estado"]??""; $id_user=(int)$_SESSION["id_usuario"]; $motivo=trim($_POST["motivo"]??""); if($id_pc<=0||!in_array($nuevo_estado,["Alta","Baja"],true))exit("Datos inválidos.");
+$stmt=mysqli_prepare($conexion,"UPDATE computadoras SET estado=? WHERE id_computadora=?"); mysqli_stmt_bind_param($stmt,"si",$nuevo_estado,$id_pc); if(!mysqli_stmt_execute($stmt))die("Error al actualizar.");
+$accion=$nuevo_estado==="Baja"?"La computadora fue dada de baja.\nMotivo: ".$motivo:"La computadora fue dada de alta"; $stmt=mysqli_prepare($conexion,"INSERT INTO historial_computadoras (id_computadora,id_usuario,accion) VALUES (?,?,?)"); mysqli_stmt_bind_param($stmt,"iis",$id_pc,$id_user,$accion); mysqli_stmt_execute($stmt); header("Location: ver_computadora.php?id=".$id_pc); exit();
+?>
