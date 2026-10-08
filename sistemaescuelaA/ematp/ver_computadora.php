@@ -1,172 +1,190 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 3) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-$id = $_GET["id"];
+$id = (int)($_GET["id"] ?? 0);
 
-// Obtener datos de la computadora (incluye el campo 'estado')
-$sql = "SELECT
-            computadoras.*,
-            laboratorios.nombre AS laboratorio
-        FROM computadoras
-        INNER JOIN laboratorios
-            ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-        WHERE computadoras.id_computadora = '$id'";
+/* Datos de la computadora */
 
-$resultado = mysqli_query($conexion, $sql);
-$pc = mysqli_fetch_assoc($resultado);
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT
+        computadoras.*,
+        laboratorios.nombre AS laboratorio
+     FROM computadoras
+     INNER JOIN laboratorios
+        ON computadoras.id_laboratorio = laboratorios.id_laboratorio
+     WHERE computadoras.id_computadora = ?"
+);
 
-// Obtener componentes
-$sqlComponentes = "SELECT *
-                   FROM componentes
-                   WHERE id_computadora = '$id'";
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$pc = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
 
-$resultadoComponentes = mysqli_query($conexion, $sqlComponentes);
-$componentes = mysqli_fetch_assoc($resultadoComponentes);
+if (!$pc) {
+    mostrar_error("No se encontró la computadora.", "computadoras.php");
+}
 
-// Historial de modificaciones
-$sqlHistorial = "SELECT
-                    historial_computadoras.*,
-                    usuarios.nombre,
-                    usuarios.apellido
-                FROM historial_computadoras
-                INNER JOIN usuarios
-                ON historial_computadoras.id_usuario = usuarios.id_usuario
-                WHERE id_computadora='$id'
-                ORDER BY fecha DESC";
+/* Componentes */
 
-$historial = mysqli_query($conexion,$sqlHistorial);
+$stmt = mysqli_prepare($conexion, "SELECT * FROM componentes WHERE id_computadora = ?");
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$componentes = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: [];
+mysqli_stmt_close($stmt);
+
+/* Historial de modificaciones */
+
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT
+        historial_computadoras.*,
+        usuarios.nombre,
+        usuarios.apellido
+     FROM historial_computadoras
+     INNER JOIN usuarios
+        ON historial_computadoras.id_usuario = usuarios.id_usuario
+     WHERE historial_computadoras.id_computadora = ?
+     ORDER BY historial_computadoras.fecha DESC, historial_computadoras.id_historial DESC"
+);
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$historial = mysqli_stmt_get_result($stmt);
+
+$filasComponentes = [
+    "Mother"        => "mother",
+    "Procesador"    => "procesador",
+    "Memoria RAM"   => "memoria_ram",
+    "Disco"         => "disco",
+    "Monitor"       => "monitor",
+    "Teclado"       => "teclado",
+    "Mouse"         => "mouse",
+    "Observaciones" => "observaciones",
+];
+
+$operativa = ($pc["estado"] === "Alta");
+
+$titulo = "Computadora";
+$menu   = "ematp";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../css/estilos.css">
-    <meta charset="UTF-8">
-    <title>Computadora</title>
-</head>
-<body>
-<?php include("../includes/menu_ematp.php"); ?>
-<h1>Computadora PC <?php echo e($pc["numero_pc"]); ?></h1>
+<div class="encabezado-pagina">
+    <h1>PC <?php echo e($pc["numero_pc"]); ?> · <?php echo e($pc["laboratorio"]); ?></h1>
+    <p>
+        <?php if ($operativa) { ?>
+            <span class="estado operativa">Operativa</span>
+        <?php } else { ?>
+            <span class="estado fuera-servicio">Fuera de servicio</span>
+        <?php } ?>
+    </p>
+</div>
 
-<a href="computadoras.php?laboratorio=<?php echo e($pc["id_laboratorio"]); ?>">
-← Volver
-</a>
+<div class="barra-acciones">
+    <a class="btn btn-secundario" href="computadoras.php?laboratorio=<?php echo e($pc["id_laboratorio"]); ?>">← Volver a las computadoras</a>
+    <a class="btn" href="editar_componentes.php?id=<?php echo (int)$id; ?>">Editar componentes</a>
+</div>
 
-<hr>
+<div class="tarjeta">
 
-<h3>Información</h3>
+    <h2 style="margin-top:0;">Componentes</h2>
 
-<p><strong>Laboratorio:</strong> <?php echo e($pc["laboratorio"]); ?></p>
-<p><strong>PC:</strong> <?php echo e($pc["numero_pc"]); ?></p>
+    <div class="tabla-responsive" style="box-shadow:none;">
+        <table class="ficha">
+            <?php foreach ($filasComponentes as $nombre => $campo) { ?>
+                <tr>
+                    <td><?php echo e($nombre); ?></td>
+                    <td>
+                        <?php
+                        $valor = trim((string)($componentes[$campo] ?? ""));
+                        echo $valor === "" ? "<span class='ayuda'>Sin datos</span>" : nl2br(e($valor));
+                        ?>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+    </div>
 
-<!-- SECCIÓN DE ESTADO -->
-<p><strong>Estado Actual:</strong>
+</div>
 
-<?php echo ($pc["estado"] == "Alta") ? "🟢 Operativa" : "🔴 Fuera de servicio"; ?>
+<div class="tarjeta">
 
-</p>
+    <h2 style="margin-top:0;">Estado de la computadora</h2>
 
+    <?php if ($operativa) { ?>
 
+        <p>Si la computadora ya no puede usarse, indique el motivo y désela de baja.</p>
 
-<?php if ($pc["estado"] == "Alta") { ?>
-    <!-- Mostrar botón de BAJA si está operativa -->
-    <form action="cambiar_estado.php" method="POST">
-        <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
-      <input type="hidden" name="nuevo_estado" value="Baja">
-        <textarea name="motivo" required placeholder="Motivo de la baja..."></textarea><br>
-        <button type="submit">Dar de Baja</button>
-    </form>
-<?php } else { ?>
-    <!-- Mostrar botón de ALTA si está de baja -->
-    <form action="cambiar_estado.php" method="POST">
-        <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
-       <input type="hidden" name="nuevo_estado" value="Alta">
-        <button type="submit">Dar de Alta</button>
-    </form>
-<?php } ?>
-<!-- FIN DE LA NUEVA SECCIÓN -->
+        <form class="formulario" action="cambiar_estado.php" method="POST"
+              onsubmit="return confirm('¿Seguro que desea dar de baja esta computadora?');">
 
-<hr>
+            <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
+            <input type="hidden" name="nuevo_estado" value="Baja">
 
-<h3>Componentes</h3>
+            <div class="campo">
+                <label for="motivo">Motivo de la baja</label>
+                <textarea id="motivo" name="motivo" required placeholder="Explique por qué se da de baja..."></textarea>
+            </div>
 
-<table border="1" cellpadding="10">
-<tr>
-    <th>Componente</th>
-    <th>Detalle</th>
-</tr>
-<tr>
-    <td>Mother</td>
-    <td><?php echo e($componentes["mother"]); ?></td>
-</tr>
-<tr>
-    <td>Procesador</td>
-    <td><?php echo e($componentes["procesador"]); ?></td>
-</tr>
-<tr>
-    <td>Memoria RAM</td>
-    <td><?php echo e($componentes["memoria_ram"]); ?></td>
-</tr>
-<tr>
-    <td>Disco</td>
-    <td><?php echo e($componentes["disco"]); ?></td>
-</tr>
-<tr>
-    <td>Monitor</td>
-    <td><?php echo e($componentes["monitor"]); ?></td>
-</tr>
-<tr>
-    <td>Teclado</td>
-    <td><?php echo e($componentes["teclado"]); ?></td>
-</tr>
-<tr>
-    <td>Mouse</td>
-    <td><?php echo e($componentes["mouse"]); ?></td>
-</tr>
-<tr>
-    <td>Observaciones</td>
-    <td><?php echo e($componentes["observaciones"]); ?></td>
-</tr>
-</table>
+            <button type="submit" class="btn-peligro">Dar de baja</button>
 
-<br>
+        </form>
 
-<a href="editar_componentes.php?id=<?php echo e($pc["id_computadora"]); ?>">
-<button>Editar Componentes</button>
-</a>
-<hr>
+    <?php } else { ?>
 
-<h2>Historial de la Computadora</h2>
+        <p>Esta computadora está fuera de servicio. Cuando vuelva a funcionar, puede darla de alta.</p>
 
-<table border="1" cellpadding="10">
-<tr>
-<th>Fecha</th>
-<th>EMATP</th>
-<th>Acción</th>
-</tr>
+        <form class="formulario" action="cambiar_estado.php" method="POST">
 
-<?php while($fila=mysqli_fetch_assoc($historial)){ ?>
-<tr>
-<td>
-<?php echo date("d/m/Y H:i",strtotime($fila["fecha"])); ?>
-</td>
-<td>
-<?php echo e($fila["nombre"])." ".e($fila["apellido"]); ?>
-</td>
-<td>
-<!-- nl2br permite que los motivos con saltos de línea se vean bien -->
-<?php echo nl2br(e($fila["accion"])); ?>
-</td>
-</tr>
-<?php } ?>
-</table>
+            <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
+            <input type="hidden" name="nuevo_estado" value="Alta">
 
-</body>
-</html>
+            <button type="submit" class="btn-exito">Dar de alta</button>
+
+        </form>
+
+    <?php } ?>
+
+</div>
+
+<h2>Historial de la computadora</h2>
+
+<div class="tabla-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>EMATP</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        <?php if (mysqli_num_rows($historial) === 0) { ?>
+            <tr>
+                <td class="sin-datos" colspan="3">Todavía no hay movimientos.</td>
+            </tr>
+        <?php } ?>
+
+        <?php while ($fila = mysqli_fetch_assoc($historial)) { ?>
+            <tr>
+                <td><?php echo date("d/m/Y H:i", strtotime($fila["fecha"])); ?></td>
+                <td><?php echo e($fila["nombre"] . " " . $fila["apellido"]); ?></td>
+                <td><?php echo nl2br(e($fila["accion"])); ?></td>
+            </tr>
+        <?php } ?>
+
+        </tbody>
+    </table>
+</div>
+
+<?php include "../includes/pie.php"; ?>

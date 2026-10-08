@@ -1,45 +1,39 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once "../conexion/conexion.php";
+
+$titulo = "Nuevo laboratorio";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../css/estilos.css">
-    <meta charset="UTF-8">
-    <title>Nuevo Laboratorio</title>
-</head>
-<body>
-<?php include("../includes/menu_admin.php"); ?>
-<h1>Nuevo Laboratorio</h1>
+<div class="encabezado-pagina">
+    <h1>Nuevo laboratorio</h1>
+</div>
 
-<a href="laboratorios.php">← Volver</a>
+<div class="tarjeta">
 
-<hr>
+    <form class="formulario" action="guardar_laboratorio.php" method="POST">
 
-<form action="guardar_laboratorio.php" method="POST">
+        <div class="campo">
+            <label for="nombre">Nombre del laboratorio</label>
+            <input type="text" id="nombre" name="nombre" maxlength="50" required>
+        </div>
 
-    <label>Nombre del laboratorio</label>
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar laboratorio</button>
+            <a class="btn btn-secundario" href="laboratorios.php">Cancelar</a>
+        </div>
 
-    <br><br>
+    </form>
 
-    <input type="text"
-           name="nombre"
-           required
-           maxlength="50">
+</div>
 
-    <br><br>
-
-    <button type="submit">
-        Guardar Laboratorio
-    </button>
-
-</form>
-
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

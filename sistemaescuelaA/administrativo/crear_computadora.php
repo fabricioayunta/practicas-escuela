@@ -1,46 +1,51 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-$labs = mysqli_query($conexion,"SELECT * FROM laboratorios");
+$labs = mysqli_query($conexion, "SELECT id_laboratorio, nombre FROM laboratorios ORDER BY nombre");
+
+$titulo = "Nueva computadora";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
-<?php include("../includes/menu_admin.php"); ?>
-<h1>Nueva Computadora</h1>
 
-<a href="computadoras.php">← Volver</a>
+<div class="encabezado-pagina">
+    <h1>Nueva computadora</h1>
+</div>
 
-<hr>
+<div class="tarjeta">
 
-<form action="guardar_computadora.php" method="POST">
+    <form class="formulario" action="guardar_computadora.php" method="POST">
 
-<label>Laboratorio</label>
-<br>
-<select name="id_laboratorio" required>
+        <div class="campo">
+            <label for="id_laboratorio">Laboratorio</label>
+            <select id="id_laboratorio" name="id_laboratorio" required>
+                <option value="">Seleccione un laboratorio</option>
+                <?php while ($l = mysqli_fetch_assoc($labs)) { ?>
+                    <option value="<?php echo e($l["id_laboratorio"]); ?>"><?php echo e($l["nombre"]); ?></option>
+                <?php } ?>
+            </select>
+        </div>
 
-<option value="">Seleccionar</option>
+        <div class="campo">
+            <label for="numero_pc">Número de computadora</label>
+            <input type="number" id="numero_pc" name="numero_pc" min="1" max="99" required>
+        </div>
 
-<?php while($l = mysqli_fetch_assoc($labs)){ ?>
-<option value="<?php echo e($l["id_laboratorio"]); ?>">
-    <?php echo e($l["nombre"]); ?>
-</option>
-<?php } ?>
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar computadora</button>
+            <a class="btn btn-secundario" href="computadoras.php">Cancelar</a>
+        </div>
 
-</select>
+    </form>
 
-<br><br>
+</div>
 
-<label>Número de PC</label>
-<br>
-<input type="number" name="numero_pc" min="1" max="50" required>
-
-<br><br>
-
-<button type="submit">Guardar</button>
-
-</form>
+<?php include "../includes/pie.php"; ?>

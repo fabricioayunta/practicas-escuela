@@ -27,17 +27,17 @@ $nombre = trim($_POST["nombre"] ?? "");
 
 /* Validar ID */
 if ($id === false || $id === null || $id <= 0) {
-    exit("ID de laboratorio inválido.");
+    mostrar_error("ID de laboratorio inválido.");
 }
 
 /* Validar nombre */
 if ($nombre === "") {
-    exit("El nombre del laboratorio es obligatorio.");
+    mostrar_error("El nombre del laboratorio es obligatorio.");
 }
 
 /* Validar longitud */
-if (mb_strlen($nombre) > 100) {
-    exit("El nombre del laboratorio es demasiado largo.");
+if (mb_strlen($nombre) > 50) {
+    mostrar_error("El nombre del laboratorio es demasiado largo (máximo 50 caracteres).");
 }
 
 /* Preparar consulta */
@@ -49,7 +49,7 @@ $stmt = mysqli_prepare(
 );
 
 if (!$stmt) {
-    exit("Error al preparar la consulta.");
+    mostrar_error("Error al preparar la consulta.");
 }
 
 /* Vincular parámetros */
@@ -57,14 +57,20 @@ mysqli_stmt_bind_param($stmt, "si", $nombre, $id);
 
 /* Ejecutar actualización */
 if (!mysqli_stmt_execute($stmt)) {
+    $codigo = mysqli_stmt_errno($stmt);
     mysqli_stmt_close($stmt);
-    exit("Error al actualizar el laboratorio.");
+
+    if ($codigo == 1062) {
+        mostrar_error("Ya existe un laboratorio con ese nombre.");
+    }
+
+    mostrar_error("Error al actualizar el laboratorio.");
 }
 
 mysqli_stmt_close($stmt);
 
 /* Volver al listado */
-header("Location: laboratorios.php");
+header("Location: laboratorios.php?ok=editado");
 exit();
 
 ?>

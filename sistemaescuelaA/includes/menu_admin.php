@@ -1,19 +1,17 @@
-<div class="menu">
+<header class="menu">
+    <div class="menu-interior">
 
-<h2 style="color:white; margin-right:40px;">
-💻 Mesa de Ayuda Informática
-</h2>
+        <span class="menu-titulo">Mesa de Ayuda Informática</span>
 
-<a href="dashboard.php">🏠 Dashboard</a>
+        <nav class="menu-enlaces">
+            <a class="<?php echo activo("inicio.php"); ?>" href="inicio.php">Inicio</a>
+            <a class="<?php echo activo("dashboard.php"); ?>" href="dashboard.php">Resumen</a>
+            <a class="<?php echo activo(["usuarios.php", "crear_usuario.php", "editar_usuario.php"]); ?>" href="usuarios.php">Usuarios</a>
+            <a class="<?php echo activo(["laboratorios.php", "crear_laboratorio.php", "editar_laboratorio.php"]); ?>" href="laboratorios.php">Laboratorios</a>
+            <a class="<?php echo activo(["computadoras.php", "crear_computadora.php", "editar_computadora.php"]); ?>" href="computadoras.php">Computadoras</a>
+            <a class="<?php echo activo(["tickets.php", "ver_ticket.php"]); ?>" href="tickets.php">Tickets</a>
+            <a class="menu-salir" href="../logout.php">Cerrar sesión</a>
+        </nav>
 
-<a href="usuarios.php">👥 Usuarios</a>
-
-<a href="laboratorios.php">🧪 Laboratorios</a>
-
-<a href="computadoras.php">💻 Computadoras</a>
-
-<a href="tickets.php">🎫 Tickets</a>
-
-<a href="../logout.php">🚪 Cerrar sesión</a>
-
-</div>
+    </div>
+</header>

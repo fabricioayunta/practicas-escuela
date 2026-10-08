@@ -1,59 +1,36 @@
 <?php
 session_start();
 
-/* Verificar que haya una sesión iniciada */
-if (!isset($_SESSION["id_usuario"])) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 2) {
     header("Location: ../index.php");
     exit();
 }
 
-/* Verificar que el usuario sea profesor */
-if (!isset($_SESSION["id_rol"]) || $_SESSION["id_rol"] != 2) {
-    header("Location: ../index.php");
-    exit();
-}
+require_once "../conexion/conexion.php";
 
-/* Función para escapar texto */
-function e($valor) {
-    return htmlspecialchars((string)$valor, ENT_QUOTES, "UTF-8");
-}
+$titulo = "Panel del profesor";
+$menu   = "profesor";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Profesor</title>
+<div class="encabezado-pagina">
+    <h1>Bienvenido/a, <?php echo e($_SESSION["nombre"]); ?></h1>
+    <p>¿Qué desea hacer?</p>
+</div>
 
-    <link rel="stylesheet" href="../css/estilos.css">
-</head>
+<div class="grilla-menu">
 
-<body>
+    <a class="opcion-grande" href="crear_ticket.php">
+        <strong>Crear un ticket</strong>
+        <span>Avisar que una computadora tiene un problema.</span>
+    </a>
 
-<?php include("../includes/menu_profesor.php"); ?>
+    <a class="opcion-grande" href="mis_tickets.php">
+        <strong>Mis tickets</strong>
+        <span>Ver los avisos que envié y cómo van.</span>
+    </a>
 
-<h1>Panel Profesor</h1>
+</div>
 
-<p>
-    Bienvenido, <?php echo e($_SESSION["nombre"] ?? "Profesor"); ?>
-</p>
-
-<hr>
-
-<ul>
-    <li>
-        <a href="crear_ticket.php">Crear Ticket</a>
-    </li>
-
-    <li>
-        <a href="mis_tickets.php">Mis Tickets</a>
-    </li>
-
-    <li>
-        <a href="../logout.php">Cerrar Sesión</a>
-    </li>
-</ul>
-
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

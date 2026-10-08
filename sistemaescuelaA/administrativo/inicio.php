@@ -1,37 +1,51 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once "../conexion/conexion.php";
+
+$titulo = "Panel administrativo";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../css/estilos.css">
-    <meta charset="UTF-8">
-    <title>Panel Administrativo</title>
-</head>
-<body>
+<div class="encabezado-pagina">
+    <h1>Bienvenido/a, <?php echo e($_SESSION["nombre"]); ?></h1>
+    <p>¿Qué desea hacer?</p>
+</div>
 
-<h1>Panel Administrativo</h1>
+<div class="grilla-menu">
 
-<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
+    <a class="opcion-grande" href="dashboard.php">
+        <strong>Resumen</strong>
+        <span>Cantidades de computadoras, tickets y usuarios.</span>
+    </a>
 
-<hr>
+    <a class="opcion-grande" href="usuarios.php">
+        <strong>Usuarios</strong>
+        <span>Crear, editar o eliminar usuarios.</span>
+    </a>
 
-<h3>Opciones</h3>
+    <a class="opcion-grande" href="laboratorios.php">
+        <strong>Laboratorios</strong>
+        <span>Administrar los laboratorios de la escuela.</span>
+    </a>
 
-<ul>
-    <li><a href="dashboard.php">Dashboard</a></li>
-    <li><a href="usuarios.php">Gestionar Usuarios</a></li>
-    <li><a href="laboratorios.php">Gestionar Laboratorios</a></li>
-    <li><a href="computadoras.php">Gestionar Computadoras</a></li>
-    <li><a href="tickets.php">Ver Tickets</a></li>
-    <li><a href="../logout.php">Cerrar Sesión</a></li>
-</ul>
+    <a class="opcion-grande" href="computadoras.php">
+        <strong>Computadoras</strong>
+        <span>Agregar, editar o eliminar computadoras.</span>
+    </a>
 
-</body>
-</html>
+    <a class="opcion-grande" href="tickets.php">
+        <strong>Tickets</strong>
+        <span>Ver los avisos enviados por los profesores.</span>
+    </a>
+
+</div>
+
+<?php include "../includes/pie.php"; ?>

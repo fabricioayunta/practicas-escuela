@@ -39,27 +39,27 @@ $id_rol = (int)($_POST["id_rol"] ?? 0);
    ============================== */
 
 if ($nombre === "" || $apellido === "") {
-    exit("Nombre y apellido son obligatorios.");
+    mostrar_error("Nombre y apellido son obligatorios.");
 }
 
 if (mb_strlen($nombre) > 50 || mb_strlen($apellido) > 50) {
-    exit("El nombre o apellido es demasiado largo.");
+    mostrar_error("El nombre o apellido es demasiado largo.");
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    exit("El email no es válido.");
+    mostrar_error("El email no es válido.");
 }
 
 if (mb_strlen($email) > 100) {
-    exit("El email es demasiado largo.");
+    mostrar_error("El email es demasiado largo.");
 }
 
 if (strlen($contrasena) < 8) {
-    exit("La contraseña debe tener al menos 8 caracteres.");
+    mostrar_error("La contraseña debe tener al menos 8 caracteres.");
 }
 
 if (!in_array($id_rol, [1, 2, 3], true)) {
-    exit("El rol seleccionado no es válido.");
+    mostrar_error("El rol seleccionado no es válido.");
 }
 
 
@@ -77,7 +77,7 @@ $stmt = mysqli_prepare(
 
 if (!$stmt) {
     error_log(mysqli_error($conexion));
-    exit("No se pudo procesar la solicitud.");
+    mostrar_error("No se pudo procesar la solicitud.");
 }
 
 mysqli_stmt_bind_param($stmt, "s", $email);
@@ -86,7 +86,7 @@ mysqli_stmt_store_result($stmt);
 
 if (mysqli_stmt_num_rows($stmt) > 0) {
     mysqli_stmt_close($stmt);
-    exit("El email ya está registrado.");
+    mostrar_error("El email ya está registrado.");
 }
 
 mysqli_stmt_close($stmt);
@@ -99,7 +99,7 @@ mysqli_stmt_close($stmt);
 $hash = password_hash($contrasena, PASSWORD_DEFAULT);
 
 if ($hash === false) {
-    exit("No se pudo procesar la contraseña.");
+    mostrar_error("No se pudo procesar la contraseña.");
 }
 
 
@@ -117,7 +117,7 @@ $stmt = mysqli_prepare(
 
 if (!$stmt) {
     error_log(mysqli_error($conexion));
-    exit("No se pudo crear el usuario.");
+    mostrar_error("No se pudo crear el usuario.");
 }
 
 mysqli_stmt_bind_param(
@@ -139,7 +139,7 @@ if (mysqli_stmt_execute($stmt)) {
 
     mysqli_stmt_close($stmt);
 
-    header("Location: usuarios.php");
+    header("Location: usuarios.php?ok=creado");
     exit();
 }
 
@@ -152,6 +152,6 @@ error_log(mysqli_stmt_error($stmt));
 
 mysqli_stmt_close($stmt);
 
-exit("No se pudo crear el usuario.");
+mostrar_error("No se pudo crear el usuario.");
 
 ?>

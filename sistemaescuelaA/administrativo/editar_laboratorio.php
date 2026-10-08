@@ -1,112 +1,58 @@
 <?php
-
 session_start();
 
-/* Verificar sesión y rol de administrador */
-if (
-    !isset($_SESSION["id_usuario"]) ||
-    !isset($_SESSION["id_rol"]) ||
-    (int)$_SESSION["id_rol"] !== 1
-) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
 
-/* Conexión a la base de datos */
-require_once("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-/* Obtener y validar ID */
-$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+$id = (int)($_GET["id"] ?? 0);
 
-if ($id === false || $id === null || $id <= 0) {
-    exit("ID de laboratorio inválido.");
-}
-
-/* Buscar laboratorio */
 $stmt = mysqli_prepare(
     $conexion,
-    "SELECT id_laboratorio, nombre
-     FROM laboratorios
-     WHERE id_laboratorio = ?"
+    "SELECT id_laboratorio, nombre FROM laboratorios WHERE id_laboratorio = ?"
 );
-
-if (!$stmt) {
-    exit("Error al preparar la consulta.");
-}
 
 mysqli_stmt_bind_param($stmt, "i", $id);
-
-if (!mysqli_stmt_execute($stmt)) {
-    mysqli_stmt_close($stmt);
-    exit("Error al consultar el laboratorio.");
-}
-
-$resultado = mysqli_stmt_get_result($stmt);
-$laboratorio = mysqli_fetch_assoc($resultado);
-
+mysqli_stmt_execute($stmt);
+$laboratorio = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
-/* Verificar existencia */
 if (!$laboratorio) {
-    exit("Laboratorio no encontrado.");
+    mostrar_error("No se encontró el laboratorio.", "laboratorios.php");
 }
 
-/* Sanitizar datos para mostrar en HTML */
-$idLaboratorio = (int)$laboratorio["id_laboratorio"];
-$nombreLaboratorio = htmlspecialchars(
-    $laboratorio["nombre"] ?? "",
-    ENT_QUOTES,
-    "UTF-8"
-);
+$titulo = "Editar laboratorio";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
+<div class="encabezado-pagina">
+    <h1>Editar laboratorio</h1>
+</div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/estilos.css">
-    <title>Editar Laboratorio</title>
-</head>
+<div class="tarjeta">
 
-<body>
+    <form class="formulario" action="actualizar_laboratorio.php" method="POST">
 
-<?php include("../includes/menu_admin.php"); ?>
+        <input type="hidden" name="id_laboratorio" value="<?php echo (int)$laboratorio["id_laboratorio"]; ?>">
 
-<h1>Editar Laboratorio</h1>
+        <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" maxlength="50"
+                   value="<?php echo e($laboratorio["nombre"]); ?>" autocomplete="off" required>
+        </div>
 
-<a href="laboratorios.php">← Volver</a>
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar cambios</button>
+            <a class="btn btn-secundario" href="laboratorios.php">Cancelar</a>
+        </div>
 
-<hr>
+    </form>
 
-<form action="actualizar_laboratorio.php" method="POST">
+</div>
 
-    <input
-        type="hidden"
-        name="id_laboratorio"
-        value="<?php echo $idLaboratorio; ?>"
-    >
-
-    <label for="nombre">Nombre</label>
-
-    <br><br>
-
-    <input
-        type="text"
-        id="nombre"
-        name="nombre"
-        value="<?php echo $nombreLaboratorio; ?>"
-        maxlength="100"
-        required
-        autocomplete="off"
-    >
-
-    <br><br>
-
-    <button type="submit">Guardar Cambios</button>
-
-</form>
-
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

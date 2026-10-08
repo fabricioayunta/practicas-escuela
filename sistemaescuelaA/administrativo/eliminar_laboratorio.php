@@ -19,7 +19,7 @@ require_once("../conexion/conexion.php");
 $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
 if ($id === false || $id === null || $id <= 0) {
-    exit("ID de laboratorio inválido.");
+    mostrar_error("ID de laboratorio inválido.");
 }
 
 /* Verificar si existen computadoras asociadas */
@@ -31,14 +31,14 @@ $stmt = mysqli_prepare(
 );
 
 if (!$stmt) {
-    exit("Error al preparar la consulta.");
+    mostrar_error("Error al preparar la consulta.");
 }
 
 mysqli_stmt_bind_param($stmt, "i", $id);
 
 if (!mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
-    exit("Error al verificar las computadoras.");
+    mostrar_error("Error al verificar las computadoras.");
 }
 
 $resultado = mysqli_stmt_get_result($stmt);
@@ -62,7 +62,7 @@ $stmt = mysqli_prepare(
 );
 
 if (!$stmt) {
-    exit("Error al preparar la eliminación.");
+    mostrar_error("Error al preparar la eliminación.");
 }
 
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -70,12 +70,12 @@ mysqli_stmt_bind_param($stmt, "i", $id);
 /* Ejecutar eliminación */
 if (!mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
-    exit("Error al eliminar el laboratorio.");
+    mostrar_error("Error al eliminar el laboratorio.");
 }
 
 mysqli_stmt_close($stmt);
 
 /* Volver a laboratorios */
-header("Location: laboratorios.php");
+header("Location: laboratorios.php?ok=eliminado");
 exit();
 ?>

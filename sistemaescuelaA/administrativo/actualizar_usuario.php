@@ -24,6 +24,18 @@ require_once "../conexion/conexion.php";
 
 
 /* ==============================
+   VERIFICAR TOKEN DE SEGURIDAD
+   ============================== */
+
+if (
+    empty($_SESSION["csrf_token"]) ||
+    !hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"] ?? "")
+) {
+    mostrar_error("El formulario venció. Vuelva a abrir la edición del usuario e intente de nuevo.");
+}
+
+
+/* ==============================
    RECIBIR DATOS
    ============================== */
 
@@ -43,30 +55,35 @@ $id_rol = (int)($_POST["id_rol"] ?? 0);
    ============================== */
 
 if ($id <= 0) {
-    exit("Usuario inválido.");
+    mostrar_error("Usuario inválido.");
 }
 
 if ($nombre === "" || $apellido === "") {
-    exit("Nombre y apellido son obligatorios.");
+    mostrar_error("Nombre y apellido son obligatorios.");
 }
 
 if (
     mb_strlen($nombre) > 50 ||
     mb_strlen($apellido) > 50
 ) {
-    exit("El nombre o apellido es demasiado largo.");
+    mostrar_error("El nombre o apellido es demasiado largo.");
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    exit("El email no es válido.");
+    mostrar_error("El email no es válido.");
 }
 
 if (mb_strlen($email) > 100) {
-    exit("El email es demasiado largo.");
+    mostrar_error("El email es demasiado largo.");
 }
 
 if (!in_array($id_rol, [1, 2, 3], true)) {
-    exit("El rol seleccionado no es válido.");
+    mostrar_error("El rol seleccionado no es válido.");
+}
+
+/* Evitar que el administrador se quite a sí mismo el acceso */
+if ($id === (int)$_SESSION["id_usuario"] && $id_rol !== 1) {
+    mostrar_error("No puede quitarse a sí mismo el rol de administrador.");
 }
 
 
@@ -84,7 +101,7 @@ $stmt = mysqli_prepare(
 
 if (!$stmt) {
     error_log(mysqli_error($conexion));
-    exit("No se pudo procesar la solicitud.");
+    mostrar_error("No se pudo procesar la solicitud.");
 }
 
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -93,7 +110,7 @@ mysqli_stmt_store_result($stmt);
 
 if (mysqli_stmt_num_rows($stmt) !== 1) {
     mysqli_stmt_close($stmt);
-    exit("El usuario no existe.");
+    mostrar_error("El usuario no existe.");
 }
 
 mysqli_stmt_close($stmt);
@@ -114,7 +131,7 @@ $stmt = mysqli_prepare(
 
 if (!$stmt) {
     error_log(mysqli_error($conexion));
-    exit("No se pudo procesar la solicitud.");
+    mostrar_error("No se pudo procesar la solicitud.");
 }
 
 mysqli_stmt_bind_param(
@@ -129,7 +146,7 @@ mysqli_stmt_store_result($stmt);
 
 if (mysqli_stmt_num_rows($stmt) > 0) {
     mysqli_stmt_close($stmt);
-    exit("El email ya está registrado.");
+    mostrar_error("El email ya está registrado.");
 }
 
 mysqli_stmt_close($stmt);
@@ -153,7 +170,7 @@ if ($contrasena === "") {
 
     if (!$stmt) {
         error_log(mysqli_error($conexion));
-        exit("No se pudo actualizar el usuario.");
+        mostrar_error("No se pudo actualizar el usuario.");
     }
 
     mysqli_stmt_bind_param(
@@ -173,7 +190,7 @@ if ($contrasena === "") {
        ============================== */
 
     if (strlen($contrasena) < 8) {
-        exit("La contraseña debe tener al menos 8 caracteres.");
+        mostrar_error("La contraseña debe tener al menos 8 caracteres.");
     }
 
     /* ==============================
@@ -186,7 +203,7 @@ if ($contrasena === "") {
     );
 
     if ($hash === false) {
-        exit("No se pudo procesar la contraseña.");
+        mostrar_error("No se pudo procesar la contraseña.");
     }
 
 
@@ -207,7 +224,7 @@ if ($contrasena === "") {
 
     if (!$stmt) {
         error_log(mysqli_error($conexion));
-        exit("No se pudo actualizar el usuario.");
+        mostrar_error("No se pudo actualizar el usuario.");
     }
 
     mysqli_stmt_bind_param(
@@ -231,7 +248,7 @@ if (mysqli_stmt_execute($stmt)) {
 
     mysqli_stmt_close($stmt);
 
-    header("Location: usuarios.php");
+    header("Location: usuarios.php?ok=editado");
     exit();
 }
 
@@ -244,6 +261,6 @@ error_log(mysqli_stmt_error($stmt));
 
 mysqli_stmt_close($stmt);
 
-exit("No se pudo actualizar el usuario.");
+mostrar_error("No se pudo actualizar el usuario.");
 
 ?>

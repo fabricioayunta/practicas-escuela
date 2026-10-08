@@ -19,7 +19,7 @@ require_once("../conexion/conexion.php");
 $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
 if ($id === false || $id === null || $id <= 0) {
-    exit("ID de computadora inválido.");
+    mostrar_error("ID de computadora inválido.");
 }
 
 /* Iniciar transacción */
@@ -99,7 +99,7 @@ try {
     /* Confirmar todas las eliminaciones */
     mysqli_commit($conexion);
 
-    header("Location: computadoras.php");
+    header("Location: computadoras.php?ok=eliminada");
     exit();
 
 } catch (Throwable $e) {
@@ -107,6 +107,6 @@ try {
     /* Revertir todos los cambios */
     mysqli_rollback($conexion);
 
-    exit("Error al eliminar la computadora.");
+    mostrar_error("Error al eliminar la computadora.");
 }
 ?>

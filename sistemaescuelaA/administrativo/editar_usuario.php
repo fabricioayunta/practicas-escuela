@@ -1,51 +1,19 @@
 <?php
-
 session_start();
 
-/* ==============================
-   VERIFICAR SESIÓN Y ROL
-   ============================== */
-
-if (
-    !isset($_SESSION["id_usuario"]) ||
-    !isset($_SESSION["id_rol"]) ||
-    $_SESSION["id_rol"] != 1
-) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
 
-
-/* ==============================
-   CONEXIÓN
-   ============================== */
-
 require_once "../conexion/conexion.php";
 
-
-/* ==============================
-   GENERAR TOKEN CSRF
-   ============================== */
-
+/* Token de seguridad del formulario */
 if (empty($_SESSION["csrf_token"])) {
     $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
 }
 
-
-/* ==============================
-   OBTENER ID
-   ============================== */
-
 $id = (int)($_GET["id"] ?? 0);
-
-if ($id <= 0) {
-    exit("ID inválido.");
-}
-
-
-/* ==============================
-   BUSCAR USUARIO
-   ============================== */
 
 $stmt = mysqli_prepare(
     $conexion,
@@ -55,191 +23,77 @@ $stmt = mysqli_prepare(
      LIMIT 1"
 );
 
-if (!$stmt) {
-    error_log(mysqli_error($conexion));
-    exit("No se pudo procesar la solicitud.");
-}
-
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
-
-$resultado = mysqli_stmt_get_result($stmt);
-$usuario = mysqli_fetch_assoc($resultado);
-
+$usuario = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$usuario) {
-    exit("Usuario no encontrado.");
+    mostrar_error("No se encontró el usuario.", "usuarios.php");
 }
 
+$roles = [1 => "Administrativo", 2 => "Profesor", 3 => "EMATP"];
+
+$titulo = "Editar usuario";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
 
-<?php include("../includes/menu_admin.php"); ?>
+<div class="encabezado-pagina">
+    <h1>Editar usuario</h1>
+</div>
 
-<h1>Editar Usuario</h1>
+<div class="tarjeta">
 
-<form action="actualizar_usuario.php" method="POST">
+    <form class="formulario" action="actualizar_usuario.php" method="POST">
 
-    <!-- ID DEL USUARIO -->
+        <input type="hidden" name="id_usuario" value="<?php echo (int)$usuario["id_usuario"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo e($_SESSION["csrf_token"]); ?>">
 
-    <input
-        type="hidden"
-        name="id_usuario"
-        value="<?php echo (int)$usuario["id_usuario"]; ?>"
-    >
+        <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" maxlength="50"
+                   value="<?php echo e($usuario["nombre"]); ?>" required>
+        </div>
 
+        <div class="campo">
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" name="apellido" maxlength="50"
+                   value="<?php echo e($usuario["apellido"]); ?>" required>
+        </div>
 
-    <!-- PROTECCIÓN CSRF -->
+        <div class="campo">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" maxlength="100"
+                   value="<?php echo e($usuario["email"]); ?>" required>
+        </div>
 
-    <input
-        type="hidden"
-        name="csrf_token"
-        value="<?php echo htmlspecialchars(
-            $_SESSION["csrf_token"],
-            ENT_QUOTES,
-            "UTF-8"
-        ); ?>"
-    >
+        <div class="campo">
+            <label for="contrasena">Nueva contraseña</label>
+            <input type="password" id="contrasena" name="contrasena" minlength="8" maxlength="255"
+                   autocomplete="new-password">
+            <small>Déjela vacía si quiere mantener la contraseña actual.</small>
+        </div>
 
+        <div class="campo">
+            <label for="id_rol">Rol</label>
+            <select id="id_rol" name="id_rol" required>
+                <?php foreach ($roles as $numero => $nombreRol) { ?>
+                    <option value="<?php echo $numero; ?>" <?php echo (int)$usuario["id_rol"] === $numero ? "selected" : ""; ?>>
+                        <?php echo e($nombreRol); ?>
+                    </option>
+                <?php } ?>
+            </select>
+        </div>
 
-    <!-- NOMBRE -->
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar cambios</button>
+            <a class="btn btn-secundario" href="usuarios.php">Cancelar</a>
+        </div>
 
-    <label for="nombre">Nombre:</label><br>
+    </form>
 
-    <input
-        type="text"
-        id="nombre"
-        name="nombre"
-        maxlength="50"
-        value="<?php echo htmlspecialchars(
-            $usuario["nombre"] ?? "",
-            ENT_QUOTES,
-            "UTF-8"
-        ); ?>"
-        required
-    >
+</div>
 
-    <br><br>
-
-
-    <!-- APELLIDO -->
-
-    <label for="apellido">Apellido:</label><br>
-
-    <input
-        type="text"
-        id="apellido"
-        name="apellido"
-        maxlength="50"
-        value="<?php echo htmlspecialchars(
-            $usuario["apellido"] ?? "",
-            ENT_QUOTES,
-            "UTF-8"
-        ); ?>"
-        required
-    >
-
-    <br><br>
-
-
-    <!-- EMAIL -->
-
-    <label for="email">Email:</label><br>
-
-    <input
-        type="email"
-        id="email"
-        name="email"
-        maxlength="100"
-        value="<?php echo htmlspecialchars(
-            $usuario["email"] ?? "",
-            ENT_QUOTES,
-            "UTF-8"
-        ); ?>"
-        required
-    >
-
-    <br><br>
-
-
-    <!-- NUEVA CONTRASEÑA -->
-
-    <label for="contrasena">
-        Nueva contraseña:
-    </label><br>
-
-    <input
-        type="password"
-        id="contrasena"
-        name="contrasena"
-        minlength="8"
-        maxlength="255"
-        autocomplete="new-password"
-    >
-
-    <br>
-
-    <small>
-        Dejá este campo vacío si querés mantener la contraseña actual.
-    </small>
-
-    <br><br>
-
-
-    <!-- ROL -->
-
-    <label for="id_rol">Rol:</label><br>
-
-    <select name="id_rol" id="id_rol" required>
-
-        <option
-            value="1"
-            <?php
-            if ((int)$usuario["id_rol"] === 1) {
-                echo "selected";
-            }
-            ?>
-        >
-            Administrativo
-        </option>
-
-        <option
-            value="2"
-            <?php
-            if ((int)$usuario["id_rol"] === 2) {
-                echo "selected";
-            }
-            ?>
-        >
-            Profesor
-        </option>
-
-        <option
-            value="3"
-            <?php
-            if ((int)$usuario["id_rol"] === 3) {
-                echo "selected";
-            }
-            ?>
-        >
-            EMATP
-        </option>
-
-    </select>
-
-    <br><br>
-
-
-    <!-- BOTÓN -->
-
-    <button type="submit">
-        Actualizar
-    </button>
-
-</form>
-
-<br>
-
-<a href="usuarios.php">
-    Volver
-</a>
+<?php include "../includes/pie.php"; ?>

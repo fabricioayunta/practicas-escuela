@@ -1,147 +1,92 @@
 <?php
-
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 2) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 2) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: crear_ticket.php");
+    exit();
+}
 
-/* =========================
-   DATOS DEL PROFESOR
-========================= */
-
-$id_usuario = $_SESSION["id_usuario"];
+$id_usuario = (int)$_SESSION["id_usuario"];
 
 
 /* =========================
    DATOS DEL FORMULARIO
 ========================= */
 
-$id_laboratorio = $_POST["id_laboratorio"] ?? "";
-$numero_pc = $_POST["numero_pc"] ?? "";
-$observacion = trim($_POST["observacion"] ?? "");
+$id_laboratorio = (int)($_POST["id_laboratorio"] ?? 0);
+$numero_pc      = (int)($_POST["numero_pc"] ?? 0);
+$observacion    = trim($_POST["observacion"] ?? "");
+$componentes    = filtrar_componentes($_POST["componentes"] ?? []);
 
-$componentes = $_POST["componentes"] ?? [];
-
-
-/* =========================
-   VALIDAR DATOS
-========================= */
-
-if (
-    $id_laboratorio == "" ||
-    $numero_pc == "" ||
-    $observacion == "" ||
-    empty($componentes)
-) {
-
-    echo "Debe seleccionar laboratorio, computadora, al menos un componente y escribir una observación.";
-    exit();
-
+if ($id_laboratorio <= 0 || $numero_pc <= 0) {
+    mostrar_error("Debe elegir el laboratorio y el número de computadora.", "crear_ticket.php");
 }
 
-
-/* =========================
-   COMPONENTES PERMITIDOS
-========================= */
-
-$componentesPermitidos = [
-    "Mother",
-    "Procesador",
-    "Memoria RAM",
-    "Disco",
-    "Monitor",
-    "Teclado",
-    "Mouse"
-];
-
-
-$componentesValidos = [];
-
-
-foreach ($componentes as $componente) {
-
-    if (in_array($componente, $componentesPermitidos)) {
-
-        $componentesValidos[] = $componente;
-
-    }
-
+if (empty($componentes)) {
+    mostrar_error("Debe marcar al menos un componente con problemas.", "crear_ticket.php");
 }
 
-
-if (empty($componentesValidos)) {
-
-    echo "Debe seleccionar al menos un componente.";
-    exit();
-
+if ($observacion === "") {
+    mostrar_error("Debe escribir una descripción del problema.", "crear_ticket.php");
 }
 
+$componentesTexto = implode(", ", $componentes);
+$titulo           = "Problema en: " . $componentesTexto;
+
 
 /* =========================
-   CONVERTIR COMPONENTES A TEXTO
+   BUSCAR COMPUTADORA
 ========================= */
 
-$componentesTexto = implode(", ", $componentesValidos);
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT id_computadora
+     FROM computadoras
+     WHERE id_laboratorio = ? AND numero_pc = ?
+     LIMIT 1"
+);
+
+mysqli_stmt_bind_param($stmt, "ii", $id_laboratorio, $numero_pc);
+mysqli_stmt_execute($stmt);
+
+$computadora = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+
+if (!$computadora) {
+    mostrar_error("No se encontró la computadora seleccionada.", "crear_ticket.php");
+}
+
+$id_computadora = (int)$computadora["id_computadora"];
 
 
 /* =========================
-   TÍTULO AUTOMÁTICO
-========================= */
-
-$titulo = "Problema en: " . $componentesTexto;
-
-
-/* =========================
-   FOTO
+   FOTO (OPCIONAL)
 ========================= */
 
 $fotoNombre = null;
 
-
-if (
-    isset($_FILES["foto"]) &&
-    $_FILES["foto"]["error"] != UPLOAD_ERR_NO_FILE
-) {
+if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] != UPLOAD_ERR_NO_FILE) {
 
     if ($_FILES["foto"]["error"] != UPLOAD_ERR_OK) {
-
-        echo "Hubo un error al subir la foto.";
-        exit();
-
+        mostrar_error("Hubo un error al subir la foto. Pruebe con una foto más chica.", "crear_ticket.php");
     }
-
-
-    /* Máximo 5 MB */
 
     if ($_FILES["foto"]["size"] > 5 * 1024 * 1024) {
-
-        echo "La foto no puede superar los 5 MB.";
-        exit();
-
+        mostrar_error("La foto no puede superar los 5 MB.", "crear_ticket.php");
     }
 
-
-    /* Comprobar que realmente sea una imagen */
-
-    $tipoImagen = getimagesize(
-        $_FILES["foto"]["tmp_name"]
-    );
-
+    $tipoImagen = getimagesize($_FILES["foto"]["tmp_name"]);
 
     if ($tipoImagen === false) {
-
-        echo "El archivo seleccionado no es una imagen válida.";
-        exit();
-
+        mostrar_error("El archivo seleccionado no es una imagen válida.", "crear_ticket.php");
     }
-
-
-    /* Tipos permitidos */
 
     $tiposPermitidos = [
         "image/jpeg" => "jpg",
@@ -149,139 +94,36 @@ if (
         "image/webp" => "webp"
     ];
 
-
     if (!isset($tiposPermitidos[$tipoImagen["mime"]])) {
-
-        echo "Solo se permiten imágenes JPG, PNG o WEBP.";
-        exit();
-
+        mostrar_error("Solo se permiten imágenes JPG, PNG o WEBP.", "crear_ticket.php");
     }
 
-
-    /* Extensión */
-
-    $extension = $tiposPermitidos[$tipoImagen["mime"]];
-
-
-    /* Nombre único */
-
+    $extension  = $tiposPermitidos[$tipoImagen["mime"]];
     $fotoNombre = uniqid("ticket_", true) . "." . $extension;
-
-
-    /* Carpeta */
-
-    $carpeta = "../uploads/tickets/";
-
-
-    /* Crear carpeta si no existe */
+    $carpeta    = "../uploads/tickets/";
 
     if (!is_dir($carpeta)) {
-
         mkdir($carpeta, 0755, true);
-
     }
 
-
-    /* Guardar foto */
-
-    if (!move_uploaded_file(
-        $_FILES["foto"]["tmp_name"],
-        $carpeta . $fotoNombre
-    )) {
-
-        echo "No se pudo guardar la foto.";
-        exit();
-
+    if (!move_uploaded_file($_FILES["foto"]["tmp_name"], $carpeta . $fotoNombre)) {
+        mostrar_error("No se pudo guardar la foto en el servidor.", "crear_ticket.php");
     }
-
 }
 
 
 /* =========================
-   BUSCAR COMPUTADORA
+   GUARDAR EL TICKET
 ========================= */
 
-$sqlComputadora = "
-    SELECT id_computadora
-
-    FROM computadoras
-
-    WHERE id_laboratorio = ?
-    AND numero_pc = ?
-
-    LIMIT 1
-";
-
+mysqli_begin_transaction($conexion);
 
 $stmt = mysqli_prepare(
     $conexion,
-    $sqlComputadora
+    "INSERT INTO tickets
+        (id_usuario, id_computadora, titulo, descripcion, componentes_afectados, foto)
+     VALUES (?, ?, ?, ?, ?, ?)"
 );
-
-
-mysqli_stmt_bind_param(
-    $stmt,
-    "ii",
-    $id_laboratorio,
-    $numero_pc
-);
-
-
-mysqli_stmt_execute($stmt);
-
-
-$resultado = mysqli_stmt_get_result($stmt);
-
-
-if (mysqli_num_rows($resultado) != 1) {
-
-    echo "No se encontró la computadora seleccionada.";
-    exit();
-
-}
-
-
-$computadora = mysqli_fetch_assoc($resultado);
-
-$id_computadora = $computadora["id_computadora"];
-
-
-/* =========================
-   INSERTAR TICKET
-========================= */
-
-$sql = "
-    INSERT INTO tickets
-    (
-        id_usuario,
-        id_computadora,
-        titulo,
-        descripcion,
-        componentes_afectados,
-        foto
-    )
-
-    VALUES
-    (?, ?, ?, ?, ?, ?)
-";
-
-
-$stmt = mysqli_prepare(
-    $conexion,
-    $sql
-);
-
-
-/*
-    6 variables:
-
-    i = id_usuario
-    i = id_computadora
-    s = titulo
-    s = observacion
-    s = componentes
-    s = foto
-*/
 
 mysqli_stmt_bind_param(
     $stmt,
@@ -294,20 +136,41 @@ mysqli_stmt_bind_param(
     $fotoNombre
 );
 
+if (!mysqli_stmt_execute($stmt)) {
 
-/* =========================
-   GUARDAR
-========================= */
+    $detalle = mysqli_stmt_error($stmt);
+    mysqli_stmt_close($stmt);
+    mysqli_rollback($conexion);
 
-if (mysqli_stmt_execute($stmt)) {
+    /* Si no se pudo guardar el ticket, se borra la foto ya subida */
+    if ($fotoNombre !== null) {
+        @unlink("../uploads/tickets/" . $fotoNombre);
+    }
 
-    header("Location: mis_tickets.php");
-    exit();
-
-} else {
-
-    echo "Error al crear el ticket: " . mysqli_error($conexion);
-
+    error_log("Error al crear ticket: " . $detalle);
+    mostrar_error("No se pudo crear el ticket. Si el problema continúa, avise al administrador.", "crear_ticket.php");
 }
 
-?>
+$id_ticket = mysqli_insert_id($conexion);
+mysqli_stmt_close($stmt);
+
+
+/* Primer registro del historial del ticket */
+
+$estadoInicial = "Abierto";
+$textoInicial  = "Ticket creado.";
+
+$stmt = mysqli_prepare(
+    $conexion,
+    "INSERT INTO historialticket (id_ticket, estado, fecha, observacion, id_usuario)
+     VALUES (?, ?, NOW(), ?, ?)"
+);
+
+mysqli_stmt_bind_param($stmt, "issi", $id_ticket, $estadoInicial, $textoInicial, $id_usuario);
+mysqli_stmt_execute($stmt);
+mysqli_stmt_close($stmt);
+
+mysqli_commit($conexion);
+
+header("Location: mis_tickets.php?ok=creado");
+exit();

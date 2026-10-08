@@ -1,87 +1,61 @@
 <?php
-
 session_start();
 
-/* Verificar sesión y rol de administrador */
-if (
-    !isset($_SESSION["id_usuario"]) ||
-    !isset($_SESSION["id_rol"]) ||
-    (int)$_SESSION["id_rol"] !== 1
-) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
 
-/* Conexión a la base de datos */
-require_once("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-/* Obtener y validar datos */
-$id = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: computadoras.php");
+    exit();
+}
+
+$id     = filter_input(INPUT_POST, "id", FILTER_VALIDATE_INT);
 $id_lab = filter_input(INPUT_POST, "id_laboratorio", FILTER_VALIDATE_INT);
 $numero = filter_input(INPUT_POST, "numero_pc", FILTER_VALIDATE_INT);
-
 $estado = trim($_POST["estado"] ?? "");
 
-/* Validar IDs y número de PC */
-if ($id === false || $id === null || $id <= 0) {
-    exit("ID de computadora inválido.");
+if (!$id || $id <= 0) {
+    mostrar_error("Computadora inválida.", "computadoras.php");
 }
 
-if ($id_lab === false || $id_lab === null || $id_lab <= 0) {
-    exit("Laboratorio inválido.");
+if (!$id_lab || $id_lab <= 0) {
+    mostrar_error("Debe elegir un laboratorio.");
 }
 
-if ($numero === false || $numero === null || $numero <= 0) {
-    exit("Número de PC inválido.");
+if (!$numero || $numero <= 0) {
+    mostrar_error("El número de computadora no es válido.");
 }
 
-/* Lista blanca de estados permitidos */
-$estadosPermitidos = ["Alta", "Baja"];
-
-if (!in_array($estado, $estadosPermitidos, true)) {
-    exit("Estado inválido.");
+if (!in_array($estado, ["Alta", "Baja"], true)) {
+    mostrar_error("El estado elegido no es válido.");
 }
 
-/* Preparar consulta */
 $stmt = mysqli_prepare(
     $conexion,
     "UPDATE computadoras
-     SET id_laboratorio = ?,
-         numero_pc = ?,
-         estado = ?
+     SET id_laboratorio = ?, numero_pc = ?, estado = ?
      WHERE id_computadora = ?"
 );
 
-if (!$stmt) {
-    exit("Error al preparar la consulta.");
-}
+mysqli_stmt_bind_param($stmt, "iisi", $id_lab, $numero, $estado, $id);
 
-/* Vincular parámetros */
-mysqli_stmt_bind_param(
-    $stmt,
-    "iisi",
-    $id_lab,
-    $numero,
-    $estado,
-    $id
-);
-
-/* Ejecutar actualización */
 if (!mysqli_stmt_execute($stmt)) {
-    mysqli_stmt_close($stmt);
-    exit("Error al actualizar la computadora.");
-}
 
-/* Verificar si realmente existe */
-if (mysqli_stmt_affected_rows($stmt) === 0) {
+    $codigo = mysqli_stmt_errno($stmt);
     mysqli_stmt_close($stmt);
-    exit("No se encontró la computadora o no hubo cambios.");
+
+    if ($codigo == 1062) {
+        mostrar_error("Ya existe la PC " . $numero . " en ese laboratorio.");
+    }
+
+    mostrar_error("No se pudo actualizar la computadora.");
 }
 
 mysqli_stmt_close($stmt);
 
-/* Volver al listado */
-header("Location: computadoras.php");
+header("Location: computadoras.php?ok=editada");
 exit();
-
-?>

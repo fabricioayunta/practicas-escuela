@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 require_once __DIR__ . "/conexion/conexion.php";
@@ -9,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
-$email = trim($_POST["email"] ?? "");
+$email      = trim($_POST["email"] ?? "");
 $contrasena = $_POST["password"] ?? "";
 
 if ($email === "" || $contrasena === "") {
@@ -17,9 +16,7 @@ if ($email === "" || $contrasena === "") {
     exit();
 }
 
-$email = filter_var($email, FILTER_VALIDATE_EMAIL);
-
-if ($email === false) {
+if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
     header("Location: index.php?error=email");
     exit();
 }
@@ -27,36 +24,35 @@ if ($email === false) {
 
 /* Buscar usuario */
 
-$sql = "SELECT id_usuario, nombre, apellido, email, contrasena, id_rol
-        FROM usuarios
-        WHERE email = ?
-        LIMIT 1";
-
-$stmt = mysqli_prepare($conexion, $sql);
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT id_usuario, nombre, apellido, email, contrasena, id_rol
+     FROM usuarios
+     WHERE email = ?
+     LIMIT 1"
+);
 
 if (!$stmt) {
-    die("ERROR SQL: " . mysqli_error($conexion));
+    mostrar_error("No se pudo consultar la base de datos. Intente nuevamente.", "index.php");
 }
 
 mysqli_stmt_bind_param($stmt, "s", $email);
 mysqli_stmt_execute($stmt);
 
 $resultado = mysqli_stmt_get_result($stmt);
+$usuario   = mysqli_fetch_assoc($resultado);
+
+mysqli_stmt_close($stmt);
 
 
-/* Usuario no encontrado */
+/*
+   Mismo mensaje si el usuario no existe o si la contraseña es incorrecta
+   (así no se revela qué emails están registrados).
+*/
 
-if (mysqli_num_rows($resultado) !== 1) {
-    die("ERROR: El usuario no existe.");
-}
-
-$usuario = mysqli_fetch_assoc($resultado);
-
-
-/* Comprobar contraseña */
-
-if (!password_verify($contrasena, $usuario["contrasena"])) {
-    die("ERROR: Contraseña incorrecta.");
+if (!$usuario || !password_verify($contrasena, $usuario["contrasena"])) {
+    header("Location: index.php?error=datos");
+    exit();
 }
 
 
@@ -65,45 +61,32 @@ if (!password_verify($contrasena, $usuario["contrasena"])) {
 session_regenerate_id(true);
 
 $_SESSION["id_usuario"] = (int)$usuario["id_usuario"];
-$_SESSION["nombre"] = $usuario["nombre"];
-$_SESSION["apellido"] = $usuario["apellido"];
-$_SESSION["email"] = $usuario["email"];
-$_SESSION["id_rol"] = (int)$usuario["id_rol"];
+$_SESSION["nombre"]     = $usuario["nombre"];
+$_SESSION["apellido"]   = $usuario["apellido"];
+$_SESSION["email"]      = $usuario["email"];
+$_SESSION["id_rol"]     = (int)$usuario["id_rol"];
 
 
-/* Mostrar datos para comprobar */
+/* Redirección según el rol */
 
-echo "<h1>LOGIN CORRECTO</h1>";
+switch ($_SESSION["id_rol"]) {
 
-echo "<p>Usuario: " . htmlspecialchars($_SESSION["nombre"]) . "</p>";
-echo "<p>Rol: " . $_SESSION["id_rol"] . "</p>";
+    case 1:
+        header("Location: administrativo/inicio.php");
+        break;
 
-echo "<p>Sesión creada correctamente.</p>";
+    case 2:
+        header("Location: profesor/inicio.php");
+        break;
 
-echo "<p>Redirigiendo al panel...</p>";
+    case 3:
+        header("Location: ematp/inicio.php");
+        break;
 
-/* Redirección */
-
-if ($_SESSION["id_rol"] === 1) {
-
-    header("Refresh: 2; url=administrativo/dashboard.php");
-
-} elseif ($_SESSION["id_rol"] === 2) {
-
-    header("Refresh: 2; url=profesor/inicio.php");
-
-} elseif ($_SESSION["id_rol"] === 3) {
-
-    header("Refresh: 2; url=ematp/inicio.php");
-
-} else {
-
-    session_unset();
-    session_destroy();
-
-    die("ERROR: El rol no es válido.");
+    default:
+        session_unset();
+        session_destroy();
+        header("Location: index.php?error=rol");
 }
 
 exit();
-
-?>

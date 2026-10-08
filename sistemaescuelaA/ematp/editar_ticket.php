@@ -1,204 +1,174 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 3) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
 $id_ticket = (int)($_GET["id"] ?? 0);
 
-// Obtener información del ticket
-$sql = "SELECT
-            tickets.*,
-            usuarios.nombre,
-            usuarios.apellido,
-            computadoras.numero_pc,
-            laboratorios.nombre AS laboratorio
-        FROM tickets
-        INNER JOIN usuarios
-            ON tickets.id_usuario = usuarios.id_usuario
-        INNER JOIN computadoras
-            ON tickets.id_computadora = computadoras.id_computadora
-        INNER JOIN laboratorios
-            ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-        WHERE tickets.id_ticket = ?";
+/* Datos del ticket */
 
-$stmt = mysqli_prepare($conexion, $sql);
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT
+        tickets.*,
+        usuarios.nombre,
+        usuarios.apellido,
+        computadoras.numero_pc,
+        laboratorios.nombre AS laboratorio
+     FROM tickets
+     INNER JOIN usuarios
+        ON tickets.id_usuario = usuarios.id_usuario
+     LEFT JOIN computadoras
+        ON tickets.id_computadora = computadoras.id_computadora
+     LEFT JOIN laboratorios
+        ON computadoras.id_laboratorio = laboratorios.id_laboratorio
+     WHERE tickets.id_ticket = ?"
+);
+
 mysqli_stmt_bind_param($stmt, "i", $id_ticket);
 mysqli_stmt_execute($stmt);
-$resultado = mysqli_stmt_get_result($stmt);
-$ticket = mysqli_fetch_assoc($resultado);
+$ticket = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
 
-// Obtener historial del ticket
-$sqlHistorial = "SELECT
-                    historialticket.*,
-                    usuarios.nombre,
-                    usuarios.apellido
-                FROM historialticket
-                INNER JOIN usuarios
-                    ON historialticket.id_usuario = usuarios.id_usuario
-                WHERE historialticket.id_ticket = ?
-                ORDER BY historialticket.fecha DESC";
+if (!$ticket) {
+    mostrar_error("No se encontró el ticket.", "tickets.php");
+}
 
-$stmt = mysqli_prepare($conexion, $sqlHistorial);
+/* Historial del ticket */
+
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT
+        historialticket.*,
+        usuarios.nombre,
+        usuarios.apellido
+     FROM historialticket
+     INNER JOIN usuarios
+        ON historialticket.id_usuario = usuarios.id_usuario
+     WHERE historialticket.id_ticket = ?
+     ORDER BY historialticket.fecha DESC"
+);
+
 mysqli_stmt_bind_param($stmt, "i", $id_ticket);
 mysqli_stmt_execute($stmt);
 $historial = mysqli_stmt_get_result($stmt);
 
+$estados = ["Abierto", "Pendiente", "Cerrado"];
+
+$ok = $_GET["ok"] ?? "";
+
+$titulo = "Gestionar ticket";
+$menu   = "ematp";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../css/estilos.css">
-<meta charset="UTF-8">
-<title>Gestionar Ticket</title>
-</head>
-
-<body>
-<?php include("../includes/menu_ematp.php"); ?>
-<h1>Gestionar Ticket #<?php echo e($ticket["id_ticket"]); ?></h1>
-
-<a href="tickets.php">← Volver a Tickets</a>
-
-<hr>
-
-<h3>Información del Ticket</h3>
-
-<p>
-    <strong>Profesor:</strong>
-    <?php echo e($ticket["nombre"]) . " " . $ticket["apellido"]; ?>
-</p>
-
-<p>
-    <strong>Laboratorio:</strong>
-    <?php echo e($ticket["laboratorio"]); ?>
-</p>
-
-<p>
-    <strong>Computadora:</strong>
-    PC <?php echo e($ticket["numero_pc"]); ?>
-</p>
-
-<p> 
-    <strong>Título:</strong>
-    <?php echo e($ticket["titulo"]); ?>
-</p>
-
-<p> 
-    <strong>Descripción:</strong><br>
-    <?php echo nl2br(e($ticket["descripcion"])); ?>
-</p>
-
-<?php if (!empty($ticket["foto"])) { ?>
+<div class="encabezado-pagina">
+    <h1>Ticket n.º <?php echo e($ticket["id_ticket"]); ?></h1>
     <p>
-        <strong>Foto del problema:</strong>
+        <span class="estado <?php echo clase_estado($ticket["estado"]); ?>"><?php echo e($ticket["estado"]); ?></span>
     </p>
-    <a
-        href="../uploads/tickets/<?php echo htmlspecialchars($ticket["foto"]); ?>"
-        target="_blank"
-    >
-        <img
-            src="../uploads/tickets/<?php echo htmlspecialchars($ticket["foto"]); ?>"
-            alt="Foto del problema"
-            style="max-width:200px; max-height:300px;"
-        >
-    </a>
-<?php } ?>
+</div>
 
-<br><br>
+<div class="barra-acciones">
+    <a class="btn btn-secundario" href="tickets.php">← Volver a los tickets</a>
+</div>
 
-<p><strong>Estado actual:</strong>
-<?php echo e($ticket["estado"]); ?>
-</p>
+<div class="tarjeta">
 
-<hr>
-<h3>Cambiar Estado</h3>
+    <h2 style="margin-top:0;">Datos del ticket</h2>
 
-<form action="actualizar_ticket.php" method="POST">
+    <div class="tabla-responsive" style="box-shadow:none;">
+        <table class="ficha">
+            <tr><td>Profesor</td><td><?php echo e($ticket["nombre"] . " " . $ticket["apellido"]); ?></td></tr>
+            <tr><td>Laboratorio</td><td><?php echo e($ticket["laboratorio"] ?? "—"); ?></td></tr>
+            <tr><td>Computadora</td><td><?php echo $ticket["numero_pc"] !== null ? "PC " . e($ticket["numero_pc"]) : "—"; ?></td></tr>
+            <tr><td>Componentes con problemas</td><td><?php echo e($ticket["componentes_afectados"] ?? "—"); ?></td></tr>
+            <tr><td>Fecha</td><td><?php echo date("d/m/Y H:i", strtotime($ticket["fecha_creacion"])); ?></td></tr>
+        </table>
+    </div>
 
-<input
-type="hidden"
-name="id_ticket"
-value="<?php echo e($ticket["id_ticket"]); ?>">
+    <h3>Descripción</h3>
+    <p class="texto-ticket"><?php echo nl2br(e($ticket["descripcion"])); ?></p>
 
-<label>Estado</label>
+    <?php if (!empty($ticket["foto"])) { ?>
+        <h3 style="margin-top:1.2em;">Foto del problema</h3>
+        <a href="../uploads/tickets/<?php echo e($ticket["foto"]); ?>" target="_blank">
+            <img class="foto-ticket" src="../uploads/tickets/<?php echo e($ticket["foto"]); ?>" alt="Foto del problema">
+        </a>
+        <small>Haga clic en la foto para verla en tamaño completo.</small>
+    <?php } ?>
 
-<br>
+</div>
 
-<select name="estado">
+<div class="tarjeta">
 
-<option value="Abierto"
-<?php if($ticket["estado"]=="Abierto") echo "selected"; ?>>Abierto
-</option>
+    <h2 style="margin-top:0;">Cambiar el estado</h2>
 
-<option value="Pendiente"
-<?php if($ticket["estado"]=="Pendiente") echo "selected"; ?>>Pendiente
-</option>
+    <form class="formulario" action="actualizar_ticket.php" method="POST">
 
-<option value="Cerrado"
-<?php if($ticket["estado"]=="Cerrado") echo "selected"; ?>>Cerrado
-</option>
+        <input type="hidden" name="id_ticket" value="<?php echo e($ticket["id_ticket"]); ?>">
 
-</select>
+        <div class="campo">
+            <label for="estado">Nuevo estado</label>
+            <select id="estado" name="estado">
+                <?php foreach ($estados as $estado) { ?>
+                    <option value="<?php echo e($estado); ?>" <?php echo $ticket["estado"] === $estado ? "selected" : ""; ?>>
+                        <?php echo e($estado); ?>
+                    </option>
+                <?php } ?>
+            </select>
+        </div>
 
-<br><br>
-<label>Observación</label>
+        <div class="campo">
+            <label for="observacion">Observación (qué se hizo o qué falta)</label>
+            <textarea id="observacion" name="observacion" required></textarea>
+        </div>
 
-<br>
+        <button type="submit" class="btn-exito">Guardar cambios</button>
 
-<textarea
-name="observacion"
-rows="5"
-cols="70"
-required></textarea>
+    </form>
 
-<br><br>
-<button type="submit">
-Guardar Cambios
-</button>
+</div>
 
-</form>
+<h2>Historial del ticket</h2>
 
-<hr>
-<h2>Historial del Ticket</h2>
-<table border="1" cellpadding="10">
-<tr>
-<th>Fecha</th>
-<th>Estado</th>
-<th>Observación</th>
-<th>Usuario</th>
+<div class="tabla-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Observación</th>
+                <th>Usuario</th>
+            </tr>
+        </thead>
+        <tbody>
 
-</tr>
-<?php while($fila = mysqli_fetch_assoc($historial)){ ?>
-<tr>
+        <?php if (mysqli_num_rows($historial) === 0) { ?>
+            <tr>
+                <td class="sin-datos" colspan="4">Todavía no hay movimientos.</td>
+            </tr>
+        <?php } ?>
 
-<td>
-<?php
-echo date("d/m/Y H:i", strtotime($fila["fecha"]));
-?>
-</td>
+        <?php while ($fila = mysqli_fetch_assoc($historial)) { ?>
+            <tr>
+                <td><?php echo date("d/m/Y H:i", strtotime($fila["fecha"])); ?></td>
+                <td>
+                    <span class="estado <?php echo clase_estado($fila["estado"]); ?>"><?php echo e($fila["estado"]); ?></span>
+                </td>
+                <td><?php echo nl2br(e($fila["observacion"])); ?></td>
+                <td><?php echo e($fila["nombre"] . " " . $fila["apellido"]); ?></td>
+            </tr>
+        <?php } ?>
 
-<td>
-<?php echo e($fila["estado"]); ?>
-</td>
+        </tbody>
+    </table>
+</div>
 
-<td>
-<?php echo e($fila["observacion"]); ?>
-</td>
-
-<td>
-<?php
-echo e($fila["nombre"])." ".e($fila["apellido"]);
-?>
-</td>
-
-</tr>
-<?php } ?>
-</table>
-
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

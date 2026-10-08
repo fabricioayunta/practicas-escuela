@@ -1,168 +1,97 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-/* TOTAL COMPUTADORAS */
-$sql1 = "SELECT COUNT(*) as total FROM computadoras";
-$res1 = mysqli_query($conexion,$sql1);
-$totalPC = mysqli_fetch_assoc($res1)["total"];
+/* Computadoras */
+$totalPC = contar($conexion, "SELECT COUNT(*) AS total FROM computadoras");
+$activas = contar($conexion, "SELECT COUNT(*) AS total FROM computadoras WHERE estado = 'Alta'");
+$bajas   = contar($conexion, "SELECT COUNT(*) AS total FROM computadoras WHERE estado = 'Baja'");
 
-/* ACTIVAS */
-$sql2 = "SELECT COUNT(*) as total FROM computadoras WHERE estado='Alta'";
-$res2 = mysqli_query($conexion,$sql2);
-$activas = mysqli_fetch_assoc($res2)["total"];
+/* Tickets */
+$ticketsAbiertos   = contar($conexion, "SELECT COUNT(*) AS total FROM tickets WHERE estado = 'Abierto'");
+$ticketsPendientes = contar($conexion, "SELECT COUNT(*) AS total FROM tickets WHERE estado = 'Pendiente'");
+$ticketsCerrados   = contar($conexion, "SELECT COUNT(*) AS total FROM tickets WHERE estado = 'Cerrado'");
 
-/* BAJAS */
-$sql3 = "SELECT COUNT(*) as total FROM computadoras WHERE estado='Baja'";
-$res3 = mysqli_query($conexion,$sql3);
-$bajas = mysqli_fetch_assoc($res3)["total"];
+/* Usuarios y laboratorios */
+$totalUsuarios = contar($conexion, "SELECT COUNT(*) AS total FROM usuarios");
+$profesores    = contar($conexion, "SELECT COUNT(*) AS total FROM usuarios WHERE id_rol = 2");
+$ematp         = contar($conexion, "SELECT COUNT(*) AS total FROM usuarios WHERE id_rol = 3");
+$laboratorios  = contar($conexion, "SELECT COUNT(*) AS total FROM laboratorios");
 
-/* TICKETS ABIERTOS */
-$sql4 = "SELECT COUNT(*) as total FROM tickets WHERE estado!='Cerrado'";
-$res4 = mysqli_query($conexion,$sql4);
-$tickets = mysqli_fetch_assoc($res4)["total"];
-/* TOTAL USUARIOS */
-$sql5 = "SELECT COUNT(*) as total FROM usuarios";
-$res5 = mysqli_query($conexion,$sql5);
-$totalUsuarios = mysqli_fetch_assoc($res5)["total"];
+$titulo = "Resumen";
+$menu   = "admin";
 
-/* PROFESORES (rol = 2) */
-$sql6 = "SELECT COUNT(*) as total FROM usuarios WHERE id_rol = 2";
-$res6 = mysqli_query($conexion,$sql6);
-$profesores = mysqli_fetch_assoc($res6)["total"];
-
-/* EMATP (rol = 3) */
-$sql7 = "SELECT COUNT(*) as total FROM usuarios WHERE id_rol = 3";
-$res7 = mysqli_query($conexion,$sql7);
-$ematp = mysqli_fetch_assoc($res7)["total"];
-
-/* LABORATORIOS */
-$sql8 = "SELECT COUNT(*) as total FROM laboratorios";
-$res8 = mysqli_query($conexion,$sql8);
-$laboratorios = mysqli_fetch_assoc($res8)["total"];
-
-/* TICKETS CERRADOS */
-$sql9 = "SELECT COUNT(*) as total FROM tickets WHERE estado='Cerrado'";
-$res9 = mysqli_query($conexion,$sql9);
-$ticketsCerrados = mysqli_fetch_assoc($res9)["total"];
-
-/* TICKETS PENDIENTES */
-$sql10 = "SELECT COUNT(*) as total FROM tickets WHERE estado='Pendiente'";
-$res10 = mysqli_query($conexion,$sql10);
-$ticketsPendientes = mysqli_fetch_assoc($res10)["total"];
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../css/estilos.css">
-    <meta charset="UTF-8">
-    <title>Dashboard Admin</title>
-</head>
-<body>
+<div class="encabezado-pagina">
+    <h1>Resumen general</h1>
+    <p>Un vistazo rápido al estado del sistema.</p>
+</div>
 
-<div class="contenedor">
-
-<?php include("../includes/menu_admin.php"); ?>
-
-<h1>Dashboard Administrativo</h1>
-
-<p>Bienvenido <?php echo e($_SESSION["nombre"]); ?></p>
-
-<hr>
+<h2 style="margin-top:0;">Computadoras</h2>
 
 <div class="cards">
-
-<div class="card azul">
-
-<h3>💻 Total Computadoras</h3>
-
-<h1><?php echo $totalPC; ?></h1>
-
+    <div class="card azul">
+        <h3>Total de computadoras</h3>
+        <div class="numero"><?php echo $totalPC; ?></div>
+    </div>
+    <div class="card verde">
+        <h3>Operativas</h3>
+        <div class="numero"><?php echo $activas; ?></div>
+    </div>
+    <div class="card rojo">
+        <h3>Fuera de servicio</h3>
+        <div class="numero"><?php echo $bajas; ?></div>
+    </div>
 </div>
 
-<div class="card verde">
+<h2>Tickets</h2>
 
-<h3>🟢 Activas</h3>
-
-<h1><?php echo $activas; ?></h1>
-
+<div class="cards">
+    <div class="card verde">
+        <h3>Abiertos</h3>
+        <div class="numero"><?php echo $ticketsAbiertos; ?></div>
+    </div>
+    <div class="card naranja">
+        <h3>Pendientes</h3>
+        <div class="numero"><?php echo $ticketsPendientes; ?></div>
+    </div>
+    <div class="card gris">
+        <h3>Cerrados</h3>
+        <div class="numero"><?php echo $ticketsCerrados; ?></div>
+    </div>
 </div>
 
-<div class="card rojo">
+<h2>Usuarios y laboratorios</h2>
 
-<h3>🔴 Fuera de Servicio</h3>
-
-<h1><?php echo $bajas; ?></h1>
-
+<div class="cards">
+    <div class="card azul">
+        <h3>Usuarios</h3>
+        <div class="numero"><?php echo $totalUsuarios; ?></div>
+    </div>
+    <div class="card azul">
+        <h3>Profesores</h3>
+        <div class="numero"><?php echo $profesores; ?></div>
+    </div>
+    <div class="card azul">
+        <h3>EMATP</h3>
+        <div class="numero"><?php echo $ematp; ?></div>
+    </div>
+    <div class="card azul">
+        <h3>Laboratorios</h3>
+        <div class="numero"><?php echo $laboratorios; ?></div>
+    </div>
 </div>
 
-<div class="card naranja">
-
-<h3>🎫 Tickets Abiertos</h3>
-
-<h1><?php echo $tickets; ?></h1>
-
+<div class="barra-acciones" style="margin-top:24px;">
+    <a class="btn btn-secundario" href="inicio.php">← Volver al inicio</a>
 </div>
 
-<div class="card gris">
-
-<h3>👥 Usuarios</h3>
-
-<h1><?php echo $totalUsuarios; ?></h1>
-
-</div>
-
-<div class="card azul">
-
-<h3>👨‍🏫 Profesores</h3>
-
-<h1><?php echo $profesores; ?></h1>
-
-</div>
-
-<div class="card verde">
-
-<h3>🛠 EMATP</h3>
-
-<h1><?php echo $ematp; ?></h1>
-
-</div>
-
-<div class="card naranja">
-
-<h3>🧪 Laboratorios</h3>
-
-<h1><?php echo $laboratorios; ?></h1>
-
-</div>
-
-<div class="card rojo">
-
-<h3>✅ Tickets Cerrados</h3>
-
-<h1><?php echo $ticketsCerrados; ?></h1>
-
-</div>
-
-<div class="card gris">
-
-<h3>⏳ Tickets Pendientes</h3>
-
-<h1><?php echo $ticketsPendientes; ?></h1>
-
-</div>
-
-</div>
-<hr>
-
-<a href="inicio.php">Volver al panel</a>
-</div>      
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

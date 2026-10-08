@@ -1,24 +1,36 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 3) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once "../conexion/conexion.php";
+
+$titulo = "Panel EMATP";
+$menu   = "ematp";
+
+include "../includes/cabecera.php";
 ?>
-<?php include("../includes/menu_ematp.php"); ?>
-<h1>Panel EMATP</h1>
 
-<p>Bienvenido <?php echo htmlspecialchars($_SESSION["nombre"]); ?></p>
+<div class="encabezado-pagina">
+    <h1>Bienvenido/a, <?php echo e($_SESSION["nombre"]); ?></h1>
+    <p>¿Qué desea hacer?</p>
+</div>
 
-<hr>
+<div class="grilla-menu">
 
- <ul>
+    <a class="opcion-grande" href="tickets.php">
+        <strong>Gestionar tickets</strong>
+        <span>Ver los avisos de los profesores y cambiar su estado.</span>
+    </a>
 
-<li><a href="tickets.php">Gestionar Tickets</a></li>
+    <a class="opcion-grande" href="computadoras.php">
+        <strong>Computadoras</strong>
+        <span>Ver y editar los componentes de cada computadora.</span>
+    </a>
 
-<li><a href="computadoras.php">Computadoras</a></li>
+</div>
 
-<li><a href="../logout.php">Cerrar Sesión</a></li>
-
-</ul>
+<?php include "../includes/pie.php"; ?>

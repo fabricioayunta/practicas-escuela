@@ -1,15 +1,14 @@
-<div class="menu">
+<header class="menu">
+    <div class="menu-interior">
 
-<h2 style="color:white; margin-right:40px;">
-💻 Mesa de Ayuda Informática
-</h2>
+        <span class="menu-titulo">Mesa de Ayuda Informática</span>
 
-<a href="../inicio.php">🏠 Inicio</a>
+        <nav class="menu-enlaces">
+            <a class="<?php echo activo("inicio.php"); ?>" href="inicio.php">Inicio</a>
+            <a class="<?php echo activo("crear_ticket.php"); ?>" href="crear_ticket.php">Crear ticket</a>
+            <a class="<?php echo activo(["mis_tickets.php", "editar_ticket.php"]); ?>" href="mis_tickets.php">Mis tickets</a>
+            <a class="menu-salir" href="../logout.php">Cerrar sesión</a>
+        </nav>
 
-<a href="crear_ticket.php">➕ Crear Ticket</a>
-
-<a href="mis_tickets.php">🎫 Mis Tickets</a>
-
-<a href="../logout.php">🚪 Cerrar sesión</a>
-
-</div>
+    </div>
+</header>
