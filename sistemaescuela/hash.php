@@ -1,4 +1,3 @@
-```php
 <?php
 
 $hash = '$2y$10$araNhp1OYezveFwEdD1v2eb.LIzqqFGyYIygv6FfytFwzsmBAB31u';
