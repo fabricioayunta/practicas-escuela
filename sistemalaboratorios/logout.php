@@ -2,14 +2,13 @@
 
 session_start();
 
-// Cierra solo la sesión de este módulo
-unset($_SESSION["id_usuario"]);
-unset($_SESSION["nombre"]);
-unset($_SESSION["apellido"]);
-unset($_SESSION["email"]);
-unset($_SESSION["id_rol"]);
+// Elimina todas las variables de sesión
+session_unset();
 
-// Vuelve al login del módulo
+// Destruye la sesión
+session_destroy();
+
+// Vuelve al login
 header("Location: index.php");
 exit();
 ?>

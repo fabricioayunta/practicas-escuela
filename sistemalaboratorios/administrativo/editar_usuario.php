@@ -1,76 +1,115 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-$id = $_GET["id"];
-
-$sql = "SELECT * FROM usuarios WHERE id_usuario = $id";
-$resultado = mysqli_query($conexion, $sql);
-
-$usuario = mysqli_fetch_assoc($resultado);
-
-// Módulos disponibles
-$modulos = mysqli_query($conexion,"SELECT * FROM modulos ORDER BY id_modulo");
-
-// Módulos que ya tiene asignados
-$asignados = array();
-
-$resAsignados = mysqli_query($conexion,"SELECT id_modulo FROM usuarios_modulos WHERE id_usuario = $id");
-
-while($fila = mysqli_fetch_assoc($resAsignados)){
-
-    $asignados[] = $fila["id_modulo"];
-
+/* Token de seguridad del formulario */
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
 }
+
+$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
+if ($id === false || $id === null || $id <= 0) {
+    mostrar_error("ID de usuario inválido.", "usuarios.php");
+}
+
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT id_usuario, nombre, apellido, email, id_rol
+     FROM usuarios
+     WHERE id_usuario = ?
+     LIMIT 1"
+);
+if (!$stmt) {
+    error_log(mysqli_error($conexion));
+    mostrar_error("No se pudo cargar el usuario.", "usuarios.php");
+}
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+if (!mysqli_stmt_execute($stmt)) {
+    error_log(mysqli_stmt_error($stmt));
+    mysqli_stmt_close($stmt);
+    mostrar_error("No se pudo cargar el usuario.", "usuarios.php");
+}
+
+$usuario = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+
+if (!$usuario) {
+    mostrar_error("No se encontró el usuario.", "usuarios.php");
+}
+
+$roles = [1 => "Administrativo", 2 => "Profesor", 3 => "EMATP"];
+
+$titulo = "Editar usuario";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
-<?php include("../includes/menu_admin.php"); ?>
-<h1>Editar Usuario</h1>
 
-<form action="actualizar_usuario.php" method="POST">
+<div class="encabezado-pagina">
+    <h1>Editar usuario</h1>
+</div>
 
-    <input type="hidden" name="id_usuario" value="<?php echo $usuario["id_usuario"]; ?>">
+<div class="tarjeta">
 
-    <label>Nombre:</label><br>
-    <input type="text" name="nombre" value="<?php echo $usuario["nombre"]; ?>" required><br><br>
+    <form class="formulario" action="actualizar_usuario.php" method="POST">
 
-    <label>Apellido:</label><br>
-    <input type="text" name="apellido" value="<?php echo $usuario["apellido"]; ?>" required><br><br>
+        <input type="hidden" name="id_usuario" value="<?php echo (int)$usuario["id_usuario"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo e($_SESSION["csrf_token"]); ?>">
 
-    <label>Email:</label><br>
-    <input type="email" name="email" value="<?php echo $usuario["email"]; ?>" required><br><br>
+        <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" maxlength="50"
+                   value="<?php echo e($usuario["nombre"]); ?>"
+                   pattern="[^&quot;'´]+" title="No se permiten comillas en el nombre."
+                   required>
+        </div>
 
-    <label>Contraseña:</label><br>
-    <input type="text" name="contrasena" value="<?php echo $usuario["contrasena"]; ?>" required><br><br>
+        <div class="campo">
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" name="apellido" maxlength="50"
+                   value="<?php echo e($usuario["apellido"]); ?>"
+                   pattern="[^&quot;'´]+" title="No se permiten comillas en el apellido."
+                   required>
+        </div>
 
-    <label>Rol:</label><br>
-    <select name="id_rol">
-        <option value="1" <?php if($usuario["id_rol"]==1) echo "selected"; ?>>Administrativo</option>
-        <option value="2" <?php if($usuario["id_rol"]==2) echo "selected"; ?>>Profesor</option>
-        <option value="3" <?php if($usuario["id_rol"]==3) echo "selected"; ?>>EMATP</option>
-    </select><br><br>
+        <div class="campo">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" maxlength="100"
+                   value="<?php echo e($usuario["email"]); ?>" required>
+        </div>
 
-    <label>Módulos a los que accede:</label><br>
+        <div class="campo">
+            <label for="contrasena">Nueva contraseña</label>
+            <input type="password" id="contrasena" name="contrasena" minlength="8" maxlength="255"
+                   autocomplete="new-password">
+            <small>Déjela vacía si quiere mantener la contraseña actual.</small>
+        </div>
 
-    <?php while($m = mysqli_fetch_assoc($modulos)){ ?>
+        <div class="campo">
+            <label for="id_rol">Rol</label>
+            <select id="id_rol" name="id_rol" required>
+                <?php foreach ($roles as $numero => $nombreRol) { ?>
+                    <option value="<?php echo $numero; ?>" <?php echo (int)$usuario["id_rol"] === $numero ? "selected" : ""; ?>>
+                        <?php echo e($nombreRol); ?>
+                    </option>
+                <?php } ?>
+            </select>
+        </div>
 
-    <input type="checkbox" name="modulos[]" value="<?php echo $m["id_modulo"]; ?>"
-    <?php if(in_array($m["id_modulo"], $asignados)) echo "checked"; ?>>
-    <?php echo $m["nombre"]; ?>
-    <br>
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar cambios</button>
+            <a class="btn btn-secundario" href="usuarios.php">Cancelar</a>
+        </div>
 
-    <?php } ?>
+    </form>
 
-    <br>
+</div>
 
-    <button type="submit">Actualizar</button>
-
-</form>
-
-<br>
-<a href="usuarios.php">Volver</a>
+<?php include "../includes/pie.php"; ?>

@@ -1,111 +1,92 @@
 <?php
-
 session_start();
 
-include("conexion/conexion.php");
+require_once __DIR__ . "/conexion/conexion.php";
 
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: index.php");
+    exit();
+}
 
-/* =========================
-   RECIBIR DATOS DEL FORMULARIO
-========================= */
+$email      = trim($_POST["email"] ?? "");
+$contrasena = $_POST["password"] ?? "";
 
-$email = trim($_POST["email"] ?? "");
-$contrasena = trim($_POST["password"] ?? "");
+if ($email === "" || $contrasena === "") {
+    header("Location: index.php?error=campos");
+    exit();
+}
 
-
-/* =========================
-   VALIDAR DATOS
-========================= */
-
-if ($email == "" || $contrasena == "") {
-    header("Location: /practicas-escuela/sistemalaboratorios/administrativo/dashboard.php");
+if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    header("Location: index.php?error=email");
     exit();
 }
 
 
-/* =========================
-   SANITIZAR EMAIL
-========================= */
+/* Buscar usuario */
 
-$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT id_usuario, nombre, apellido, email, contrasena, id_rol
+     FROM usuarios
+     WHERE email = ?
+     LIMIT 1"
+);
 
-
-/* =========================
-   CONSULTAR USUARIO
-========================= */
-
-$sql = "SELECT *
-        FROM usuarios
-        WHERE email = ?
-        LIMIT 1";
-
-$stmt = mysqli_prepare($conexion, $sql);
+if (!$stmt) {
+    mostrar_error("No se pudo consultar la base de datos. Intente nuevamente.", "index.php");
+}
 
 mysqli_stmt_bind_param($stmt, "s", $email);
-
 mysqli_stmt_execute($stmt);
 
 $resultado = mysqli_stmt_get_result($stmt);
+$usuario   = mysqli_fetch_assoc($resultado);
+
+mysqli_stmt_close($stmt);
 
 
-/* =========================
-   COMPROBAR USUARIO
-========================= */
+/*
+   Mismo mensaje si el usuario no existe o si la contraseña es incorrecta
+   (así no se revela qué emails están registrados).
+*/
 
-if (mysqli_num_rows($resultado) == 1) {
-
-    $usuario = mysqli_fetch_assoc($resultado);
-
-
-    /* =========================
-       COMPROBAR CONTRASEÑA
-    ========================= */
-
-    if ($contrasena === $usuario["contrasena"]) {
-
-        /* =========================
-           COMPROBAR ACCESO AL MÓDULO
-        ========================= */
-
-        $sqlAcceso = "SELECT id_modulo
-                      FROM usuarios_modulos
-                      WHERE id_usuario = '".$usuario["id_usuario"]."'
-                      AND id_modulo = 1";
-
-        $resAcceso = mysqli_query($conexion, $sqlAcceso);
-
-        if (mysqli_num_rows($resAcceso) == 1) {
-
-            /* Crear sesión de este módulo */
-
-            $_SESSION["id_usuario"] = $usuario["id_usuario"];
-
-            $_SESSION["nombre"] = $usuario["nombre"];
-
-            $_SESSION["apellido"] = $usuario["apellido"];
-
-            $_SESSION["email"] = $usuario["email"];
-
-            $_SESSION["id_rol"] = $usuario["id_rol"];
-
-
-            /* Ir al inicio del módulo */
-
-            header("Location: /practicas-escuela/sistemalaboratorios/administrativo/dashboard.php");
-            exit();
-
-        }
-
-    }
-
+if (!$usuario || !password_verify($contrasena, $usuario["contrasena"])) {
+    header("Location: index.php?error=datos");
+    exit();
 }
 
 
-/* =========================
-   LOGIN INCORRECTO
-========================= */
+/* Crear sesión */
 
-header("Location: index.php?error=1");
+session_regenerate_id(true);
+
+$_SESSION["id_usuario"] = (int)$usuario["id_usuario"];
+$_SESSION["nombre"]     = $usuario["nombre"];
+$_SESSION["apellido"]   = $usuario["apellido"];
+$_SESSION["email"]      = $usuario["email"];
+$_SESSION["id_rol"]     = (int)$usuario["id_rol"];
+
+
+/* Redirección según el rol */
+
+switch ($_SESSION["id_rol"]) {
+
+    case 1:
+        header("Location: administrativo/inicio.php");
+        break;
+
+    case 2:
+        header("Location: profesor/inicio.php");
+        break;
+
+    case 3:
+        header("Location: ematp/inicio.php");
+        break;
+
+    default:
+        session_unset();
+        session_destroy();
+        header("Location: index.php?error=rol");
+}
+
 exit();
-
-?>

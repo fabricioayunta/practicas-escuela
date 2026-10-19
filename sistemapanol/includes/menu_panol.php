@@ -1,17 +1,16 @@
-<div class="menu">
+<?php require_once __DIR__ . "/../../sistemalaboratorios/includes/funciones.php"; ?>
+<header class="menu">
+    <div class="menu-interior">
 
-<h2 style="color:white; margin-right:40px;">
-🧰 Pañol
-</h2>
+        <span class="menu-titulo">🧰 Pañol</span>
 
-<a href="inicio.php">🏠 Inicio</a>
+        <nav class="menu-enlaces">
+            <a class="<?php echo activo("inicio.php"); ?>" href="inicio.php">Inicio</a>
+            <a class="<?php echo activo(["articulos.php", "crear_articulo.php", "editar_articulo.php"]); ?>" href="articulos.php">Artículos</a>
+            <a class="<?php echo activo(["prestamos.php", "crear_prestamo.php"]); ?>" href="prestamos.php">Préstamos</a>
+            <a href="../index.php">Cambiar de módulo</a>
+            <a class="menu-salir" href="logout.php">Cerrar sesión</a>
+        </nav>
 
-<a href="articulos.php">📦 Artículos</a>
-
-<a href="prestamos.php">🔄 Préstamos</a>
-
-<a href="../index.php">🔁 Cambiar de Módulo</a>
-
-<a href="logout.php">🚪 Cerrar sesión</a>
-
-</div>
+    </div>
+</header>

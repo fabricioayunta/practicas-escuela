@@ -1,39 +1,36 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 2) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 2) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once "../conexion/conexion.php";
+
+$titulo = "Panel del profesor";
+$menu   = "profesor";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Panel Profesor</title>
+<div class="encabezado-pagina">
+    <h1>Bienvenido/a, <?php echo e($_SESSION["nombre"]); ?></h1>
+    <p>¿Qué desea hacer?</p>
+</div>
 
-<link rel="stylesheet" href="../css/estilos.css">
+<div class="grilla-menu">
 
-</head>
+    <a class="opcion-grande" href="crear_ticket.php">
+        <strong>Crear un ticket</strong>
+        <span>Avisar que una computadora tiene un problema.</span>
+    </a>
 
-<body>
-<?php include("../includes/menu_profesor.php"); ?>
-<h1>Panel Profesor</h1>
+    <a class="opcion-grande" href="mis_tickets.php">
+        <strong>Mis tickets</strong>
+        <span>Ver los avisos que envié y cómo van.</span>
+    </a>
 
-<p>Bienvenido <?php echo $_SESSION["nombre"]; ?></p>
+</div>
 
-<hr>
-
-<ul>
-
-<li><a href="crear_ticket.php">Crear Ticket</a></li>
-
-<li><a href="mis_tickets.php">Mis Tickets</a></li>
-
-<li><a href="../logout.php">Cerrar Sesión</a></li>
-
-</ul>
-
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

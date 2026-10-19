@@ -1,179 +1,92 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 3) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 3) {
     header("Location: ../index.php");
     exit();
 }
 
-include("../conexion/conexion.php");
+require_once "../conexion/conexion.php";
 
-$id = $_GET["id"];
+$id = (int)($_GET["id"] ?? 0);
 
-// Obtener la computadora
-$sqlPC = "SELECT
-            computadoras.*,
-            laboratorios.nombre AS laboratorio
-          FROM computadoras
-          INNER JOIN laboratorios
-          ON computadoras.id_laboratorio = laboratorios.id_laboratorio
-          WHERE computadoras.id_computadora = '$id'";
+/* Computadora */
 
-$resultadoPC = mysqli_query($conexion, $sqlPC);
-$pc = mysqli_fetch_assoc($resultadoPC);
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT
+        computadoras.*,
+        laboratorios.nombre AS laboratorio
+     FROM computadoras
+     INNER JOIN laboratorios
+        ON computadoras.id_laboratorio = laboratorios.id_laboratorio
+     WHERE computadoras.id_computadora = ?"
+);
 
-// Obtener componentes
-$sql = "SELECT * FROM componentes
-        WHERE id_computadora = '$id'";
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$pc = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
 
-$resultado = mysqli_query($conexion, $sql);
-$componentes = mysqli_fetch_assoc($resultado);
+if (!$pc) {
+    mostrar_error("No se encontró la computadora.", "computadoras.php");
+}
+
+/* Componentes actuales (si todavía no hay ninguno, los campos quedan vacíos) */
+
+$stmt = mysqli_prepare($conexion, "SELECT * FROM componentes WHERE id_computadora = ?");
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$componentes = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt)) ?: [];
+mysqli_stmt_close($stmt);
+
+$campos = [
+    "mother"      => "Mother",
+    "procesador"  => "Procesador",
+    "memoria_ram" => "Memoria RAM",
+    "disco"       => "Disco",
+    "monitor"     => "Monitor",
+    "teclado"     => "Teclado",
+    "mouse"       => "Mouse",
+];
+
+$titulo = "Editar componentes";
+$menu   = "ematp";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
+<div class="encabezado-pagina">
+    <h1>Editar componentes</h1>
+    <p><?php echo e($pc["laboratorio"]); ?> · PC <?php echo e($pc["numero_pc"]); ?></p>
+</div>
 
-<head>
-<link rel="stylesheet" href="../css/estilos.css">
-<meta charset="UTF-8">
+<div class="tarjeta">
 
-<title>Editar Componentes</title>
+    <form class="formulario" action="guardar_componentes.php" method="POST">
 
-</head>
+        <input type="hidden" name="id_computadora" value="<?php echo (int)$id; ?>">
 
-<body>
-<?php include("../includes/menu_ematp.php"); ?>
-<h1>Editar Componentes</h1>
+        <?php foreach ($campos as $campo => $etiqueta) { ?>
+            <div class="campo">
+                <label for="<?php echo e($campo); ?>"><?php echo e($etiqueta); ?></label>
+                <input type="text" id="<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
+                       maxlength="100" value="<?php echo e($componentes[$campo] ?? ""); ?>">
+            </div>
+        <?php } ?>
 
-<p>
+        <div class="campo">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" name="observaciones" maxlength="255"><?php echo e($componentes["observaciones"] ?? ""); ?></textarea>
+        </div>
 
-<strong>Laboratorio:</strong>
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar componentes</button>
+            <a class="btn btn-secundario" href="ver_computadora.php?id=<?php echo (int)$id; ?>">Cancelar</a>
+        </div>
 
-<?php echo $pc["laboratorio"]; ?>
+    </form>
 
-</p>
+</div>
 
-<p>
-
-<strong>PC:</strong>
-
-<?php echo $pc["numero_pc"]; ?>
-
-</p>
-
-<hr>
-
-<form action="guardar_componentes.php" method="POST">
-
-<input
-type="hidden"
-name="id_computadora"
-value="<?php echo $id; ?>">
-
-<label>Mother</label>
-
-<br>
-
-<input
-type="text"
-name="mother"
-value="<?php echo $componentes["mother"]; ?>">
-
-<br><br>
-
-<label>Procesador</label>
-
-<br>
-
-<input
-type="text"
-name="procesador"
-value="<?php echo $componentes["procesador"]; ?>">
-
-<br><br>
-
-<label>Memoria RAM</label>
-
-<br>
-
-<input
-type="text"
-name="memoria_ram"
-value="<?php echo $componentes["memoria_ram"]; ?>">
-
-<br><br>
-
-<label>Disco</label>
-
-<br>
-
-<input
-type="text"
-name="disco"
-value="<?php echo $componentes["disco"]; ?>">
-
-<br><br>
-
-<label>Monitor</label>
-
-<br>
-
-<input
-type="text"
-name="monitor"
-value="<?php echo $componentes["monitor"]; ?>">
-
-<br><br>
-
-<label>Teclado</label>
-
-<br>
-
-<input
-type="text"
-name="teclado"
-value="<?php echo $componentes["teclado"]; ?>">
-
-<br><br>
-
-<label>Mouse</label>
-
-<br>
-
-<input
-type="text"
-name="mouse"
-value="<?php echo $componentes["mouse"]; ?>">
-
-<br><br>
-
-<label>Observaciones</label>
-
-<br>
-
-<textarea
-name="observaciones"
-rows="5"
-cols="60"><?php echo $componentes["observaciones"]; ?></textarea>
-
-<br><br>
-
-<button type="submit">
-
-Guardar Componentes
-
-</button>
-
-</form>
-
-<br>
-
-<a href="ver_computadora.php?id=<?php echo $id; ?>">
-
-← Volver
-
-</a>
-
-</body>
-
-</html>
+<?php include "../includes/pie.php"; ?>

@@ -13,9 +13,9 @@
 
 </head>
 
-<body>
+<body class="sin-menu">
 
-<div class="contenedor">
+<main class="contenedor">
 
     <h1>Sistema de Gestión Escolar</h1>
 
@@ -37,7 +37,7 @@
 
             <br>
 
-            <a href="sistemalaboratorios/index.php" class="btn btn-azul">
+            <a href="sistemalaboratorios/index.php" class="btn btn-primario">
                 Iniciar Sesión
             </a>
 
@@ -54,7 +54,7 @@
 
             <br>
 
-            <a href="sistemapanolinformatico/index.php" class="btn btn-verde">
+            <a href="sistemapanolinformatico/index.php" class="btn btn-exito">
                 Iniciar Sesión
             </a>
 
@@ -71,7 +71,7 @@
 
             <br>
 
-            <a href="sistemapanol/index.php" class="btn btn-azul">
+            <a href="sistemapanol/index.php" class="btn btn-primario">
                 Iniciar Sesión
             </a>
 
@@ -79,7 +79,7 @@
 
     </div>
 
-</div>
+</main>
 
 </body>
 

@@ -3,13 +3,16 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-08-2026 a las 21:24:39
+-- Tiempo de generación: 15-09-2026 a las 21:58:17
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+CREATE DATABASE IF NOT EXISTS `inventariocomputadorasA` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `inventariocomputadorasA`;
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -18,7 +21,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `inventariocomputadoras`
+-- Base de datos: `inventariocomputadorasA`
 --
 
 -- --------------------------------------------------------
@@ -46,7 +49,7 @@ CREATE TABLE `componentes` (
 
 INSERT INTO `componentes` (`id_componente`, `id_computadora`, `mother`, `procesador`, `memoria_ram`, `disco`, `monitor`, `teclado`, `mouse`, `observaciones`) VALUES
 (1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, 2, 'ASUS H610', 'Intel i5-12400', '16 GB', 'SSD  1T', ' Samsung 22', 'Logitech K120', 'Genius DX-120', ' Equipo actualizado.\r\n'),
+(2, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (5, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -124,7 +127,17 @@ INSERT INTO `componentes` (`id_componente`, `id_computadora`, `mother`, `procesa
 (77, 77, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (78, 78, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (79, 79, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(80, 80, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(80, 80, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(81, 81, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(82, 82, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(83, 83, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(84, 84, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(85, 85, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(86, 86, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(87, 87, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(88, 88, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(89, 89, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(90, 90, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -160,70 +173,80 @@ INSERT INTO `computadoras` (`id_computadora`, `numero_pc`, `id_laboratorio`, `es
 (14, 14, 1, 'Alta'),
 (15, 15, 1, 'Alta'),
 (16, 16, 1, 'Alta'),
-(17, 1, 2, 'Alta'),
-(18, 2, 2, 'Alta'),
-(19, 3, 2, 'Alta'),
-(20, 4, 2, 'Alta'),
-(21, 5, 2, 'Alta'),
-(22, 6, 2, 'Alta'),
-(23, 7, 2, 'Alta'),
-(24, 8, 2, 'Alta'),
-(25, 9, 2, 'Alta'),
-(26, 10, 2, 'Alta'),
-(27, 11, 2, 'Alta'),
-(28, 12, 2, 'Alta'),
-(29, 13, 2, 'Alta'),
-(30, 14, 2, 'Alta'),
-(31, 15, 2, 'Alta'),
-(32, 16, 2, 'Alta'),
-(33, 1, 3, 'Alta'),
-(34, 2, 3, 'Alta'),
-(35, 3, 3, 'Alta'),
-(36, 4, 3, 'Alta'),
-(37, 5, 3, 'Alta'),
-(38, 6, 3, 'Alta'),
-(39, 7, 3, 'Alta'),
-(40, 8, 3, 'Alta'),
-(41, 9, 3, 'Alta'),
-(42, 10, 3, 'Alta'),
-(43, 11, 3, 'Alta'),
-(44, 12, 3, 'Alta'),
-(45, 13, 3, 'Alta'),
-(46, 14, 3, 'Alta'),
-(47, 15, 3, 'Alta'),
-(48, 16, 3, 'Alta'),
-(49, 1, 4, 'Alta'),
-(50, 2, 4, 'Alta'),
-(51, 3, 4, 'Alta'),
-(52, 4, 4, 'Alta'),
-(53, 5, 4, 'Alta'),
-(54, 6, 4, 'Alta'),
-(55, 7, 4, 'Alta'),
-(56, 8, 4, 'Alta'),
-(57, 9, 4, 'Alta'),
-(58, 10, 4, 'Alta'),
-(59, 11, 4, 'Alta'),
-(60, 12, 4, 'Alta'),
-(61, 13, 4, 'Alta'),
-(62, 14, 4, 'Alta'),
-(63, 15, 4, 'Alta'),
-(64, 16, 4, 'Alta'),
-(65, 1, 5, 'Alta'),
-(66, 2, 5, 'Alta'),
-(67, 3, 5, 'Alta'),
-(68, 4, 5, 'Alta'),
-(69, 5, 5, 'Alta'),
-(70, 6, 5, 'Alta'),
-(71, 7, 5, 'Alta'),
-(72, 8, 5, 'Alta'),
-(73, 9, 5, 'Alta'),
-(74, 10, 5, 'Alta'),
-(75, 11, 5, 'Alta'),
-(76, 12, 5, 'Alta'),
-(77, 13, 5, 'Alta'),
-(78, 14, 5, 'Alta'),
-(79, 15, 5, 'Alta'),
-(80, 16, 5, 'Alta');
+(17, 17, 1, 'Alta'),
+(18, 18, 1, 'Alta'),
+(19, 1, 2, 'Alta'),
+(20, 2, 2, 'Alta'),
+(21, 3, 2, 'Alta'),
+(22, 4, 2, 'Alta'),
+(23, 5, 2, 'Alta'),
+(24, 6, 2, 'Alta'),
+(25, 7, 2, 'Alta'),
+(26, 8, 2, 'Alta'),
+(27, 9, 2, 'Alta'),
+(28, 10, 2, 'Alta'),
+(29, 11, 2, 'Alta'),
+(30, 12, 2, 'Alta'),
+(31, 13, 2, 'Alta'),
+(32, 14, 2, 'Alta'),
+(33, 15, 2, 'Alta'),
+(34, 16, 2, 'Alta'),
+(35, 17, 2, 'Alta'),
+(36, 18, 2, 'Alta'),
+(37, 1, 3, 'Alta'),
+(38, 2, 3, 'Alta'),
+(39, 3, 3, 'Alta'),
+(40, 4, 3, 'Alta'),
+(41, 5, 3, 'Alta'),
+(42, 6, 3, 'Alta'),
+(43, 7, 3, 'Alta'),
+(44, 8, 3, 'Alta'),
+(45, 9, 3, 'Alta'),
+(46, 10, 3, 'Alta'),
+(47, 11, 3, 'Alta'),
+(48, 12, 3, 'Alta'),
+(49, 13, 3, 'Alta'),
+(50, 14, 3, 'Alta'),
+(51, 15, 3, 'Alta'),
+(52, 16, 3, 'Alta'),
+(53, 17, 3, 'Alta'),
+(54, 18, 3, 'Alta'),
+(55, 1, 4, 'Alta'),
+(56, 2, 4, 'Alta'),
+(57, 3, 4, 'Alta'),
+(58, 4, 4, 'Alta'),
+(59, 5, 4, 'Alta'),
+(60, 6, 4, 'Alta'),
+(61, 7, 4, 'Alta'),
+(62, 8, 4, 'Alta'),
+(63, 9, 4, 'Alta'),
+(64, 10, 4, 'Alta'),
+(65, 11, 4, 'Alta'),
+(66, 12, 4, 'Alta'),
+(67, 13, 4, 'Alta'),
+(68, 14, 4, 'Alta'),
+(69, 15, 4, 'Alta'),
+(70, 16, 4, 'Alta'),
+(71, 17, 4, 'Alta'),
+(72, 18, 4, 'Alta'),
+(73, 1, 5, 'Alta'),
+(74, 2, 5, 'Alta'),
+(75, 3, 5, 'Alta'),
+(76, 4, 5, 'Alta'),
+(77, 5, 5, 'Alta'),
+(78, 6, 5, 'Alta'),
+(79, 7, 5, 'Alta'),
+(80, 8, 5, 'Alta'),
+(81, 9, 5, 'Alta'),
+(82, 10, 5, 'Alta'),
+(83, 11, 5, 'Alta'),
+(84, 12, 5, 'Alta'),
+(85, 13, 5, 'Alta'),
+(86, 14, 5, 'Alta'),
+(87, 15, 5, 'Alta'),
+(88, 16, 5, 'Alta'),
+(89, 17, 5, 'Alta'),
+(90, 18, 5, 'Alta');
 
 -- --------------------------------------------------------
 
@@ -240,17 +263,6 @@ CREATE TABLE `historialticket` (
   `id_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `historialticket`
---
-
-INSERT INTO `historialticket` (`id_historial`, `id_ticket`, `estado`, `fecha`, `observacion`, `id_usuario`) VALUES
-(1, 1, 'Pendiente', '2026-06-29 14:56:49', 'wow hemos observado que no funciona. pero no se comno sew arregla xd', 2),
-(2, 1, 'Cerrado', '2026-06-29 14:57:19', 'listo\r\n', 2),
-(3, 2, 'Pendiente', '2026-07-03 14:50:00', 'me ', 2),
-(4, 3, 'Pendiente', '2026-08-07 15:50:06', 'visto', 2),
-(5, 9, 'Pendiente', '2026-08-10 15:50:41', 'ererere', 2);
-
 -- --------------------------------------------------------
 
 --
@@ -262,48 +274,8 @@ CREATE TABLE `historial_computadoras` (
   `id_computadora` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `accion` varchar(255) NOT NULL,
-  `fecha` datetime NOT NULL DEFAULT current_timestamp()
+  `fecha` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `historial_computadoras`
---
-
-INSERT INTO `historial_computadoras` (`id_historial`, `id_computadora`, `id_usuario`, `accion`, `fecha`) VALUES
-(1, 2, 2, 'Modificó los componentes de la computadora.', '2026-07-01 14:47:07'),
-(2, 2, 2, 'Disco: SSD 480 GB → SSD  1T\n', '2026-07-01 14:52:32'),
-(3, 2, 2, 'La computadora fue dada de baja.\nMotivo: sss', '2026-07-01 16:12:07'),
-(4, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:12:10'),
-(5, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:12:12'),
-(6, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:12:13'),
-(7, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:19:51'),
-(8, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:24:54'),
-(9, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:24:58'),
-(10, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:34:29'),
-(11, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:34:30'),
-(12, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:34:30'),
-(13, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:34:30'),
-(14, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:30'),
-(15, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:31'),
-(16, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:31'),
-(17, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:31'),
-(18, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:32'),
-(19, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:32'),
-(20, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:33'),
-(21, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:33'),
-(22, 3, 2, 'La computadora volvió a estar operativa.', '2026-07-01 16:39:49'),
-(23, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:25:17'),
-(24, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:29:21'),
-(25, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:54:58'),
-(26, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:54:58'),
-(27, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:54:59'),
-(28, 2, 2, 'La computadora volvió a estar operativa.', '2026-07-03 13:57:41'),
-(29, 2, 2, 'La computadora fue dada de alta', '2026-07-03 14:05:10'),
-(30, 2, 2, 'La computadora fue dada de baja.\nMotivo: porque tengo ganas y soy el jefe\r\n', '2026-07-03 14:05:27'),
-(31, 2, 2, 'La computadora fue dada de alta', '2026-07-03 14:07:13'),
-(32, 2, 2, 'La computadora fue dada de baja.\nMotivo: prueba', '2026-07-06 14:16:41'),
-(33, 2, 2, 'Memoria RAM: 32 GB → 16 GB\n', '2026-07-06 14:17:04'),
-(34, 2, 2, 'La computadora fue dada de alta', '2026-07-06 14:17:05');
 
 -- --------------------------------------------------------
 
@@ -357,7 +329,7 @@ CREATE TABLE `tickets` (
   `id_ticket` int(11) NOT NULL,
   `titulo` varchar(100) NOT NULL,
   `descripcion` text NOT NULL,
-  `componentes_afectados` text DEFAULT NULL,
+  `componentes_afectados` varchar(255) DEFAULT NULL,
   `fecha_creacion` datetime DEFAULT current_timestamp(),
   `estado` enum('Abierto','Pendiente','Cerrado') NOT NULL DEFAULT 'Abierto',
   `id_usuario` int(11) NOT NULL,
@@ -365,22 +337,6 @@ CREATE TABLE `tickets` (
   `foto` varchar(255) DEFAULT NULL,
   `id_ematp_asignado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `tickets`
---
-
-INSERT INTO `tickets` (`id_ticket`, `titulo`, `descripcion`, `componentes_afectados`, `fecha_creacion`, `estado`, `id_usuario`, `id_computadora`, `foto`, `id_ematp_asignado`) VALUES
-(1, 'usb delantero ', 'no anda los usb de adelante del gabinete', NULL, '2026-06-29 14:51:46', 'Cerrado', 3, 60, NULL, 2),
-(2, ' el telcado no anda', 'sf,jdsfg', NULL, '2026-07-03 14:49:12', 'Pendiente', 4, 37, NULL, 2),
-(3, 'prueba imagen', 'prueba', NULL, '2026-08-05 16:22:19', 'Pendiente', 3, 1, '6a738d6bbbc7e.jpeg', 2),
-(4, 'prueba213', 'hola', NULL, '2026-08-07 14:35:13', 'Abierto', 3, 33, NULL, NULL),
-(5, 'Problema en: Mother, Memoria RAM, Teclado', 'NO ANDA  NADA', 'Mother, Memoria RAM, Teclado', '2026-08-10 14:54:09', 'Abierto', 3, 4, NULL, NULL),
-(6, 'Problema en: Procesador, Disco, Mouse', 'No funciona', 'Procesador, Disco, Mouse', '2026-08-10 15:04:41', 'Abierto', 3, 29, NULL, NULL),
-(7, 'Problema en: Mother, Memoria RAM, Teclado', 'prueba de imagen con el mejor auto', 'Mother, Memoria RAM, Teclado', '2026-08-10 15:09:20', 'Abierto', 3, 2, NULL, NULL),
-(8, 'Problema en: Disco, Teclado', 'igkghkghk', 'Disco, Teclado', '2026-08-10 15:25:47', 'Abierto', 3, 31, 'ticket_6a7a17abcadb81.89306716.jpg', NULL),
-(9, 'Problema en: Procesador, Monitor', 'gdfgdgdfgdfg', 'Procesador, Monitor', '2026-08-10 15:26:07', 'Pendiente', 3, 47, 'ticket_6a7a17bf82c809.36632045.jpg', 2),
-(10, 'Problema en: Memoria RAM, Disco, Monitor', 'fytytyyyyty', 'Memoria RAM, Disco, Monitor', '2026-08-10 15:51:25', 'Abierto', 3, 30, 'ticket_6a7a1dad69d824.69732661.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -402,10 +358,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `email`, `contrasena`, `id_rol`) VALUES
-(1, 'admin', 'pruebaa', 'admin@gmail.com', '12345', 1),
-(2, 'lucas', 'gomez', 'ematp@gmail.com', '12345', 3),
-(3, 'marta', 'soria', 'profe@gmail.com', '12345', 2),
-(4, 'luciana', 'rodriguez', 'luly@gmail.com', '12345', 2);
+(1, 'Marta', 'Soria', 'profe@gmail.com', '$2y$10$CHN2xhNvGIMw/dR.ubUT4eW8EXNU3jWwOwyGk4itFaBn8uPi8t3jO', 2),
+(2, 'Juan', 'Perez', 'ematp@gmail.com', '$2y$10$.DJSXNxRDzFd0VKMY2L3fO8Ky4iKqDdm4yw66IOL/eixmXN3nurdi', 3),
+(4, 'Administrador', 'Sistema', 'admin@gmail.com', '$2y$10$OzOMi638lj8M41fJx50X..NYDe/720YqoRcjMXs4IxVNoBjOLERPC', 1);
 
 --
 -- Índices para tablas volcadas
@@ -423,7 +378,6 @@ ALTER TABLE `componentes`
 --
 ALTER TABLE `computadoras`
   ADD PRIMARY KEY (`id_computadora`),
-  ADD UNIQUE KEY `numero_pc` (`numero_pc`,`id_laboratorio`),
   ADD UNIQUE KEY `uq_pc_laboratorio` (`numero_pc`,`id_laboratorio`),
   ADD KEY `id_laboratorio` (`id_laboratorio`);
 
@@ -433,7 +387,7 @@ ALTER TABLE `computadoras`
 ALTER TABLE `historialticket`
   ADD PRIMARY KEY (`id_historial`),
   ADD KEY `id_ticket` (`id_ticket`),
-  ADD KEY `fk_historial_usuario` (`id_usuario`);
+  ADD KEY `id_usuario` (`id_usuario`);
 
 --
 -- Indices de la tabla `historial_computadoras`
@@ -464,7 +418,7 @@ ALTER TABLE `tickets`
   ADD PRIMARY KEY (`id_ticket`),
   ADD KEY `id_usuario` (`id_usuario`),
   ADD KEY `id_computadora` (`id_computadora`),
-  ADD KEY `fk_ticket_ematp` (`id_ematp_asignado`);
+  ADD KEY `id_ematp_asignado` (`id_ematp_asignado`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -482,31 +436,31 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `componentes`
 --
 ALTER TABLE `componentes`
-  MODIFY `id_componente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `id_componente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT de la tabla `computadoras`
 --
 ALTER TABLE `computadoras`
-  MODIFY `id_computadora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
+  MODIFY `id_computadora` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT de la tabla `historialticket`
 --
 ALTER TABLE `historialticket`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_computadoras`
 --
 ALTER TABLE `historial_computadoras`
-  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id_historial` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `laboratorios`
 --
 ALTER TABLE `laboratorios`
-  MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -518,13 +472,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_ticket` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
@@ -534,41 +488,45 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `componentes`
 --
 ALTER TABLE `componentes`
-  ADD CONSTRAINT `componentes_ibfk_1` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`);
+  ADD CONSTRAINT `fk_componente_computadora` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `computadoras`
 --
 ALTER TABLE `computadoras`
-  ADD CONSTRAINT `computadoras_ibfk_1` FOREIGN KEY (`id_laboratorio`) REFERENCES `laboratorios` (`id_laboratorio`);
+  ADD CONSTRAINT `fk_computadora_laboratorio` FOREIGN KEY (`id_laboratorio`) REFERENCES `laboratorios` (`id_laboratorio`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `historialticket`
 --
 ALTER TABLE `historialticket`
-  ADD CONSTRAINT `fk_historial_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `historialticket_ibfk_1` FOREIGN KEY (`id_ticket`) REFERENCES `tickets` (`id_ticket`);
+  ADD CONSTRAINT `fk_historial_ticket` FOREIGN KEY (`id_ticket`) REFERENCES `tickets` (`id_ticket`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_historial_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `historial_computadoras`
 --
 ALTER TABLE `historial_computadoras`
-  ADD CONSTRAINT `historial_computadoras_ibfk_1` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`),
-  ADD CONSTRAINT `historial_computadoras_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
+  ADD CONSTRAINT `fk_historial_pc` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_historial_pc_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `tickets`
 --
 ALTER TABLE `tickets`
-  ADD CONSTRAINT `fk_ticket_ematp` FOREIGN KEY (`id_ematp_asignado`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`);
+  ADD CONSTRAINT `fk_ticket_computadora` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ticket_ematp` FOREIGN KEY (`id_ematp_asignado`) REFERENCES `usuarios` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ticket_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`);
+  ADD CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON UPDATE CASCADE;
+
+-- ========================================================
+-- MÓDULOS: Laboratorios, Pañol Informático y Pañol
+-- ========================================================
 
 -- --------------------------------------------------------
 
@@ -607,14 +565,14 @@ CREATE TABLE `usuarios_modulos` (
 -- Volcado de datos para la tabla `usuarios_modulos`
 --
 
+-- IDs según los usuarios de esta base: 4 = admin, 2 = ematp, 1 = profe
 INSERT INTO `usuarios_modulos` (`id_usuario_modulo`, `id_usuario`, `id_modulo`) VALUES
-(1, 1, 1),
-(2, 1, 2),
-(3, 1, 3),
+(1, 4, 1),
+(2, 4, 2),
+(3, 4, 3),
 (4, 2, 1),
 (5, 2, 2),
-(6, 3, 1),
-(7, 4, 1);
+(6, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -749,7 +707,7 @@ ALTER TABLE `modulos`
 -- AUTO_INCREMENT de la tabla `usuarios_modulos`
 --
 ALTER TABLE `usuarios_modulos`
-  MODIFY `id_usuario_modulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_usuario_modulo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `repuestos`

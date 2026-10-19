@@ -1,45 +1,54 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["id_usuario"]) || $_SESSION["id_rol"] != 1) {
+if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once "../conexion/conexion.php";
+
+if (
+    !isset($_SESSION["csrf_token"]) ||
+    !is_string($_SESSION["csrf_token"]) ||
+    strlen($_SESSION["csrf_token"]) !== 64
+) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
+
+$titulo = "Nuevo laboratorio";
+$menu   = "admin";
+
+include "../includes/cabecera.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../css/estilos.css">
-    <meta charset="UTF-8">
-    <title>Nuevo Laboratorio</title>
-</head>
-<body>
-<?php include("../includes/menu_admin.php"); ?>
-<h1>Nuevo Laboratorio</h1>
+<div class="encabezado-pagina">
+    <h1>Nuevo laboratorio</h1>
+    <p>Registra un laboratorio con un identificador corto y fácil de reconocer.</p>
+</div>
 
-<a href="laboratorios.php">← Volver</a>
+<div class="tarjeta tarjeta-laboratorio">
 
-<hr>
+    <form class="formulario formulario-laboratorio" action="guardar_laboratorio.php" method="POST">
 
-<form action="guardar_laboratorio.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo e($_SESSION["csrf_token"]); ?>">
 
-    <label>Nombre del laboratorio</label>
+        <div class="campo campo-nombre-laboratorio">
+            <label for="nombre">Nombre del laboratorio</label>
+            <input type="text" id="nombre" name="nombre" maxlength="18"
+                   pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]{1,18}"
+                   oninput="let letras = 0, numeros = 0; this.value = Array.from(this.value).filter(caracter => { if (/[0-9]/.test(caracter)) return ++numeros <= 2; if (/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(caracter)) return ++letras <= 16; return true; }).slice(0, 18).join('')"
+                   title="Use hasta 16 letras y 2 números."
+                   required>
+        </div>
 
-    <br><br>
+        <div class="acciones-form">
+            <button type="submit" class="btn-exito">Guardar laboratorio</button>
+            <a class="btn btn-secundario" href="laboratorios.php">Cancelar</a>
+        </div>
 
-    <input type="text"
-           name="nombre"
-           required
-           maxlength="50">
+    </form>
 
-    <br><br>
+</div>
 
-    <button type="submit">
-        Guardar Laboratorio
-    </button>
-
-</form>
-
-</body>
-</html>
+<?php include "../includes/pie.php"; ?>

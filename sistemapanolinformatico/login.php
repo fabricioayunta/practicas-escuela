@@ -61,7 +61,8 @@ if (mysqli_num_rows($resultado) == 1) {
        COMPROBAR CONTRASEÑA
     ========================= */
 
-    if ($contrasena === $usuario["contrasena"]) {
+    /* Las contraseñas se guardan con password_hash (igual que en Laboratorios) */
+    if (password_verify($contrasena, $usuario["contrasena"])) {
 
         /* =========================
            COMPROBAR ACCESO AL MÓDULO
