@@ -1,41 +1,31 @@
 <?php
+/*
+   Esta página solo envía a cada usuario a su panel según su rol.
+   (Igual que en Laboratorios).
+*/
 session_start();
 
-if (!isset($_SESSION["pi_id_usuario"])) {
-    header("Location: index.php");
+if (!isset($_SESSION["pi_id_usuario"]) || !isset($_SESSION["pi_id_rol"])) {
+    header("Location: index.php?error=sesion");
     exit();
 }
-?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Panel Pañol Informático</title>
+switch ((int)$_SESSION["pi_id_rol"]) {
 
-<link rel="stylesheet" href="css/estilos.css">
+    case 1:
+        header("Location: administrativo/inicio.php");
+        break;
 
-</head>
+    case 2:
+        header("Location: profesor/inicio.php");
+        break;
 
-<body>
-<?php include("includes/menu_panol_informatico.php"); ?>
-<h1>Panel Pañol Informático</h1>
+    case 3:
+        header("Location: ematp/inicio.php");
+        break;
 
-<p>Bienvenido <?php echo $_SESSION["pi_nombre"]; ?></p>
+    default:
+        header("Location: logout.php");
+}
 
-<hr>
-
-<ul>
-
-<li><a href="prestamos.php">Préstamos de Insumos</a></li>
-
-<li><a href="repuestos.php">Stock de Repuestos</a></li>
-
-<li><a href="../index.php">Cambiar de Módulo</a></li>
-
-<li><a href="logout.php">Cerrar Sesión</a></li>
-
-</ul>
-
-</body>
-</html>
+exit();

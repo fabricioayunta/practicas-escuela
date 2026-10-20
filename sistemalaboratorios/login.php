@@ -56,6 +56,14 @@ if (!$usuario || !password_verify($contrasena, $usuario["contrasena"])) {
 }
 
 
+/* Comprobar que tenga acceso a este módulo (1 = Laboratorios) */
+
+if (!tiene_acceso($conexion, (int)$usuario["id_usuario"], 1)) {
+    header("Location: index.php?error=acceso");
+    exit();
+}
+
+
 /* Crear sesión */
 
 session_regenerate_id(true);

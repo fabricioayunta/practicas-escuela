@@ -15,11 +15,20 @@ $resultado = mysqli_query(
         usuarios.nombre,
         usuarios.apellido,
         usuarios.email,
-        roles.nombre AS rol
+        roles.nombre AS rol,
+        GROUP_CONCAT(modulos.nombre ORDER BY modulos.id_modulo SEPARATOR ', ') AS modulos
      FROM usuarios
      LEFT JOIN roles ON usuarios.id_rol = roles.id_rol
+     LEFT JOIN usuarios_modulos ON usuarios_modulos.id_usuario = usuarios.id_usuario
+     LEFT JOIN modulos ON modulos.id_modulo = usuarios_modulos.id_modulo
+     GROUP BY usuarios.id_usuario, usuarios.nombre, usuarios.apellido, usuarios.email, roles.nombre
      ORDER BY usuarios.apellido, usuarios.nombre"
 );
+
+if (!$resultado) {
+    error_log(mysqli_error($conexion));
+    mostrar_error("No se pudieron cargar los usuarios.", "inicio.php");
+}
 
 $ok = $_GET["ok"] ?? "";
 
@@ -31,7 +40,7 @@ include "../includes/cabecera.php";
 
 <div class="encabezado-pagina">
     <h1>Usuarios</h1>
-    <p>Personas que pueden ingresar al sistema.</p>
+    <p>Personas que pueden ingresar al sistema y a qué módulos.</p>
 </div>
 
 <?php if ($ok === "creado") { ?>
@@ -55,6 +64,7 @@ include "../includes/cabecera.php";
                 <th>Apellido</th>
                 <th>Email</th>
                 <th>Rol</th>
+                <th>Módulos</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -66,6 +76,7 @@ include "../includes/cabecera.php";
                 <td><?php echo e($fila["apellido"]); ?></td>
                 <td><?php echo e($fila["email"]); ?></td>
                 <td><?php echo e($fila["rol"] ?? "—"); ?></td>
+                <td><?php echo e($fila["modulos"] ?? "Ninguno"); ?></td>
                 <td>
                     <div class="acciones">
 

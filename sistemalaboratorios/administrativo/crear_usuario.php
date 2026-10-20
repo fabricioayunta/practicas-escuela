@@ -8,6 +8,9 @@ if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
 
 require_once "../conexion/conexion.php";
 
+/* Módulo en el que estamos (1 = Laboratorios): viene marcado por defecto */
+$moduloActual = 1;
+
 $titulo = "Crear usuario";
 $menu   = "admin";
 
@@ -22,6 +25,8 @@ include "../includes/cabecera.php";
 <div class="tarjeta">
 
     <form class="formulario" action="guardar_usuario.php" method="POST">
+
+        <input type="hidden" name="csrf_token" value="<?php echo e(token_formulario("csrf_token")); ?>">
 
         <div class="campo">
             <label for="nombre">Nombre</label>
@@ -52,11 +57,16 @@ include "../includes/cabecera.php";
         <div class="campo">
             <label for="id_rol">Rol</label>
             <select id="id_rol" name="id_rol" required>
-                <option value="1">Administrativo</option>
-                <option value="2" selected>Profesor</option>
-                <option value="3">EMATP</option>
+                <?php foreach (roles_sistema() as $numero => $nombreRol) { ?>
+                    <option value="<?php echo $numero; ?>" <?php echo $numero === 2 ? "selected" : ""; ?>>
+                        <?php echo e($nombreRol); ?>
+                    </option>
+                <?php } ?>
             </select>
+            <small>El rol es el mismo en todos los módulos.</small>
         </div>
+
+        <?php casillas_modulos([$moduloActual]); ?>
 
         <div class="acciones-form">
             <button type="submit" class="btn-exito">Crear usuario</button>

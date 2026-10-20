@@ -10,6 +10,7 @@
             <a class="<?php echo activo(["laboratorios.php", "crear_laboratorio.php", "editar_laboratorio.php"]); ?>" href="laboratorios.php">Laboratorios</a>
             <a class="<?php echo activo(["computadoras.php", "crear_computadora.php", "editar_computadora.php"]); ?>" href="computadoras.php">Computadoras</a>
             <a class="<?php echo activo(["tickets.php", "ver_ticket.php"]); ?>" href="tickets.php">Tickets</a>
+            <a href="../../index.php">Cambiar de módulo</a>
             <a class="menu-salir" href="../logout.php">Cerrar sesión</a>
         </nav>
 

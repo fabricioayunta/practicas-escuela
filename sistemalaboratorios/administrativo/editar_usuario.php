@@ -8,11 +8,6 @@ if (!isset($_SESSION["id_usuario"]) || ($_SESSION["id_rol"] ?? 0) != 1) {
 
 require_once "../conexion/conexion.php";
 
-/* Token de seguridad del formulario */
-if (empty($_SESSION["csrf_token"])) {
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-}
-
 $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 if ($id === false || $id === null || $id <= 0) {
     mostrar_error("ID de usuario inválido.", "usuarios.php");
@@ -44,7 +39,7 @@ if (!$usuario) {
     mostrar_error("No se encontró el usuario.", "usuarios.php");
 }
 
-$roles = [1 => "Administrativo", 2 => "Profesor", 3 => "EMATP"];
+$modulosUsuario = modulos_de_usuario($conexion, $id);
 
 $titulo = "Editar usuario";
 $menu   = "admin";
@@ -61,7 +56,7 @@ include "../includes/cabecera.php";
     <form class="formulario" action="actualizar_usuario.php" method="POST">
 
         <input type="hidden" name="id_usuario" value="<?php echo (int)$usuario["id_usuario"]; ?>">
-        <input type="hidden" name="csrf_token" value="<?php echo e($_SESSION["csrf_token"]); ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo e(token_formulario("csrf_token")); ?>">
 
         <div class="campo">
             <label for="nombre">Nombre</label>
@@ -95,13 +90,16 @@ include "../includes/cabecera.php";
         <div class="campo">
             <label for="id_rol">Rol</label>
             <select id="id_rol" name="id_rol" required>
-                <?php foreach ($roles as $numero => $nombreRol) { ?>
+                <?php foreach (roles_sistema() as $numero => $nombreRol) { ?>
                     <option value="<?php echo $numero; ?>" <?php echo (int)$usuario["id_rol"] === $numero ? "selected" : ""; ?>>
                         <?php echo e($nombreRol); ?>
                     </option>
                 <?php } ?>
             </select>
+            <small>El rol es el mismo en todos los módulos.</small>
         </div>
+
+        <?php casillas_modulos($modulosUsuario); ?>
 
         <div class="acciones-form">
             <button type="submit" class="btn-exito">Guardar cambios</button>

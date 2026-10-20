@@ -1,110 +1,105 @@
 <?php
-
 session_start();
 
-include("conexion/conexion.php");
+require_once __DIR__ . "/conexion/conexion.php";
 
-
-/* =========================
-   RECIBIR DATOS DEL FORMULARIO
-========================= */
-
-$email = trim($_POST["email"] ?? "");
-$contrasena = trim($_POST["password"] ?? "");
-
-
-/* =========================
-   VALIDAR DATOS
-========================= */
-
-if ($email == "" || $contrasena == "") {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: index.php");
     exit();
 }
 
+$email      = trim($_POST["email"] ?? "");
+$contrasena = $_POST["password"] ?? "";
 
-/* =========================
-   SANITIZAR EMAIL
-========================= */
+if ($email === "" || $contrasena === "") {
+    header("Location: index.php?error=campos");
+    exit();
+}
 
-$email = filter_var($email, FILTER_SANITIZE_EMAIL);
-
-
-/* =========================
-   CONSULTAR USUARIO
-========================= */
-
-$sql = "SELECT *
-        FROM usuarios
-        WHERE email = ?
-        LIMIT 1";
-
-$stmt = mysqli_prepare($conexion, $sql);
-
-mysqli_stmt_bind_param($stmt, "s", $email);
-
-mysqli_stmt_execute($stmt);
-
-$resultado = mysqli_stmt_get_result($stmt);
-
-
-/* =========================
-   COMPROBAR USUARIO
-========================= */
-
-if (mysqli_num_rows($resultado) == 1) {
-
-    $usuario = mysqli_fetch_assoc($resultado);
-
-
-    /* =========================
-       COMPROBAR CONTRASEÑA
-    ========================= */
-
-    /* Las contraseñas se guardan con password_hash (igual que en Laboratorios) */
-    if (password_verify($contrasena, $usuario["contrasena"])) {
-
-        /* =========================
-           COMPROBAR ACCESO AL MÓDULO
-        ========================= */
-
-        $sqlAcceso = "SELECT id_modulo
-                      FROM usuarios_modulos
-                      WHERE id_usuario = '".$usuario["id_usuario"]."'
-                      AND id_modulo = 3";
-
-        $resAcceso = mysqli_query($conexion, $sqlAcceso);
-
-        if (mysqli_num_rows($resAcceso) == 1) {
-
-            /* Crear sesión de este módulo */
-
-            $_SESSION["panol_id_usuario"] = $usuario["id_usuario"];
-
-            $_SESSION["panol_nombre"] = $usuario["nombre"];
-
-            $_SESSION["panol_apellido"] = $usuario["apellido"];
-
-            $_SESSION["panol_email"] = $usuario["email"];
-
-
-            /* Ir al inicio del módulo */
-
-            header("Location: inicio.php");
-            exit();
-
-        }
-
-    }
-
+if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    header("Location: index.php?error=email");
+    exit();
 }
 
 
-/* =========================
-   LOGIN INCORRECTO
-========================= */
+/* Buscar usuario */
 
-header("Location: index.php?error=1");
+$stmt = mysqli_prepare(
+    $conexion,
+    "SELECT id_usuario, nombre, apellido, email, contrasena, id_rol
+     FROM usuarios
+     WHERE email = ?
+     LIMIT 1"
+);
+
+if (!$stmt) {
+    mostrar_error("No se pudo consultar la base de datos. Intente nuevamente.", "index.php");
+}
+
+mysqli_stmt_bind_param($stmt, "s", $email);
+mysqli_stmt_execute($stmt);
+
+$resultado = mysqli_stmt_get_result($stmt);
+$usuario   = mysqli_fetch_assoc($resultado);
+
+mysqli_stmt_close($stmt);
+
+
+/*
+   Mismo mensaje si el usuario no existe o si la contraseña es incorrecta
+   (así no se revela qué emails están registrados).
+*/
+
+if (!$usuario || !password_verify($contrasena, $usuario["contrasena"])) {
+    header("Location: index.php?error=datos");
+    exit();
+}
+
+
+/* Comprobar que tenga acceso a este módulo (3 = Pañol) */
+
+if (!tiene_acceso($conexion, (int)$usuario["id_usuario"], 3)) {
+    header("Location: index.php?error=acceso");
+    exit();
+}
+
+
+/* Crear sesión de este módulo (con sus propias claves) */
+
+session_regenerate_id(true);
+
+$_SESSION["panol_id_usuario"] = (int)$usuario["id_usuario"];
+$_SESSION["panol_nombre"]     = $usuario["nombre"];
+$_SESSION["panol_apellido"]   = $usuario["apellido"];
+$_SESSION["panol_email"]      = $usuario["email"];
+$_SESSION["panol_id_rol"]     = (int)$usuario["id_rol"];
+
+
+/* Redirección según el rol */
+
+switch ($_SESSION["panol_id_rol"]) {
+
+    case 1:
+        header("Location: administrativo/inicio.php");
+        break;
+
+    case 2:
+        header("Location: profesor/inicio.php");
+        break;
+
+    case 3:
+        header("Location: ematp/inicio.php");
+        break;
+
+    default:
+        unset(
+            $_SESSION["panol_id_usuario"],
+            $_SESSION["panol_nombre"],
+            $_SESSION["panol_apellido"],
+            $_SESSION["panol_email"],
+            $_SESSION["panol_id_rol"]
+        );
+        header("Location: index.php?error=rol");
+}
+
 exit();
-
-?>

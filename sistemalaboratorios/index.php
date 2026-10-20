@@ -14,6 +14,7 @@ $mensajes = [
     "email"    => "El email no tiene un formato válido. Ejemplo: nombre@gmail.com",
     "datos"    => "El email o la contraseña no son correctos. Revise los datos e intente de nuevo.",
     "rol"      => "Su usuario no tiene un rol válido. Consulte con el administrador.",
+    "acceso"   => "Su usuario no tiene acceso al módulo Laboratorios. Consulte con el administrador.",
     "sesion"   => "Para continuar, inicie sesión.",
 ];
 
@@ -60,6 +61,10 @@ include __DIR__ . "/includes/cabecera.php";
         </form>
 
     </div>
+
+    <p style="text-align:center;">
+        <a href="../index.php">← Volver al selector de módulos</a>
+    </p>
 
 </div>
 

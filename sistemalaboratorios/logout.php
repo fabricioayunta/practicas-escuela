@@ -2,11 +2,14 @@
 
 session_start();
 
-// Elimina todas las variables de sesión
-session_unset();
-
-// Destruye la sesión
-session_destroy();
+// Cierra solo la sesión de este módulo
+// (la de Pañol y Pañol Informático sigue abierta)
+unset($_SESSION["id_usuario"]);
+unset($_SESSION["nombre"]);
+unset($_SESSION["apellido"]);
+unset($_SESSION["email"]);
+unset($_SESSION["id_rol"]);
+unset($_SESSION["csrf_token"]);
 
 // Vuelve al login
 header("Location: index.php");

@@ -22,15 +22,15 @@ if (
 
 require_once "../conexion/conexion.php";
 
+/* Módulo en el que estamos (1 = Laboratorios) */
+$moduloActual = 1;
+
 
 /* ==============================
    VERIFICAR TOKEN DE SEGURIDAD
    ============================== */
 
-if (
-    empty($_SESSION["csrf_token"]) ||
-    !hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"] ?? "")
-) {
+if (!token_valido("csrf_token")) {
     mostrar_error("El formulario venció. Vuelva a abrir la edición del usuario e intente de nuevo.");
 }
 
@@ -53,6 +53,8 @@ $email = trim($_POST["email"] ?? "");
 $contrasena = $_POST["contrasena"] ?? "";
 
 $id_rol = (int)($_POST["id_rol"] ?? 0);
+
+$modulos = filtrar_modulos($_POST["modulos"] ?? []);
 
 
 /* ==============================
@@ -89,13 +91,25 @@ if (mb_strlen($email) > 100) {
     mostrar_error("El email es demasiado largo.");
 }
 
-if (!in_array($id_rol, [1, 2, 3], true)) {
+if (!array_key_exists($id_rol, roles_sistema())) {
     mostrar_error("El rol seleccionado no es válido.");
+}
+
+if (count($modulos) === 0) {
+    mostrar_error("Marque al menos un módulo al que pueda entrar el usuario.");
+}
+
+if ($contrasena !== "" && strlen($contrasena) < 8) {
+    mostrar_error("La contraseña debe tener al menos 8 caracteres.");
 }
 
 /* Evitar que el administrador se quite a sí mismo el acceso */
 if ($id === (int)$_SESSION["id_usuario"] && $id_rol !== 1) {
     mostrar_error("No puede quitarse a sí mismo el rol de administrador.");
+}
+
+if ($id === (int)$_SESSION["id_usuario"] && !in_array($moduloActual, $modulos, true)) {
+    mostrar_error("No puede quitarse a sí mismo el acceso a este módulo.");
 }
 
 
@@ -171,10 +185,12 @@ mysqli_stmt_close($stmt);
 
 
 /* ==============================
-   ACTUALIZAR SIN CAMBIAR CONTRASEÑA
+   PREPARAR LA ACTUALIZACIÓN
    ============================== */
 
 if ($contrasena === "") {
+
+    /* Sin cambiar la contraseña */
 
     $stmt = mysqli_prepare(
         $conexion,
@@ -203,17 +219,7 @@ if ($contrasena === "") {
 
 } else {
 
-    /* ==============================
-       VALIDAR NUEVA CONTRASEÑA
-       ============================== */
-
-    if (strlen($contrasena) < 8) {
-        mostrar_error("La contraseña debe tener al menos 8 caracteres.");
-    }
-
-    /* ==============================
-       GENERAR HASH
-       ============================== */
+    /* Con nueva contraseña */
 
     $hash = password_hash(
         $contrasena,
@@ -223,11 +229,6 @@ if ($contrasena === "") {
     if ($hash === false) {
         mostrar_error("No se pudo procesar la contraseña.");
     }
-
-
-    /* ==============================
-       ACTUALIZAR CON NUEVA CONTRASEÑA
-       ============================== */
 
     $stmt = mysqli_prepare(
         $conexion,
@@ -259,26 +260,29 @@ if ($contrasena === "") {
 
 
 /* ==============================
-   EJECUTAR
+   EJECUTAR (USUARIO + MÓDULOS)
    ============================== */
 
-if (mysqli_stmt_execute($stmt)) {
+mysqli_begin_transaction($conexion);
 
+if (!mysqli_stmt_execute($stmt)) {
+    error_log(mysqli_stmt_error($stmt));
     mysqli_stmt_close($stmt);
-
-    header("Location: usuarios.php?ok=editado");
-    exit();
+    mysqli_rollback($conexion);
+    mostrar_error("No se pudo actualizar el usuario.");
 }
-
-
-/* ==============================
-   ERROR
-   ============================== */
-
-error_log(mysqli_stmt_error($stmt));
 
 mysqli_stmt_close($stmt);
 
-mostrar_error("No se pudo actualizar el usuario.");
+if (!guardar_modulos_usuario($conexion, $id, $modulos)) {
+    error_log(mysqli_error($conexion));
+    mysqli_rollback($conexion);
+    mostrar_error("No se pudieron guardar los módulos del usuario.");
+}
+
+mysqli_commit($conexion);
+
+header("Location: usuarios.php?ok=editado");
+exit();
 
 ?>

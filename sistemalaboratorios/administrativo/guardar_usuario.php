@@ -27,6 +27,10 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
+if (!token_valido("csrf_token")) {
+    mostrar_error("El formulario venció. Vuelva a abrir la creación del usuario e intente de nuevo.");
+}
+
 
 /* ==============================
    RECIBIR Y LIMPIAR DATOS
@@ -42,6 +46,7 @@ $apellido = trim($apellido);
 $email = trim($_POST["email"] ?? "");
 $contrasena = $_POST["contrasena"] ?? "";
 $id_rol = (int)($_POST["id_rol"] ?? 0);
+$modulos = filtrar_modulos($_POST["modulos"] ?? []);
 
 
 /* ==============================
@@ -75,8 +80,12 @@ if (strlen($contrasena) < 8) {
     mostrar_error("La contraseña debe tener al menos 8 caracteres.");
 }
 
-if (!in_array($id_rol, [1, 2, 3], true)) {
+if (!array_key_exists($id_rol, roles_sistema())) {
     mostrar_error("El rol seleccionado no es válido.");
+}
+
+if (count($modulos) === 0) {
+    mostrar_error("Marque al menos un módulo al que pueda entrar el usuario.");
 }
 
 
@@ -124,8 +133,10 @@ if ($hash === false) {
 
 
 /* ==============================
-   INSERTAR USUARIO
+   INSERTAR USUARIO Y SUS MÓDULOS
    ============================== */
+
+mysqli_begin_transaction($conexion);
 
 $stmt = mysqli_prepare(
     $conexion,
@@ -137,6 +148,7 @@ $stmt = mysqli_prepare(
 
 if (!$stmt) {
     error_log(mysqli_error($conexion));
+    mysqli_rollback($conexion);
     mostrar_error("No se pudo crear el usuario.");
 }
 
@@ -150,28 +162,25 @@ mysqli_stmt_bind_param(
     $id_rol
 );
 
-
-/* ==============================
-   EJECUTAR
-   ============================== */
-
-if (mysqli_stmt_execute($stmt)) {
-
+if (!mysqli_stmt_execute($stmt)) {
+    error_log(mysqli_stmt_error($stmt));
     mysqli_stmt_close($stmt);
-
-    header("Location: usuarios.php?ok=creado");
-    exit();
+    mysqli_rollback($conexion);
+    mostrar_error("No se pudo crear el usuario.");
 }
 
-
-/* ==============================
-   ERROR
-   ============================== */
-
-error_log(mysqli_stmt_error($stmt));
-
+$id_nuevo = (int)mysqli_insert_id($conexion);
 mysqli_stmt_close($stmt);
 
-mostrar_error("No se pudo crear el usuario.");
+if (!guardar_modulos_usuario($conexion, $id_nuevo, $modulos)) {
+    error_log(mysqli_error($conexion));
+    mysqli_rollback($conexion);
+    mostrar_error("No se pudieron guardar los módulos del usuario.");
+}
+
+mysqli_commit($conexion);
+
+header("Location: usuarios.php?ok=creado");
+exit();
 
 ?>

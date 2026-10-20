@@ -9,8 +9,8 @@ independientes que comparten una misma base de datos y una misma tabla de usuari
 
 1. Copiar la carpeta `practicas-escuela` dentro de `xampp/htdocs`.
 2. Iniciar **Apache** y **MySQL** desde el panel de XAMPP.
-3. Entrar a phpMyAdmin, crear la base `inventariocomputadoras` e importar
-   `inventariocomputadoras.sql`.
+3. Entrar a phpMyAdmin, crear la base `inventariocomputadorasA` e importar
+   `inventariocomputadorasA.sql` (incluye las tablas de los tres módulos).
 4. Abrir `http://localhost/practicas-escuela/`.
 
 La conexión se configura en un solo lugar:
@@ -30,16 +30,16 @@ Se elige primero el módulo y recién después se inicia sesión, **dentro de es
 
 ### Usuarios de prueba
 
-Hoy los tres módulos comparten los mismos emails y contraseñas, pero el acceso se
+Los tres módulos comparten los mismos emails, contraseñas y roles, pero el acceso se
 controla por módulo: que un usuario entre a Laboratorios no significa que pueda entrar
 a Pañol.
 
-| Email | Contraseña | Rol en Laboratorios | Módulos a los que entra |
+| Email | Contraseña | Rol | Módulos a los que entra |
 |---|---|---|---|
-| admin@gmail.com | 12345 | Administrativo | Laboratorios, Pañol Informático, Pañol |
-| ematp@gmail.com | 12345 | EMATP | Laboratorios, Pañol Informático |
-| profe@gmail.com | 12345 | Profesor | Laboratorios |
-| luly@gmail.com | 12345 | Profesor | Laboratorios |
+| admin@gmail.com | 123456 | Administrativo | Laboratorios, Pañol Informático, Pañol |
+| ematp@gmail.com | 123456 | EMATP | Laboratorios, Pañol Informático |
+| profe@gmail.com | 123456 | Profesor | Laboratorios |
+| profe2@gmail.com | 12345678 | Profesor | Laboratorios |
 
 ---
 
@@ -193,9 +193,9 @@ profesor de otro. Por eso cada módulo guarda su sesión con sus propias claves:
 
 | Módulo | Claves de sesión |
 |---|---|
-| Laboratorios | `id_usuario`, `nombre`, `apellido`, `email`, `id_rol` |
-| Pañol Informático | `pi_id_usuario`, `pi_nombre`, `pi_apellido`, `pi_email` |
-| Pañol | `panol_id_usuario`, `panol_nombre`, `panol_apellido`, `panol_email` |
+| Laboratorios | `id_usuario`, `nombre`, `apellido`, `email`, `id_rol`, `csrf_token` |
+| Pañol Informático | `pi_id_usuario`, `pi_nombre`, `pi_apellido`, `pi_email`, `pi_id_rol`, `pi_csrf_token` |
+| Pañol | `panol_id_usuario`, `panol_nombre`, `panol_apellido`, `panol_email`, `panol_id_rol`, `panol_csrf_token` |
 
 Consecuencias:
 
@@ -207,19 +207,30 @@ Consecuencias:
 #### Roles y accesos
 
 `usuarios.id_rol` **quedó igual que antes** (1 Administrativo, 2 Profesor, 3 EMATP) y
-sigue definiendo qué ve el usuario *dentro* del módulo de Laboratorios, que es el único
-que tiene roles internos.
+vale en los tres módulos. Los tres tienen la misma estructura: después del login,
+`inicio.php` manda a cada uno a `administrativo/`, `profesor/` o `ematp/`.
 
 El acceso a los módulos se resolvió aparte, con la tabla `usuarios_modulos`, porque un
 solo `id_rol` no alcanza para decir "este usuario entra a Laboratorios **y** a Pañol":
 habría hecho falta inventar un rol por cada combinación posible.
 
-Los accesos se asignan desde el panel administrativo de Laboratorios, en
-**Usuarios → Crear / Editar**, con casillas de verificación. El listado de usuarios
-muestra una columna "Módulos" con lo que tiene asignado cada uno.
+El **administrativo** puede lo mismo en los tres módulos: Resumen, Usuarios (ABM con
+rol y módulos de acceso, igual en los tres) y el ABM propio del módulo. Lo que cambia
+entre módulos es lo que pueden hacer el EMATP y el profesor:
 
-> Un usuario sin filas en `usuarios_modulos` no puede entrar a ningún módulo.
-> Si creaste usuarios antes de este cambio, hay que editarlos y marcarles los módulos.
+| | Laboratorios | Pañol Informático | Pañol |
+|---|---|---|---|
+| **Administrativo** | Resumen, Usuarios, Laboratorios, Computadoras, Tickets | Resumen, Usuarios, Repuestos (ABM), Préstamos de insumos (ver todos, registrar, devolver, eliminar) | Resumen, Usuarios, Artículos (ABM, alta/baja), Préstamos (ver todos, registrar, devolver) |
+| **EMATP** | Gestionar tickets, componentes y alta/baja de PCs | Registrar entregas y devoluciones de insumos, actualizar el stock de repuestos | Registrar préstamos y devoluciones, consultar artículos |
+| **Profesor** | Crear tickets y ver los propios | Pedir insumos a su nombre y ver sus préstamos | Pedir artículos disponibles a su nombre y ver sus préstamos |
+
+Los accesos se asignan desde **Usuarios → Crear / Editar** de cualquiera de los tres
+módulos, con casillas de verificación. El listado de usuarios muestra una columna
+"Módulos" con lo que tiene asignado cada uno. Un administrador no puede quitarse a sí
+mismo el rol de administrador ni el acceso al módulo en el que está.
+
+> Un usuario sin filas en `usuarios_modulos` no puede entrar a ningún módulo
+> (tampoco a Laboratorios). Para bloquear a alguien sin borrarlo, quítele los módulos.
 
 ### 6. Selector de módulo en la raíz
 
@@ -245,37 +256,40 @@ practicas-escuela/
 │   ├── conexion/  css/  includes/
 │   └── administrativo/  ematp/  profesor/  uploads/
 │
-├── sistemapanolinformatico/
+├── sistemapanolinformatico/         ← misma estructura que Laboratorios
 │   ├── index.php  login.php  logout.php
-│   ├── inicio.php
-│   ├── prestamos.php  crear_prestamo.php  guardar_prestamo.php
-│   │   devolver_prestamo.php  eliminar_prestamo.php
-│   ├── repuestos.php  crear_repuesto.php  guardar_repuesto.php
-│   │   editar_repuesto.php  actualizar_repuesto.php  eliminar_repuesto.php
-│   └── conexion/  css/  includes/
+│   ├── inicio.php                   ← panel según el id_rol
+│   ├── conexion/  css/
+│   ├── includes/                    ← cabecera, pie, menu_admin/ematp/profesor,
+│   │                                   funciones_pi.php
+│   ├── administrativo/              ← resumen, usuarios, repuestos, préstamos
+│   ├── ematp/                       ← préstamos, stock de repuestos
+│   └── profesor/                    ← pedir insumo, mis préstamos
 │
-└── sistemapanol/
+└── sistemapanol/                    ← misma estructura que Laboratorios
     ├── index.php  login.php  logout.php
-    ├── inicio.php
-    ├── articulos.php  crear_articulo.php  guardar_articulo.php
-    │   editar_articulo.php  actualizar_articulo.php
-    │   cambiar_estado_articulo.php  eliminar_articulo.php
-    ├── prestamos.php  crear_prestamo.php  guardar_prestamo.php
-    │   devolver_prestamo.php
-    └── conexion/  css/  includes/
+    ├── inicio.php                   ← panel según el id_rol
+    ├── conexion/  css/
+    ├── includes/                    ← cabecera, pie, menu_admin/ematp/profesor,
+    │                                   funciones_panol.php
+    ├── administrativo/              ← resumen, usuarios, artículos, préstamos
+    ├── ematp/                       ← préstamos, consulta de artículos
+    └── profesor/                    ← pedir artículo, mis préstamos
 ```
+
+Las funciones comunes (escapar texto, mensajes de error, roles, módulos, token de los
+formularios) están en `sistemalaboratorios/includes/funciones.php` y las usan los tres.
 
 ---
 
 ## Nota sobre la seguridad
 
-**Este sistema es intencionalmente inseguro.** Es un trabajo práctico y los módulos
-nuevos replican a propósito las mismas debilidades que tenía el original:
+Los tres módulos siguen las mismas prácticas que el módulo principal:
 
-- Las contraseñas se guardan y se comparan en **texto plano**, sin hash.
-- Las consultas se arman **interpolando strings** en el SQL, salvo la búsqueda del
-  usuario en los `login.php`, que ya usaba una sentencia preparada.
-- Las validaciones son mínimas y casi todas del lado del HTML.
-- La salida no se escapa, salvo donde ya se escapaba.
+- Las contraseñas se guardan con `password_hash` y se comprueban con `password_verify`.
+- Las consultas con datos del usuario usan **sentencias preparadas**.
+- Los datos se validan también del lado del servidor y la salida se escapa con `e()`.
+- Los formularios que guardan datos llevan un token (`csrf_token`) propio de cada módulo.
 
-No usar este código como base de un sistema real sin corregir todo eso.
+Sigue siendo un trabajo práctico: no tiene, por ejemplo, límite de intentos de login ni
+registro de auditoría.

@@ -1,22 +1,7 @@
 /* ===========================
    ESTILOS COMPARTIDOS
-   Se reutiliza la hoja de estilos del módulo de Laboratorios
+   Se reutiliza la hoja de estilos del módulo de Laboratorios,
+   así los tres módulos se ven igual.
 =========================== */
 
 @import url("../../sistemalaboratorios/css/estilos.css");
-
-/* Las pantallas del pañol no usan <main class="contenedor">,
-   así que se centra el contenido igual que en Laboratorios */
-body > :not(.menu) {
-    width: 100%;
-    max-width: 1100px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 20px;
-    padding-right: 20px;
-    box-sizing: border-box;
-}
-
-body > h1:first-of-type {
-    margin-top: 28px;
-}

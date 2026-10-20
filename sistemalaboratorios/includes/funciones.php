@@ -74,6 +74,154 @@ function mostrar_error($mensaje, $volver = "")
     exit();
 }
 
+/* Devuelve la clase CSS de un estado de préstamo (Pañol y Pañol Informático) */
+function clase_prestamo($estado)
+{
+    return $estado === "Pendiente" ? "pendiente" : "abierto";
+}
+
+/* Roles del sistema (tabla roles). Valen igual en los tres módulos */
+function roles_sistema()
+{
+    return [1 => "Administrativo", 2 => "Profesor", 3 => "EMATP"];
+}
+
+/* Módulos del sistema (tabla modulos) */
+function modulos_sistema()
+{
+    return [1 => "Laboratorios", 2 => "Pañol Informático", 3 => "Pañol"];
+}
+
+/* Filtra los módulos recibidos del formulario dejando solo los que existen */
+function filtrar_modulos($recibidos)
+{
+    $validos = [];
+
+    foreach ((array)$recibidos as $modulo) {
+        $modulo = (int)$modulo;
+
+        if (array_key_exists($modulo, modulos_sistema()) && !in_array($modulo, $validos, true)) {
+            $validos[] = $modulo;
+        }
+    }
+
+    return $validos;
+}
+
+/* Dibuja las casillas de módulos (marcando los indicados en $marcados) */
+function casillas_modulos($marcados = [])
+{
+    echo '<fieldset><legend>Módulos a los que puede entrar</legend><div class="opciones" style="margin-bottom:14px;">';
+
+    foreach (modulos_sistema() as $id => $nombre) {
+
+        $marca = in_array($id, $marcados, true) ? " checked" : "";
+
+        echo '<label class="opcion">';
+        echo '<input type="checkbox" name="modulos[]" value="' . $id . '"' . $marca . '>';
+        echo e($nombre);
+        echo '</label>';
+    }
+
+    echo '</div></fieldset>';
+}
+
+/* Devuelve los id de los módulos a los que puede entrar un usuario */
+function modulos_de_usuario($conexion, $id_usuario)
+{
+    $modulos = [];
+
+    $stmt = mysqli_prepare($conexion, "SELECT id_modulo FROM usuarios_modulos WHERE id_usuario = ?");
+
+    if (!$stmt) {
+        return $modulos;
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $id_usuario);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $modulos[] = (int)$fila["id_modulo"];
+    }
+
+    mysqli_stmt_close($stmt);
+
+    return $modulos;
+}
+
+/* Indica si un usuario puede entrar a un módulo */
+function tiene_acceso($conexion, $id_usuario, $id_modulo)
+{
+    return in_array((int)$id_modulo, modulos_de_usuario($conexion, $id_usuario), true);
+}
+
+/*
+   Reemplaza los módulos de un usuario por los indicados.
+   Se usa dentro de una transacción: devuelve false si algo falló.
+*/
+function guardar_modulos_usuario($conexion, $id_usuario, $modulos)
+{
+    $stmt = mysqli_prepare($conexion, "DELETE FROM usuarios_modulos WHERE id_usuario = ?");
+
+    if (!$stmt) {
+        return false;
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $id_usuario);
+    $ok = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    if (!$ok) {
+        return false;
+    }
+
+    foreach ($modulos as $id_modulo) {
+
+        $stmt = mysqli_prepare($conexion, "INSERT INTO usuarios_modulos (id_usuario, id_modulo) VALUES (?, ?)");
+
+        if (!$stmt) {
+            return false;
+        }
+
+        mysqli_stmt_bind_param($stmt, "ii", $id_usuario, $id_modulo);
+        $ok = mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        if (!$ok) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/*
+   Token de seguridad de los formularios.
+   Cada módulo usa su propia clave de sesión, así cerrar sesión
+   en un módulo no invalida los formularios abiertos en otro.
+*/
+function token_formulario($clave = "csrf_token")
+{
+    if (
+        !isset($_SESSION[$clave]) ||
+        !is_string($_SESSION[$clave]) ||
+        strlen($_SESSION[$clave]) !== 64
+    ) {
+        $_SESSION[$clave] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION[$clave];
+}
+
+function token_valido($clave = "csrf_token")
+{
+    return isset($_SESSION[$clave], $_POST["csrf_token"]) &&
+        is_string($_SESSION[$clave]) &&
+        is_string($_POST["csrf_token"]) &&
+        hash_equals($_SESSION[$clave], $_POST["csrf_token"]);
+}
+
 /* Componentes que se pueden marcar en un ticket */
 function componentes_internos()
 {
