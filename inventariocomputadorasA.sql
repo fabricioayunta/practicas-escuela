@@ -525,7 +525,7 @@ ALTER TABLE `usuarios`
   ADD CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON UPDATE CASCADE;
 
 -- ========================================================
--- MÓDULOS: Laboratorios, Pañol Informático y Pañol
+-- MÓDULOS: Mesa de Ayuda de Laboratorios, de Máquinas de Impresión 3D y de Herramientas
 -- ========================================================
 
 -- --------------------------------------------------------
@@ -545,9 +545,9 @@ CREATE TABLE `modulos` (
 --
 
 INSERT INTO `modulos` (`id_modulo`, `nombre`, `carpeta`) VALUES
-(1, 'Laboratorios', 'sistemalaboratorios'),
-(2, 'Pañol Informático', 'sistemapanolinformatico'),
-(3, 'Pañol', 'sistemapanol');
+(1, 'Mesa de Ayuda de Laboratorios', 'laboratorios'),
+(2, 'Mesa de Ayuda de Máquinas de Impresión 3D', 'impresion3d'),
+(3, 'Mesa de Ayuda de Herramientas', 'pañol');
 
 -- --------------------------------------------------------
 

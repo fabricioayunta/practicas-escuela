@@ -1,4 +1,4 @@
-# Sistema de Gestión Escolar
+# Mesa de Ayuda Informática
 
 Trabajo práctico. Sistema web en PHP + MySQL (XAMPP) formado por tres módulos
 independientes que comparten una misma base de datos y una misma tabla de usuarios.
@@ -14,16 +14,16 @@ independientes que comparten una misma base de datos y una misma tabla de usuari
 4. Abrir `http://localhost/practicas-escuela/`.
 
 La conexión se configura en un solo lugar:
-`sistemalaboratorios/conexion/conexion.php` (usuario `root`, sin contraseña).
+`laboratorios/conexion/conexion.php` (usuario `root`, sin contraseña).
 
 ## Cómo se usa
 
 ```
 practicas-escuela/index.php          ← selector de módulo (pantalla pública)
         │
-        ├─→ sistemalaboratorios/index.php      → login → inicio.php
-        ├─→ sistemapanolinformatico/index.php  → login → inicio.php
-        └─→ sistemapanol/index.php             → login → inicio.php
+        ├─→ laboratorios/index.php  → login → inicio.php
+        ├─→ impresion3d/index.php   → login → inicio.php
+        └─→ pañol/index.php         → login → inicio.php
 ```
 
 Se elige primero el módulo y recién después se inicia sesión, **dentro de ese módulo**.
@@ -32,12 +32,12 @@ Se elige primero el módulo y recién después se inicia sesión, **dentro de es
 
 Los tres módulos comparten los mismos emails, contraseñas y roles, pero el acceso se
 controla por módulo: que un usuario entre a Laboratorios no significa que pueda entrar
-a Pañol.
+a Herramientas.
 
 | Email | Contraseña | Rol | Módulos a los que entra |
 |---|---|---|---|
-| admin@gmail.com | 123456 | Administrativo | Laboratorios, Pañol Informático, Pañol |
-| ematp@gmail.com | 123456 | EMATP | Laboratorios, Pañol Informático |
+| admin@gmail.com | 123456 | Administrativo | Laboratorios, Máquinas de Impresión 3D, Herramientas |
+| ematp@gmail.com | 123456 | EMATP | Laboratorios, Máquinas de Impresión 3D |
 | profe@gmail.com | 123456 | Profesor | Laboratorios |
 | profe2@gmail.com | 12345678 | Profesor | Laboratorios |
 
@@ -103,7 +103,7 @@ por interpolación de strings y termina con el HTML.
 
 ### 1. Renombrado del módulo original
 
-`sistemaescuela` pasó a llamarse **`sistemalaboratorios`**, porque ahora es uno de
+`sistemaescuela` pasó a llamarse **`laboratorios`**, porque ahora es uno de
 tres módulos y el nombre viejo era ambiguo.
 
 No hubo que corregir includes ni rutas: todas eran relativas
@@ -112,17 +112,17 @@ el renombrado no rompió nada.
 
 **La lógica interna del módulo no se modificó.**
 
-### 2. Módulo nuevo: `sistemapanolinformatico`
+### 2. Módulo nuevo: `impresion3d` (antes `sistemapanolinformatico`)
 
-Gestión del pañol informático. Dos funciones:
+**Mesa de Ayuda de Máquinas de Impresión 3D** (antes "Pañol Informático"). Dos funciones:
 
 - **Préstamos de insumos**: registrar la entrega de un insumo, registrar su
   devolución, y ver el estado (Pendiente / Devuelto).
 - **Stock de repuestos**: ABM de repuestos con su cantidad disponible.
 
-### 3. Módulo nuevo: `sistemapanol`
+### 3. Módulo nuevo: `pañol` (antes `sistemapanol`)
 
-Gestión del pañol general. Cuatro funciones:
+**Mesa de Ayuda de Herramientas** (antes "Pañol"). Cuatro funciones:
 
 - **Alta de artículos** (y edición).
 - **Préstamo de artículos** a una persona.
@@ -131,9 +131,10 @@ Gestión del pañol general. Cuatro funciones:
   los prestables, igual que hacen las computadoras en el módulo de Laboratorios.
   También se puede eliminar del todo, salvo que tenga préstamos registrados.
 
-> Las carpetas se llaman `sistemapanol` y `sistemapanolinformatico`, **sin la ñ**,
-> para evitar problemas de codificación en las URLs. En pantalla siempre se lee
-> "Pañol" con ñ.
+> Las carpetas se llaman `laboratorios`, `impresion3d` y `pañol`, que son también las
+> rutas públicas: `mesadeayuda.tec4.ar/laboratorios`, `/impresion3d` y `/pañol`.
+> En pantalla los módulos se llaman **Mesa de Ayuda de Laboratorios**,
+> **Mesa de Ayuda de Máquinas de Impresión 3D** y **Mesa de Ayuda de Herramientas**.
 
 ### 4. Base de datos compartida
 
@@ -148,7 +149,7 @@ Tablas nuevas:
 | `usuarios_modulos` | A qué módulos puede entrar cada usuario |
 | `prestamos_insumos` | Entregas de insumos informáticos y su devolución |
 | `repuestos` | Stock de repuestos informáticos |
-| `articulos` | Artículos del pañol |
+| `articulos` | Herramientas y artículos que se prestan |
 | `prestamos_articulos` | Préstamos de artículos y su devolución |
 
 Todas con el mismo estilo del dump original: motor InnoDB, charset `utf8mb4`,
@@ -160,14 +161,14 @@ Para no repetir las credenciales de la base en tres lugares, los módulos nuevos
 su propio `conexion/conexion.php`, pero adentro solo incluyen el del módulo original:
 
 ```php
-include(__DIR__ . "/../../sistemalaboratorios/conexion/conexion.php");
+include(__DIR__ . "/../../laboratorios/conexion/conexion.php");
 ```
 
 Lo mismo con los estilos: el `css/estilos.css` de cada módulo nuevo importa la hoja de
 Laboratorios, así los tres se ven igual y hay una sola hoja para mantener.
 
 ```css
-@import url("../../sistemalaboratorios/css/estilos.css");
+@import url("../../laboratorios/css/estilos.css");
 ```
 
 ### 5. Un login por módulo
@@ -194,13 +195,13 @@ profesor de otro. Por eso cada módulo guarda su sesión con sus propias claves:
 | Módulo | Claves de sesión |
 |---|---|
 | Laboratorios | `id_usuario`, `nombre`, `apellido`, `email`, `id_rol`, `csrf_token` |
-| Pañol Informático | `pi_id_usuario`, `pi_nombre`, `pi_apellido`, `pi_email`, `pi_id_rol`, `pi_csrf_token` |
-| Pañol | `panol_id_usuario`, `panol_nombre`, `panol_apellido`, `panol_email`, `panol_id_rol`, `panol_csrf_token` |
+| Máquinas de Impresión 3D | `pi_id_usuario`, `pi_nombre`, `pi_apellido`, `pi_email`, `pi_id_rol`, `pi_csrf_token` |
+| Herramientas | `panol_id_usuario`, `panol_nombre`, `panol_apellido`, `panol_email`, `panol_id_rol`, `panol_csrf_token` |
 
 Consecuencias:
 
-- Estar logueado en Laboratorios no te deja entrar a Pañol: hay que hacer el login de
-  Pañol.
+- Estar logueado en Laboratorios no te deja entrar a Herramientas: hay que hacer el login
+  de Herramientas.
 - Cerrar sesión en un módulo **no** cierra la de los otros: cada `logout.php` borra
   solo sus propias claves.
 
@@ -211,14 +212,14 @@ vale en los tres módulos. Los tres tienen la misma estructura: después del log
 `inicio.php` manda a cada uno a `administrativo/`, `profesor/` o `ematp/`.
 
 El acceso a los módulos se resolvió aparte, con la tabla `usuarios_modulos`, porque un
-solo `id_rol` no alcanza para decir "este usuario entra a Laboratorios **y** a Pañol":
+solo `id_rol` no alcanza para decir "este usuario entra a Laboratorios **y** a Herramientas":
 habría hecho falta inventar un rol por cada combinación posible.
 
 El **administrativo** puede lo mismo en los tres módulos: Resumen, Usuarios (ABM con
 rol y módulos de acceso, igual en los tres) y el ABM propio del módulo. Lo que cambia
 entre módulos es lo que pueden hacer el EMATP y el profesor:
 
-| | Laboratorios | Pañol Informático | Pañol |
+| | Laboratorios | Máquinas de Impresión 3D | Herramientas |
 |---|---|---|---|
 | **Administrativo** | Resumen, Usuarios, Laboratorios, Computadoras, Tickets | Resumen, Usuarios, Repuestos (ABM), Préstamos de insumos (ver todos, registrar, devolver, eliminar) | Resumen, Usuarios, Artículos (ABM, alta/baja), Préstamos (ver todos, registrar, devolver) |
 | **EMATP** | Gestionar tickets, componentes y alta/baja de PCs | Registrar entregas y devoluciones de insumos, actualizar el stock de repuestos | Registrar préstamos y devoluciones, consultar artículos |
@@ -238,7 +239,7 @@ Se agregó `practicas-escuela/index.php`. Es una pantalla **pública** (no pide 
 que muestra los tres módulos y lleva al login de cada uno.
 
 Desde adentro de cualquier módulo se vuelve al selector con el link
-**"🔁 Cambiar de Módulo"**, que está en todos los menús.
+**"Cambiar de módulo"**, que está en todos los menús.
 
 ---
 
@@ -250,13 +251,13 @@ practicas-escuela/
 ├── inventariocomputadoras.sql
 ├── README.md
 │
-├── sistemalaboratorios/             ← antes "sistemaescuela"
+├── laboratorios/                    ← antes "sistemaescuela"
 │   ├── index.php  login.php  logout.php
 │   ├── inicio.php                   ← panel según el id_rol
 │   ├── conexion/  css/  includes/
 │   └── administrativo/  ematp/  profesor/  uploads/
 │
-├── sistemapanolinformatico/         ← misma estructura que Laboratorios
+├── impresion3d/                     ← misma estructura que Laboratorios
 │   ├── index.php  login.php  logout.php
 │   ├── inicio.php                   ← panel según el id_rol
 │   ├── conexion/  css/
@@ -266,7 +267,7 @@ practicas-escuela/
 │   ├── ematp/                       ← préstamos, stock de repuestos
 │   └── profesor/                    ← pedir insumo, mis préstamos
 │
-└── sistemapanol/                    ← misma estructura que Laboratorios
+└── pañol/                           ← misma estructura que Laboratorios
     ├── index.php  login.php  logout.php
     ├── inicio.php                   ← panel según el id_rol
     ├── conexion/  css/
@@ -278,7 +279,7 @@ practicas-escuela/
 ```
 
 Las funciones comunes (escapar texto, mensajes de error, roles, módulos, token de los
-formularios) están en `sistemalaboratorios/includes/funciones.php` y las usan los tres.
+formularios) están en `laboratorios/includes/funciones.php` y las usan los tres.
 
 ---
 

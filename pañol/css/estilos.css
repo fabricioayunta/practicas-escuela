@@ -1,0 +1,7 @@
+/* ===========================
+   ESTILOS COMPARTIDOS
+   Se reutiliza la hoja de estilos del módulo de Laboratorios,
+   así los tres módulos se ven igual.
+=========================== */
+
+@import url("../../laboratorios/css/estilos.css");

@@ -7,9 +7,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sistema de Gestión Escolar</title>
+    <title>Mesa de Ayuda Informática</title>
 
-    <link rel="stylesheet" href="sistemalaboratorios/css/estilos.css">
+    <link rel="stylesheet" href="laboratorios/css/estilos.css">
 
 </head>
 
@@ -17,7 +17,7 @@
 
 <main class="contenedor">
 
-    <h1>Sistema de Gestión Escolar</h1>
+    <h1>Mesa de Ayuda Informática</h1>
 
     <p>
         Elegí a qué módulo querés entrar.
@@ -29,7 +29,7 @@
 
         <div class="card azul">
 
-            <h3>💻 Laboratorios</h3>
+            <h3>Mesa de Ayuda de Laboratorios</h3>
 
             <p>
                 Computadoras, laboratorios y tickets de la mesa de ayuda.
@@ -37,7 +37,7 @@
 
             <br>
 
-            <a href="sistemalaboratorios/index.php" class="btn btn-primario">
+            <a href="laboratorios/index.php" class="btn btn-primario">
                 Iniciar Sesión
             </a>
 
@@ -46,15 +46,15 @@
 
         <div class="card verde">
 
-            <h3>🔌 Pañol Informático</h3>
+            <h3>Mesa de Ayuda de Máquinas de Impresión 3D</h3>
 
             <p>
-                Préstamos de insumos y stock de repuestos.
+                Préstamos de insumos y stock de repuestos de las impresoras 3D.
             </p>
 
             <br>
 
-            <a href="sistemapanolinformatico/index.php" class="btn btn-exito">
+            <a href="impresion3d/index.php" class="btn btn-exito">
                 Iniciar Sesión
             </a>
 
@@ -63,15 +63,15 @@
 
         <div class="card naranja">
 
-            <h3>🧰 Pañol</h3>
+            <h3>Mesa de Ayuda de Herramientas</h3>
 
             <p>
-                Artículos del pañol, préstamos y devoluciones.
+                Herramientas, préstamos y devoluciones.
             </p>
 
             <br>
 
-            <a href="sistemapanol/index.php" class="btn btn-primario">
+            <a href="pañol/index.php" class="btn btn-primario">
                 Iniciar Sesión
             </a>
 
