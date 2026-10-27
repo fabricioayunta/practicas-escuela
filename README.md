@@ -36,7 +36,7 @@ a Herramientas.
 
 | Email | Contraseña | Rol | Módulos a los que entra |
 |---|---|---|---|
-| admin@gmail.com | 123456 | Administrativo | Laboratorios, Máquinas de Impresión 3D, Herramientas |
+| admin@gmail.com | 12345678 | Administrativo | Laboratorios, Máquinas de Impresión 3D, Herramientas |
 | ematp@gmail.com | 123456 | EMATP | Laboratorios, Máquinas de Impresión 3D |
 | profe@gmail.com | 123456 | Profesor | Laboratorios |
 | profe2@gmail.com | 12345678 | Profesor | Laboratorios |
