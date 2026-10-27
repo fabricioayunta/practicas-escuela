@@ -7,6 +7,8 @@
             <a class="<?php echo activo("inicio.php"); ?>" href="inicio.php">Inicio</a>
             <a class="<?php echo activo("crear_ticket.php"); ?>" href="crear_ticket.php">Crear ticket</a>
             <a class="<?php echo activo(["mis_tickets.php", "editar_ticket.php"]); ?>" href="mis_tickets.php">Mis tickets</a>
+            <a class="<?php echo activo(["relevamiento.php", "guardar_relevamiento.php"]); ?>" href="relevamiento.php">Relevar laboratorio</a>
+            <a class="<?php echo activo(["mis_relevamientos.php", "ver_relevamiento.php"]); ?>" href="mis_relevamientos.php">Mis relevamientos</a>
             <a href="../../index.php">Cambiar de módulo</a>
             <a class="menu-salir" href="../logout.php">Cerrar sesión</a>
         </nav>

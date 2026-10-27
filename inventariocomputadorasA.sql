@@ -302,6 +302,45 @@ INSERT INTO `laboratorios` (`id_laboratorio`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `relevamientos`
+-- (relevamiento y habilitación de laboratorios por turno)
+--
+
+CREATE TABLE `relevamientos` (
+  `id_relevamiento` int(11) NOT NULL,
+  `id_laboratorio` int(11) DEFAULT NULL,
+  `laboratorio_nombre` varchar(50) NOT NULL,
+  `turno` varchar(20) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  `resultado` enum('Todo OK','Con inconvenientes') NOT NULL,
+  `total_computadoras` int(11) NOT NULL DEFAULT 0,
+  `revisadas` int(11) NOT NULL DEFAULT 0,
+  `con_inconvenientes` int(11) NOT NULL DEFAULT 0,
+  `observaciones` varchar(255) DEFAULT NULL,
+  `token_envio` char(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `relevamiento_detalle`
+--
+
+CREATE TABLE `relevamiento_detalle` (
+  `id_detalle` int(11) NOT NULL,
+  `id_relevamiento` int(11) NOT NULL,
+  `id_computadora` int(11) DEFAULT NULL,
+  `numero_pc` int(11) NOT NULL,
+  `estado` enum('En condiciones','Con inconvenientes','Fuera de servicio') NOT NULL,
+  `observacion` varchar(500) DEFAULT NULL,
+  `id_ticket` int(11) DEFAULT NULL,
+  `ticket_nuevo` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `roles`
 --
 
@@ -405,6 +444,25 @@ ALTER TABLE `laboratorios`
   ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
+-- Indices de la tabla `relevamientos`
+--
+ALTER TABLE `relevamientos`
+  ADD PRIMARY KEY (`id_relevamiento`),
+  ADD UNIQUE KEY `uq_relevamiento_token` (`token_envio`),
+  ADD KEY `idx_rel_laboratorio_fecha` (`id_laboratorio`,`fecha`),
+  ADD KEY `idx_rel_usuario` (`id_usuario`),
+  ADD KEY `idx_rel_fecha` (`fecha`);
+
+--
+-- Indices de la tabla `relevamiento_detalle`
+--
+ALTER TABLE `relevamiento_detalle`
+  ADD PRIMARY KEY (`id_detalle`),
+  ADD UNIQUE KEY `uq_detalle_relevamiento_pc` (`id_relevamiento`,`numero_pc`),
+  ADD KEY `idx_det_computadora` (`id_computadora`,`id_relevamiento`),
+  ADD KEY `idx_det_ticket` (`id_ticket`);
+
+--
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -463,6 +521,18 @@ ALTER TABLE `laboratorios`
   MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT de la tabla `relevamientos`
+--
+ALTER TABLE `relevamientos`
+  MODIFY `id_relevamiento` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `relevamiento_detalle`
+--
+ALTER TABLE `relevamiento_detalle`
+  MODIFY `id_detalle` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -509,6 +579,21 @@ ALTER TABLE `historialticket`
 ALTER TABLE `historial_computadoras`
   ADD CONSTRAINT `fk_historial_pc` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_historial_pc_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `relevamientos`
+--
+ALTER TABLE `relevamientos`
+  ADD CONSTRAINT `fk_rel_laboratorio` FOREIGN KEY (`id_laboratorio`) REFERENCES `laboratorios` (`id_laboratorio`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_rel_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `relevamiento_detalle`
+--
+ALTER TABLE `relevamiento_detalle`
+  ADD CONSTRAINT `fk_det_relevamiento` FOREIGN KEY (`id_relevamiento`) REFERENCES `relevamientos` (`id_relevamiento`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_det_computadora` FOREIGN KEY (`id_computadora`) REFERENCES `computadoras` (`id_computadora`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_det_ticket` FOREIGN KEY (`id_ticket`) REFERENCES `tickets` (`id_ticket`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `tickets`

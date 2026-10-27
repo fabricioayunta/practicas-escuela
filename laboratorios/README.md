@@ -67,15 +67,22 @@ Al iniciar sesión, el sistema te lleva automáticamente al panel que correspond
 
 ---
 
+### Si ya tenés la base instalada (actualizar sin perder datos)
+
+Importá **`actualizar_relevamientos.sql`** desde phpMyAdmin (pestaña *Importar*). Solo agrega las tablas `relevamientos` y `relevamiento_detalle`; no borra ni modifica nada existente. Si instalás desde cero con `inventariocomputadorasA.sql`, ya vienen incluidas.
+
 ## Cómo se usa
 
 ###  Profesor
 - **Crear ticket:** elegí el laboratorio y el número de computadora, marcá los componentes con problemas (Mother, Procesador, Memoria RAM, Disco, Monitor, Teclado, Mouse), escribí la descripción y, si querés, adjuntá una foto (JPG, PNG o WEBP, máximo 5 MB).
 - **Mis tickets:** ver el estado de tus tickets y editarlos.
+- **Relevar laboratorio:** elegí laboratorio y turno, marcá cada PC como *En condiciones* o *Con inconvenientes*. Si hay un problema, describilo y creá un ticket nuevo o vinculá uno abierto. Con PC sin revisar o con inconvenientes no se puede dar «Todo OK». Antes de guardar pide confirmación y el registro no se puede modificar.
+- **Mis relevamientos:** ver tus controles anteriores.
 
 ###  EMATP (soporte técnico)
 - **Tickets:** ver los tickets, cambiar su estado (*Abierto*, *Pendiente*, *Cerrado*) y dejar observaciones. Cada cambio queda en el historial.
 - **Computadoras:** ver el detalle de cada equipo y editar sus componentes.
+- **Relevamientos:** listado con filtros (laboratorio, fecha, turno, resultado), detalle de cada control e historial por computadora (botón en el detalle de la PC). La comparación entre controles no indica cuándo se originó una falla ni quién la causó.
 
 ###  Administrativo
 - **Resumen:** panel con estadísticas generales.
@@ -83,6 +90,7 @@ Al iniciar sesión, el sistema te lleva automáticamente al panel que correspond
 - **Laboratorios:** crear, editar y eliminar laboratorios.
 - **Computadoras:** crear, editar y eliminar computadoras.
 - **Tickets:** ver todos los tickets con su detalle.
+- **Relevamientos:** mismo control que EMATP (solo lectura).
 
 ---
 

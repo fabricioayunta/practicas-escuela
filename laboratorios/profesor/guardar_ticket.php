@@ -29,16 +29,13 @@ if ($id_laboratorio <= 0 || $numero_pc <= 0) {
     mostrar_error("Debe elegir el laboratorio y el número de computadora.", "crear_ticket.php");
 }
 
-if (empty($componentes)) {
-    mostrar_error("Debe marcar al menos un componente con problemas.", "crear_ticket.php");
-}
-
 if ($observacion === "") {
-    mostrar_error("Debe escribir una descripción del problema.", "crear_ticket.php");
+    mostrar_error("Debe contar qué le pasa a la computadora.", "crear_ticket.php");
 }
 
-$componentesTexto = implode(", ", $componentes);
-$titulo           = "Problema en: " . $componentesTexto;
+/* Los componentes son opcionales: sin marcar se guarda NULL ("—") */
+$componentesTexto = empty($componentes) ? null : implode(", ", $componentes);
+$titulo           = titulo_ticket($observacion);
 
 
 /* =========================
@@ -124,6 +121,17 @@ $stmt = mysqli_prepare(
         (id_usuario, id_computadora, titulo, descripcion, componentes_afectados, foto)
      VALUES (?, ?, ?, ?, ?, ?)"
 );
+
+if (!$stmt) {
+    error_log("Error al preparar el ticket: " . mysqli_error($conexion));
+    mysqli_rollback($conexion);
+
+    if ($fotoNombre !== null) {
+        @unlink("../uploads/tickets/" . $fotoNombre);
+    }
+
+    mostrar_error("No se pudo crear el ticket. Si el problema continúa, avise al administrador.", "crear_ticket.php");
+}
 
 mysqli_stmt_bind_param(
     $stmt,

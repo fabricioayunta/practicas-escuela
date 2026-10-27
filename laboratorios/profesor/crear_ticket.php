@@ -64,19 +64,15 @@ include "../includes/cabecera.php";
             </select>
         </div>
 
-        <h2>2. ¿Qué parte tiene el problema?</h2>
-        <p class="ayuda">Marque una o más opciones.</p>
-
-        <?php casillas_componentes(); ?>
-
-        <h2>3. Cuéntenos qué pasa</h2>
+        <h2>2. ¿Qué le pasa a la computadora?</h2>
+        <p class="ayuda">Cuente con sus palabras cuál es el problema y qué se ve. No hace falta saber qué parte falla.</p>
 
         <div class="campo">
-            <label for="observacion">Descripción del problema</label>
+            <label for="observacion">Qué pasa y qué se ve</label>
             <textarea
                 id="observacion"
                 name="observacion"
-                placeholder="Por ejemplo: el monitor no enciende desde ayer."
+                placeholder="Por ejemplo: al encenderla la pantalla queda negra y se escucha un pitido."
                 required></textarea>
         </div>
 
@@ -85,6 +81,11 @@ include "../includes/cabecera.php";
             <input type="file" id="foto" name="foto" accept="image/jpeg,image/png,image/webp">
             <small>Formatos permitidos: JPG, PNG o WEBP. Tamaño máximo: 5 MB.</small>
         </div>
+
+        <h2>3. ¿Sabe qué parte falla? (opcional)</h2>
+        <p class="ayuda">Si lo sabe, márquela. Si no, deje todo sin marcar: el personal técnico lo revisará.</p>
+
+        <?php casillas_componentes(); ?>
 
         <div class="acciones-form">
             <button type="submit" class="btn-exito">Enviar ticket</button>

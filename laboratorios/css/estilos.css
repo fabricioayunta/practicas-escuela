@@ -670,6 +670,98 @@ table tr:hover td {
     .barra-acciones .btn {
         width: 100%;
     }
+
+    /* Tablas como tarjetas: una tarjeta por fila (ver includes/tablas_moviles.php) */
+
+    .tabla-responsive.con-tarjetas {
+        overflow: visible;
+        border: none;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .tabla-tarjetas,
+    .tabla-tarjetas tbody,
+    .tabla-tarjetas tr,
+    .tabla-tarjetas td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabla-tarjetas {
+        background: transparent;
+    }
+
+    /* El encabezado queda oculto a la vista pero disponible para lectores de pantalla */
+    .tabla-tarjetas thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+
+    .tabla-tarjetas tbody tr,
+    .tabla-tarjetas tbody tr:nth-child(even) {
+        background: var(--blanco);
+        border: 1px solid var(--gris-borde);
+        border-radius: var(--radio);
+        box-shadow: var(--sombra);
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .tabla-tarjetas tr:nth-child(even) td,
+    .tabla-tarjetas tr:hover td {
+        background: transparent;
+    }
+
+    .tabla-tarjetas td {
+        padding: 10px 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .tabla-tarjetas td:first-child {
+        border-top: none;
+    }
+
+    /* El nombre de la columna queda a la izquierda y el dato a la derecha */
+    .tabla-tarjetas td[data-label] {
+        position: relative;
+        min-height: 2.6em;
+        padding-left: calc(38% + 14px);
+    }
+
+    .tabla-tarjetas td[data-label]::before {
+        content: attr(data-label);
+        position: absolute;
+        top: 10px;
+        left: 14px;
+        width: calc(38% - 14px);
+        font-weight: 700;
+        color: var(--gris-suave);
+        font-size: .9rem;
+        overflow-wrap: anywhere;
+    }
+
+    /* Fichas de dos columnas: el dato pasa debajo de su nombre */
+    .ficha,
+    .ficha tbody,
+    .ficha tr,
+    .ficha td {
+        display: block;
+        width: 100%;
+    }
+
+    .ficha td:first-child {
+        width: 100%;
+        padding-bottom: 4px;
+    }
+
+    .ficha td + td {
+        border-top: none;
+        padding-top: 4px;
+    }
 }
 
 /* ---------- Impresión ---------- */
@@ -685,4 +777,108 @@ table tr:hover td {
     body {
         background: #fff;
     }
+}
+
+/* ==========================================================
+   RELEVAMIENTO DE LABORATORIOS
+   Los estados siempre llevan texto (y símbolo), no solo color.
+   ========================================================== */
+
+.rel-ok        { background: #e6f4ea; color: #14532d; border-color: #1e7a46; }
+.rel-problema  { background: #fdecea; color: #7a1710; border-color: #b3261e; }
+.rel-baja      { background: #eceff1; color: #37474f; border-color: #78909c; }
+.rel-pendiente { background: #fff4d6; color: #7a4b00; border-color: #d99a00; }
+
+.sin-margen-arriba { margin-top: 0; }
+.sin-sombra        { box-shadow: none; }
+.separada          { margin-top: 22px; }
+
+.rel-ayuda {
+    margin: 0 0 6px;
+    padding-left: 22px;
+    color: var(--gris-suave);
+}
+
+.rel-progreso {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 12px 16px;
+    margin-bottom: 18px;
+}
+
+.rel-progreso progress {
+    width: 100%;
+    height: 14px;
+    accent-color: var(--verde);
+}
+
+.rel-pc {
+    background: var(--blanco);
+    border-left-width: 6px;
+    animation: floatIn .35s ease both;
+}
+
+.rel-pc-pendiente { border-left-color: #d99a00; }
+.rel-pc-ok        { border-left-color: var(--verde); }
+.rel-pc-problema  { border-left-color: var(--rojo); }
+
+.rel-pc-baja {
+    border: 1px solid var(--gris-borde);
+    border-left: 6px solid #78909c;
+    border-radius: var(--radio);
+    background: #f7f8f9;
+    padding: 12px 18px;
+    margin-bottom: 22px;
+}
+
+.rel-pc-baja .ayuda { margin: 6px 0 0; }
+.rel-pc-titulo { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+.rel-etiqueta { margin-left: 8px; font-size: .8rem; }
+
+.rel-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.rel-opciones-columna { flex-direction: column; }
+
+.rel-detalle { margin-top: 4px; }
+.rel-detalle[hidden] { display: none; }
+
+.rel-resultado-previsto {
+    display: block;
+    padding: 12px 16px;
+    border: 2px solid;
+    border-radius: var(--radio);
+    font-weight: 700;
+    margin: 0 0 18px;
+}
+
+.rel-comparacion {
+    border-left: 6px solid var(--azul);
+    background: var(--azul-claro);
+    padding: 10px 14px;
+    border-radius: var(--radio);
+    margin: 8px 0;
+}
+
+.rel-comparacion-problema { border-left-color: var(--rojo); background: #fdecea; }
+
+.fila-problema td { background: #fff5f4; }
+
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rel-pc { animation: none; }
 }

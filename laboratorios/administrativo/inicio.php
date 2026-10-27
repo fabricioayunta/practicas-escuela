@@ -46,6 +46,11 @@ include "../includes/cabecera.php";
         <span>Ver los avisos enviados por los profesores.</span>
     </a>
 
+    <a class="opcion-grande" href="relevamientos.php">
+        <strong>Control de relevamientos</strong>
+        <span>Ver los controles de laboratorio y el historial de cada computadora.</span>
+    </a>
+
 </div>
 
 <?php include "../includes/pie.php"; ?>

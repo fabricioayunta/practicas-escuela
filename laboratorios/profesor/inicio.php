@@ -31,6 +31,16 @@ include "../includes/cabecera.php";
         <span>Ver los avisos que envié y cómo van.</span>
     </a>
 
+    <a class="opcion-grande" href="relevamiento.php">
+        <strong>Relevar un laboratorio</strong>
+        <span>Revisar las computadoras antes de la clase.</span>
+    </a>
+
+    <a class="opcion-grande" href="mis_relevamientos.php">
+        <strong>Mis relevamientos</strong>
+        <span>Ver los controles que ya registré.</span>
+    </a>
+
 </div>
 
 <?php include "../includes/pie.php"; ?>

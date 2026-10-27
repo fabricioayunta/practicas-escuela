@@ -31,6 +31,11 @@ include "../includes/cabecera.php";
         <span>Ver y editar los componentes de cada computadora.</span>
     </a>
 
+    <a class="opcion-grande" href="relevamientos.php">
+        <strong>Relevamientos de laboratorios</strong>
+        <span>Ver los controles que hicieron los profesores.</span>
+    </a>
+
 </div>
 
 <?php include "../includes/pie.php"; ?>

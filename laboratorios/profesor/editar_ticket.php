@@ -64,14 +64,18 @@ include "../includes/cabecera.php";
 
         <input type="hidden" name="id_ticket" value="<?php echo e($ticket["id_ticket"]); ?>">
 
-        <h2 style="margin-top:0;">¿Qué parte tiene el problema?</h2>
-
-        <?php casillas_componentes($componentesActuales); ?>
+        <h2 style="margin-top:0;">¿Qué le pasa a la computadora?</h2>
+        <p class="ayuda">Cuente con sus palabras cuál es el problema y qué se ve.</p>
 
         <div class="campo">
-            <label for="observacion">Descripción del problema</label>
+            <label for="observacion">Qué pasa y qué se ve</label>
             <textarea id="observacion" name="observacion" required><?php echo e($ticket["descripcion"]); ?></textarea>
         </div>
+
+        <h2>¿Sabe qué parte falla? (opcional)</h2>
+        <p class="ayuda">Si no lo sabe, deje todo sin marcar.</p>
+
+        <?php casillas_componentes($componentesActuales); ?>
 
         <div class="acciones-form">
             <button type="submit" class="btn-exito">Guardar cambios</button>
