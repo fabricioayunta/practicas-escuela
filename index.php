@@ -7,7 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Mesa de Ayuda Informática</title>
+    <title>Mesa de Ayuda</title>
 
     <link rel="stylesheet" href="laboratorios/css/estilos.css">
 
@@ -17,7 +17,7 @@
 
 <main class="contenedor">
 
-    <h1>Mesa de Ayuda Informática</h1>
+    <h1>Mesa de Ayuda</h1>
 
     <p>
         Elegí a qué módulo querés entrar.
@@ -29,7 +29,7 @@
 
         <div class="card azul">
 
-            <h3>Mesa de Ayuda de Laboratorios</h3>
+            <h3>Gestion de Laboratorios</h3>
 
             <p>
                 Computadoras, laboratorios y tickets de la mesa de ayuda.
@@ -46,7 +46,7 @@
 
         <div class="card verde">
 
-            <h3>Mesa de Ayuda de Máquinas de Impresión 3D</h3>
+            <h3>Gestion de Máquinas 3D</h3>
 
             <p>
                 Préstamos de insumos y stock de repuestos de las impresoras 3D.
@@ -63,7 +63,7 @@
 
         <div class="card naranja">
 
-            <h3>Mesa de Ayuda de Herramientas</h3>
+            <h3>Gestion de Herramientas</h3>
 
             <p>
                 Herramientas, préstamos y devoluciones.
