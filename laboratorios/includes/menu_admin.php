@@ -3,7 +3,11 @@
 
         <span class="menu-titulo">Mesa de Ayuda de Laboratorios</span>
 
-        <nav class="menu-enlaces">
+        <details class="menu-navegacion">
+            <summary aria-label="Mostrar opciones de navegación">
+                <span class="menu-icono" aria-hidden="true"><span></span><span></span><span></span></span>
+            </summary>
+            <nav class="menu-enlaces">
             <a class="<?php echo activo("inicio.php"); ?>" href="inicio.php">Inicio</a>
             <a class="<?php echo activo("dashboard.php"); ?>" href="dashboard.php">Resumen</a>
             <a class="<?php echo activo(["usuarios.php", "crear_usuario.php", "editar_usuario.php"]); ?>" href="usuarios.php">Usuarios</a>
@@ -13,7 +17,8 @@
             <a class="<?php echo activo(["relevamientos.php", "ver_relevamiento.php", "historial_relevamientos_pc.php"]); ?>" href="relevamientos.php">Relevamientos</a>
             <a href="../../index.php">Cambiar de módulo</a>
             <a class="menu-salir" href="../logout.php">Cerrar sesión</a>
-        </nav>
+            </nav>
+        </details>
 
     </div>
 </header>
