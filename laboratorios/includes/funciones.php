@@ -248,17 +248,6 @@ function filtrar_componentes($recibidos)
     return $validos;
 }
 
-/*
-   Título del ticket: el comienzo de la descripción que escribió el profesor.
-   (Los componentes son opcionales, así que no siempre hay de dónde sacarlo.)
-*/
-function titulo_ticket($descripcion)
-{
-    $texto = preg_replace('/\s+/u', ' ', trim($descripcion));
-
-    return mb_strlen($texto) > 90 ? rtrim(mb_substr($texto, 0, 87)) . "..." : $texto;
-}
-
 /* Dibuja las casillas de componentes (marcando las indicadas en $marcados) */
 function casillas_componentes($marcados = [])
 {
@@ -282,28 +271,5 @@ function casillas_componentes($marcados = [])
         }
 
         echo '</div></fieldset>';
-    }
-}
-
-/*
-   Atajos de seguridad que usan las pantallas de relevamientos.
-   Usan el mismo token de sesión ("csrf_token") que token_formulario().
-*/
-function csrf_token()
-{
-    return token_formulario("csrf_token");
-}
-
-/* Campo oculto que debe llevar todo formulario que usa POST */
-function campo_csrf()
-{
-    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
-}
-
-/* Se llama al inicio de todo script que recibe un formulario */
-function verificar_csrf()
-{
-    if (!token_valido("csrf_token")) {
-        mostrar_error("El formulario venció o no es válido. Vuelva atrás, actualice la página e intente de nuevo.");
     }
 }

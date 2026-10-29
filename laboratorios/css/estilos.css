@@ -433,6 +433,7 @@ legend {
 /* ---------- Tablas ---------- */
 
 .tabla-responsive {
+    width: 100%;
     overflow-x: auto;
     border: 1px solid var(--gris-borde);
     border-radius: var(--radio);
@@ -442,9 +443,11 @@ legend {
 }
 
 table {
-    width: 100%;
+    width: 100% !important;
+    max-width: 100%;
     border-collapse: collapse;
     background: var(--blanco);
+    table-layout: auto;
 }
 
 th {
@@ -452,14 +455,16 @@ th {
     color: var(--blanco);
     text-align: left;
     font-size: .95rem;
-    padding: 14px 16px;
-    white-space: nowrap;
+    padding: 12px 14px;
+    white-space: normal;
 }
 
 td {
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-top: 1px solid var(--gris-borde);
     vertical-align: middle;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 tbody tr:nth-child(even),
@@ -963,3 +968,31 @@ table tr:hover td {
 @media (prefers-reduced-motion: reduce) {
     .rel-pc { animation: none; }
 }
+
+/* ==========================================================
+   CORRECCIÓN DEFINITIVA PARA ACCIONES ("Editar" y "Eliminar")
+   ========================================================== */
+table td .acciones a.btn-chico,
+.acciones a.btn-chico {
+    color: #1d3557 !important;
+    background-color: #e2e8f0 !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 5px 10px !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    display: inline-block !important;
+}
+
+table td .acciones a.btn-peligro,
+.acciones a.btn-peligro {
+    color: #ffffff !important;
+    background-color: #e63946 !important;
+    border: 1px solid #d62828 !important;
+}
+
+table td .acciones a.btn-chico:hover,
+.acciones a.btn-chico:hover {
+    opacity: 0.85;
+}
+

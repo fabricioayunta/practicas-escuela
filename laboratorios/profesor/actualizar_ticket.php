@@ -22,13 +22,16 @@ if ($id_ticket <= 0) {
     mostrar_error("Ticket inválido.", "mis_tickets.php");
 }
 
-if ($observacion === "") {
-    mostrar_error("Debe contar qué le pasa a la computadora.");
+if (empty($componentes)) {
+    mostrar_error("Debe marcar al menos un componente con problemas.");
 }
 
-/* Los componentes son opcionales: sin marcar se guarda NULL ("—") */
-$componentesTexto = empty($componentes) ? null : implode(", ", $componentes);
-$titulo           = titulo_ticket($observacion);
+if ($observacion === "") {
+    mostrar_error("Debe escribir una descripción del problema.");
+}
+
+$componentesTexto = implode(", ", $componentes);
+$titulo           = "Problema en: " . $componentesTexto;
 
 
 /* Comprobar que el ticket sea del profesor y siga abierto */

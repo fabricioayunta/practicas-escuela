@@ -92,7 +92,6 @@ include "../includes/cabecera.php";
 <div class="barra-acciones">
     <a class="btn btn-secundario" href="computadoras.php?laboratorio=<?php echo e($pc["id_laboratorio"]); ?>">← Volver a las computadoras</a>
     <a class="btn" href="editar_componentes.php?id=<?php echo (int)$id; ?>">Editar componentes</a>
-    <a class="btn btn-secundario" href="historial_relevamientos_pc.php?id=<?php echo (int)$id; ?>">Historial de relevamientos</a>
 </div>
 
 <div class="tarjeta">

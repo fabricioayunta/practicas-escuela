@@ -88,7 +88,7 @@ include "../includes/cabecera.php";
             <tr><td>Profesor</td><td><?php echo e($ticket["nombre"] . " " . $ticket["apellido"]); ?></td></tr>
             <tr><td>Laboratorio</td><td><?php echo e($ticket["laboratorio"] ?? "—"); ?></td></tr>
             <tr><td>Computadora</td><td><?php echo $ticket["numero_pc"] !== null ? "PC " . e($ticket["numero_pc"]) : "—"; ?></td></tr>
-            <tr><td>Parte que falla</td><td><?php echo e($ticket["componentes_afectados"] ?? "No indicado"); ?></td></tr>
+            <tr><td>Componentes con problemas</td><td><?php echo e($ticket["componentes_afectados"] ?? "—"); ?></td></tr>
             <tr><td>Fecha</td><td><?php echo date("d/m/Y H:i", strtotime($ticket["fecha_creacion"])); ?></td></tr>
         </table>
     </div>
