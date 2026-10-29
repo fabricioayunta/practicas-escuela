@@ -248,6 +248,17 @@ function filtrar_componentes($recibidos)
     return $validos;
 }
 
+/*
+   Título del ticket: el comienzo de la descripción que escribió el profesor.
+   (Los componentes son opcionales, así que no siempre hay de dónde sacarlo.)
+*/
+function titulo_ticket($descripcion)
+{
+    $texto = preg_replace('/\s+/u', ' ', trim($descripcion));
+
+    return mb_strlen($texto) > 90 ? rtrim(mb_substr($texto, 0, 87)) . "..." : $texto;
+}
+
 /* Dibuja las casillas de componentes (marcando las indicadas en $marcados) */
 function casillas_componentes($marcados = [])
 {
