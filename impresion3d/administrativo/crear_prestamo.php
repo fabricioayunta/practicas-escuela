@@ -8,8 +8,14 @@ if (!isset($_SESSION["pi_id_usuario"]) || ($_SESSION["pi_id_rol"] ?? 0) != 1) {
 
 require_once "../conexion/conexion.php";
 
+// Establecemos la zona horaria predeterminada
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+
 $titulo = "Nueva entrega de insumo";
 $menu   = "admin";
+
+$fecha_actual = date("Y-m-d");
+$hora_actual  = date("H:i");
 
 include "../includes/cabecera.php";
 ?>
@@ -40,6 +46,19 @@ include "../includes/cabecera.php";
             <label for="persona">Entregado a</label>
             <input type="text" id="persona" name="persona" maxlength="100" required>
             <small>Nombre y apellido de quien se lleva el insumo.</small>
+        </div>
+
+        <div class="campo">
+            <label for="fecha_prestamo">Fecha y hora de entrega</label>
+            <input type="date" id="fecha_prestamo" name="fecha_prestamo" value="<?php echo $fecha_actual; ?>" required style="margin-bottom: 8px;">
+            <input type="time" id="hora_prestamo" name="hora_prestamo" value="<?php echo $hora_actual; ?>" required>
+        </div>
+
+        <div class="campo">
+            <label for="fecha_devolucion">Fecha y hora estimada de devolución</label>
+            <input type="date" id="fecha_devolucion" name="fecha_devolucion" value="<?php echo $fecha_actual; ?>" required style="margin-bottom: 8px;">
+            <input type="time" id="hora_devolucion" name="hora_devolucion" value="<?php echo $hora_actual; ?>" required>
+            <small>Se mostrará de forma permanente en la tabla de control.</small>
         </div>
 
         <div class="campo">

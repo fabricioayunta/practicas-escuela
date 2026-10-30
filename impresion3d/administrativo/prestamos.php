@@ -1,6 +1,16 @@
 <?php
 session_start();
 
+/* Puente de compatibilidad de sesión para evitar redirecciones al inicio */
+if (!isset($_SESSION["pi_id_usuario"]) && isset($_SESSION["id_usuario"])) {
+    $_SESSION["pi_id_usuario"] = $_SESSION["id_usuario"];
+}
+if (!isset($_SESSION["pi_id_rol"]) && isset($_SESSION["rol"])) {
+    if ($_SESSION["rol"] == 'administrativo' || $_SESSION["rol"] == 1) {
+        $_SESSION["pi_id_rol"] = 1;
+    }
+}
+
 if (!isset($_SESSION["pi_id_usuario"]) || ($_SESSION["pi_id_rol"] ?? 0) != 1) {
     header("Location: ../index.php");
     exit();
@@ -140,8 +150,19 @@ include "../includes/cabecera.php";
                 </td>
                 <td><?php echo e($fila["cantidad"]); ?></td>
                 <td><?php echo e($fila["persona"]); ?></td>
-                <td><?php echo date("d/m/Y H:i", strtotime($fila["fecha_entrega"])); ?></td>
-                <td><?php echo $fila["fecha_devolucion"] !== null ? date("d/m/Y H:i", strtotime($fila["fecha_devolucion"])) : "—"; ?></td>
+               <td><?php echo date("d/m/Y H:i", strtotime($fila["fecha_entrega"])); ?></td>
+                
+                <!-- Muestra siempre la fecha de devolución guardada (estimada o real) -->
+                <td>
+                    <?php 
+                    if (!empty($fila["fecha_devolucion"])) {
+                        echo date("d/m/Y H:i", strtotime($fila["fecha_devolucion"]));
+                    } else {
+                        echo "—";
+                    }
+                    ?>
+                </td>
+
                 <td>
                     <span class="estado <?php echo clase_prestamo($fila["estado"]); ?>">
                         <?php echo e($fila["estado"]); ?>

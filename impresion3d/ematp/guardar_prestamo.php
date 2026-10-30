@@ -26,19 +26,53 @@ if (!token_valido("pi_csrf_token")) {
 }
 
 /* Obtener y limpiar datos */
-$insumo        = trim((string)($_POST["insumo"] ?? ""));
-$cantidad      = filter_var($_POST["cantidad"] ?? "", FILTER_VALIDATE_INT);
-$persona       = trim((string)($_POST["persona"] ?? ""));
-$observaciones = trim((string)($_POST["observaciones"] ?? ""));
-$id_usuario    = (int)$_SESSION["pi_id_usuario"];
+$insumo          = trim((string)($_POST["insumo"] ?? ""));
+$cantidad        = filter_var($_POST["cantidad"] ?? "", FILTER_VALIDATE_INT);
+$persona         = trim((string)($_POST["persona"] ?? ""));
+$fecha_prest_val = trim((string)($_POST["fecha_prestamo"] ?? ""));
+$hora_prest_val  = trim((string)($_POST["hora_prestamo"] ?? ""));
+$fecha_dev_val   = trim((string)($_POST["fecha_devolucion"] ?? ""));
+$hora_dev_val    = trim((string)($_POST["hora_devolucion"] ?? ""));
+$observaciones   = trim((string)($_POST["observaciones"] ?? ""));
+$id_usuario      = (int)$_SESSION["pi_id_usuario"];
 
-/* Validar y guardar */
-$error = registrar_prestamo_insumo($conexion, $insumo, $cantidad, $persona, $observaciones, $id_usuario);
-
-if ($error !== "") {
-    mostrar_error($error);
+/* Combinar fecha y hora de entrega */
+$fecha_entrega = date("Y-m-d H:i:s");
+if (!empty($fecha_prest_val)) {
+    $h_prest = !empty($hora_prest_val) ? $hora_prest_val : "00:00";
+    $fecha_entrega = $fecha_prest_val . " " . $h_prest . ":00";
 }
 
-header("Location: prestamos.php?ok=creado");
-exit();
+/* Combinar fecha y hora de devolución */
+$fecha_devolucion = null;
+if (!empty($fecha_dev_val)) {
+    $h_dev = !empty($hora_dev_val) ? $hora_dev_val : "00:00";
+    $fecha_devolucion = $fecha_dev_val . " " . $h_dev . ":00";
+}
+
+if (empty($insumo) || !$cantidad || empty($persona) || empty($fecha_devolucion)) {
+    echo "<script>alert('Complete todos los campos obligatorios, incluyendo la fecha de devolución.'); window.history.back();</script>";
+    exit();
+}
+
+/* Guardar en prestamos_insumos */
+$stmt = $conexion->prepare("INSERT INTO prestamos_insumos (insumo, cantidad, persona, fecha_devolucion, observaciones, id_usuario, estado, fecha_entrega) VALUES (?, ?, ?, ?, ?, ?, 'Pendiente', ?)");
+
+if ($stmt) {
+    $stmt->bind_param("sisssis", $insumo, $cantidad, $persona, $fecha_devolucion, $observaciones, $id_usuario, $fecha_entrega);
+    
+    if ($stmt->execute()) {
+        $stmt->close();
+        header("Location: prestamos.php?ok=creado");
+        exit();
+    } else {
+        error_log("Error al insertar: " . $stmt->error);
+        echo "<script>alert('Error al guardar en la base de datos.'); window.history.back();</script>";
+        exit();
+    }
+} else {
+    error_log("Error al preparar la consulta: " . $conexion->error);
+    echo "<script>alert('Error en la estructura de la consulta SQL.'); window.history.back();</script>";
+    exit();
+}
 ?>

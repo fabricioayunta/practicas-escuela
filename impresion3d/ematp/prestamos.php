@@ -1,6 +1,16 @@
 <?php
 session_start();
 
+/* Puente de compatibilidad de sesión para EMATP */
+if (!isset($_SESSION["pi_id_usuario"]) && isset($_SESSION["id_usuario"])) {
+    $_SESSION["pi_id_usuario"] = $_SESSION["id_usuario"];
+}
+if (!isset($_SESSION["pi_id_rol"]) && isset($_SESSION["rol"])) {
+    if ($_SESSION["rol"] == 'ematp' || $_SESSION["rol"] == 3) {
+        $_SESSION["pi_id_rol"] = 3;
+    }
+}
+
 if (!isset($_SESSION["pi_id_usuario"]) || ($_SESSION["pi_id_rol"] ?? 0) != 3) {
     header("Location: ../index.php");
     exit();
@@ -54,7 +64,7 @@ $resultado = mysqli_stmt_get_result($stmt);
 $ok = $_GET["ok"] ?? "";
 
 $titulo = "Préstamos de insumos";
-$menu   = "ematp";
+$menu   = "ematp"; //[cite: 12]
 
 include "../includes/cabecera.php";
 ?>
@@ -139,7 +149,10 @@ include "../includes/cabecera.php";
                 <td><?php echo e($fila["cantidad"]); ?></td>
                 <td><?php echo e($fila["persona"]); ?></td>
                 <td><?php echo date("d/m/Y H:i", strtotime($fila["fecha_entrega"])); ?></td>
-                <td><?php echo $fila["fecha_devolucion"] !== null ? date("d/m/Y H:i", strtotime($fila["fecha_devolucion"])) : "—"; ?></td>
+                <!-- Visualización clara de la fecha de devolución guardada -->
+                <td>
+                    <?php echo !empty($fila["fecha_devolucion"]) ? date("d/m/Y H:i", strtotime($fila["fecha_devolucion"])) : "—"; ?>
+                </td>
                 <td>
                     <span class="estado <?php echo clase_prestamo($fila["estado"]); ?>">
                         <?php echo e($fila["estado"]); ?>
@@ -147,15 +160,15 @@ include "../includes/cabecera.php";
                 </td>
                 <td><?php echo e($fila["nombre"] . " " . $fila["apellido"]); ?></td>
                 <td>
-                    <?php if ($fila["estado"] === "Pendiente") { ?>
-                        <div class="acciones">
+                    <div class="acciones">
+                        <?php if ($fila["estado"] === "Pendiente") { ?>
                             <a class="btn btn-exito btn-chico"
                                href="devolver_prestamo.php?id=<?php echo e($fila["id_prestamo"]); ?>"
                                onclick="return confirm('¿Registrar la devolución de este insumo?');">Devolver</a>
-                        </div>
-                    <?php } else { ?>
-                        —
-                    <?php } ?>
+                        <?php } else { ?>
+                            —
+                        <?php } ?>
+                    </div>
                 </td>
             </tr>
         <?php } ?>

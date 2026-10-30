@@ -1,7 +1,7 @@
 <header class="menu">
     <div class="menu-interior">
 
-        <span class="menu-titulo">Mesa de Ayuda de Máquinas de Impresión 3D</span>
+        <span class="menu-titulo">Gestor de Máquinas 3D</span>
 
         <details class="menu-navegacion">
             <summary aria-label="Mostrar opciones de navegación">
@@ -18,3 +18,19 @@
 
     </div>
 </header>
+
+<script>
+    function limpiarMenuDesktop() {
+        if (window.innerWidth > 700) {
+            document.querySelectorAll('details.menu-navegacion').forEach(function(details) {
+                details.removeAttribute('open');
+            });
+        }
+    }
+
+    // Ejecutar al cargar la página por si ya está en modo escritorio
+    window.addEventListener('DOMContentLoaded', limpiarMenuDesktop);
+
+    // Ejecutar al redimensionar la ventana
+    window.addEventListener('resize', limpiarMenuDesktop);
+</script>
